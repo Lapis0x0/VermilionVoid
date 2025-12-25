@@ -3,6 +3,15 @@
 import { useMemo, useState } from "react"
 import { ArticleCard } from "./article-card"
 import { Sidebar } from "./sidebar"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+} from "@/components/ui/pagination"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 export type ArticleMeta = {
   slug: string
@@ -18,16 +27,74 @@ export type ArticleMeta = {
   pinned?: boolean
 }
 
+type PaginationMeta = {
+  currentPage: number
+  totalPages: number
+  basePath?: string
+}
+
+const HIDDEN = -1
+const ADJACENT_DISTANCE = 2
+const VISIBLE_PAGES = ADJACENT_DISTANCE * 2 + 1
+
+const normalizeBasePath = (basePath: string) => {
+  if (!basePath.startsWith("/")) return `/${basePath}`.replace(/\/+$/, "")
+  return basePath === "/" ? "" : basePath.replace(/\/+$/, "")
+}
+
+const getPageHref = (pageNumber: number, basePath: string) => {
+  const base = normalizeBasePath(basePath)
+  if (pageNumber === 1) return base || "/"
+  return `${base}/${pageNumber}/`
+}
+
+const buildPageRange = (currentPage: number, totalPages: number) => {
+  if (totalPages <= 1) return []
+
+  let count = 1
+  let left = currentPage
+  let right = currentPage
+
+  while (left - 1 > 0 && right + 1 <= totalPages && count + 2 <= VISIBLE_PAGES) {
+    count += 2
+    left -= 1
+    right += 1
+  }
+
+  while (left - 1 > 0 && count < VISIBLE_PAGES) {
+    count += 1
+    left -= 1
+  }
+
+  while (right + 1 <= totalPages && count < VISIBLE_PAGES) {
+    count += 1
+    right += 1
+  }
+
+  const pages: number[] = []
+  if (left > 1) pages.push(1)
+  if (left === 3) pages.push(2)
+  if (left > 3) pages.push(HIDDEN)
+  for (let page = left; page <= right; page += 1) pages.push(page)
+  if (right < totalPages - 2) pages.push(HIDDEN)
+  if (right === totalPages - 2) pages.push(totalPages - 1)
+  if (right < totalPages) pages.push(totalPages)
+
+  return pages
+}
+
 export function ArticleList({
   articles,
   title = "近期文章",
   subtitle = "Latest Posts",
   showViewAll = true,
+  pagination,
 }: {
   articles: ArticleMeta[]
   title?: string
   subtitle?: string
   showViewAll?: boolean
+  pagination?: PaginationMeta
 }) {
   const [activeCategory, setActiveCategory] = useState("all")
   const [activeTag, setActiveTag] = useState<string | null>(null)
@@ -56,6 +123,17 @@ export function ArticleList({
     const tagMatch = !activeTag || article.tags.includes(activeTag)
     return categoryMatch && tagMatch
   })
+
+  const pageRange = useMemo(() => {
+    if (!pagination) return []
+    return buildPageRange(pagination.currentPage, pagination.totalPages)
+  }, [pagination])
+
+  const basePath = pagination?.basePath ?? "/"
+  const previousUrl =
+    pagination && pagination.currentPage > 1 ? getPageHref(pagination.currentPage - 1, basePath) : undefined
+  const nextUrl =
+    pagination && pagination.currentPage < pagination.totalPages ? getPageHref(pagination.currentPage + 1, basePath) : undefined
 
   return (
     <section className="px-6 py-16 bg-muted/30">
@@ -103,6 +181,57 @@ export function ArticleList({
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                   </svg>
                 </a>
+              </div>
+            )}
+
+            {pagination && pagination.totalPages > 1 && (
+              <div className="pt-8">
+                <Pagination>
+                  <PaginationContent>
+                    <PaginationItem>
+                      <PaginationLink
+                        href={previousUrl}
+                        size="default"
+                        aria-disabled={!previousUrl}
+                        tabIndex={previousUrl ? undefined : -1}
+                        className={cn("gap-1 px-2.5", !previousUrl && "pointer-events-none opacity-50")}
+                        rel={previousUrl ? "prev" : undefined}
+                      >
+                        <ChevronLeft className="size-4" />
+                        <span className="hidden sm:block">上一页</span>
+                      </PaginationLink>
+                    </PaginationItem>
+
+                    {pageRange.map((page, index) => (
+                      <PaginationItem key={`${page}-${index}`}>
+                        {page === HIDDEN ? (
+                          <PaginationEllipsis />
+                        ) : (
+                          <PaginationLink
+                            href={getPageHref(page, basePath)}
+                            isActive={pagination.currentPage === page}
+                          >
+                            {page}
+                          </PaginationLink>
+                        )}
+                      </PaginationItem>
+                    ))}
+
+                    <PaginationItem>
+                      <PaginationLink
+                        href={nextUrl}
+                        size="default"
+                        aria-disabled={!nextUrl}
+                        tabIndex={nextUrl ? undefined : -1}
+                        className={cn("gap-1 px-2.5", !nextUrl && "pointer-events-none opacity-50")}
+                        rel={nextUrl ? "next" : undefined}
+                      >
+                        <span className="hidden sm:block">下一页</span>
+                        <ChevronRight className="size-4" />
+                      </PaginationLink>
+                    </PaginationItem>
+                  </PaginationContent>
+                </Pagination>
               </div>
             )}
           </div>

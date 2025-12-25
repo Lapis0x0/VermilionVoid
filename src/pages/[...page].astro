@@ -1,0 +1,44 @@
+---
+import type { GetStaticPaths } from "astro"
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { ArticleList } from "@/components/article-list"
+import { Footer } from "@/components/footer"
+import { Header } from "@/components/header"
+import { PAGE_SIZE } from "@/lib/constants"
+import { getSortedPosts, toPostMeta } from "@/lib/posts"
+
+const description = "探索金融、社会与人工智能的交汇点"
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getSortedPosts()
+  const articles = posts.map((post) => toPostMeta(post))
+  const pages = paginate(articles, { pageSize: PAGE_SIZE })
+  return pages.filter(({ props }) => props.page.currentPage > 1)
+}) satisfies GetStaticPaths
+
+const { page } = Astro.props
+const currentPage = page.currentPage
+const totalPages = page.lastPage
+const articles = page.data
+const title =
+  currentPage > 1
+    ? `思维边界 | Boundary of Thought · 第 ${currentPage} 页`
+    : "思维边界 | Boundary of Thought"
+---
+
+<BaseLayout {title} {description}>
+  <div class="min-h-screen bg-background">
+    <Header client:load />
+    <main class="pt-24">
+      <ArticleList
+        client:load
+        articles={articles}
+        title="全部文章"
+        subtitle="All Posts"
+        showViewAll={false}
+        pagination={{ currentPage, totalPages, basePath: "/" }}
+      />
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>
