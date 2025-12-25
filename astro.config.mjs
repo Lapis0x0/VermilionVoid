@@ -25,6 +25,7 @@ export default defineConfig({
   srcDir: "./src",
   output: "static",
   site: process.env.SITE_URL || "https://example.com",
+  trailingSlash: "always",
   alias: {
     "@": "./src",
   },

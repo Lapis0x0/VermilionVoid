@@ -19,7 +19,7 @@ export function ArticleCard({
   const readTime = article.readTime ?? "——"
 
   return (
-    <a href={`/posts/${article.slug}`} className={cn("group block", className)} style={style}>
+    <a href={`/posts/${article.slug}/`} className={cn("group block", className)} style={style}>
       <article className="relative bg-card border border-border/50 rounded-xl p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
         {/* Pinned indicator */}
         {article.pinned && (

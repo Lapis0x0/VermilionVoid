@@ -12,7 +12,7 @@ const slugParam = Astro.params.slug
 const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam
 
 if (slug) {
-  return Astro.redirect(encodeURI(`/posts/${slug}`))
+  return Astro.redirect(encodeURI(`/posts/${slug}/`))
 }
 
 return Astro.redirect("/")

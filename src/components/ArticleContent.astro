@@ -121,7 +121,7 @@ const categoryLabel = data.category?.toString().trim() || "未分类"
 
       <div class="grid sm:grid-cols-2 gap-4">
         <a
-          href={data.prevSlug ? `/posts/${data.prevSlug}` : "/"}
+          href={data.prevSlug ? `/posts/${data.prevSlug}/` : "/"}
           class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors"
         >
           <span class="text-xs text-muted-foreground mb-1 block">上一篇</span>
@@ -130,7 +130,7 @@ const categoryLabel = data.category?.toString().trim() || "未分类"
           </span>
         </a>
         <a
-          href={data.nextSlug ? `/posts/${data.nextSlug}` : "/"}
+          href={data.nextSlug ? `/posts/${data.nextSlug}/` : "/"}
           class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors text-right"
         >
           <span class="text-xs text-muted-foreground mb-1 block">下一篇</span>
