@@ -33,7 +33,7 @@ export function Header() {
     >
       <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="group flex items-center gap-3">
+        <a href="/" data-home-target="home-main" className="group flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center transition-transform duration-300 group-hover:scale-105">
             <span className="text-primary-foreground font-serif text-sm font-semibold">思</span>
           </div>
@@ -46,6 +46,7 @@ export function Header() {
             <a
               key={item.name}
               href={item.href}
+              data-home-target={item.href === "/" ? "home-main" : undefined}
               className="text-sm text-muted-foreground hover:text-foreground transition-colors duration-200 relative group"
             >
               {item.name}
@@ -92,6 +93,7 @@ export function Header() {
             <a
               key={item.name}
               href={item.href}
+              data-home-target={item.href === "/" ? "home-main" : undefined}
               onClick={() => setMobileMenuOpen(false)}
               className="text-muted-foreground hover:text-foreground transition-colors duration-200"
             >

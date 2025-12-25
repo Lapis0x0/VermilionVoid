@@ -21,16 +21,18 @@ const sidebarMeta = buildSidebarMeta(allArticles)
     <Header client:load />
     <main>
       <Hero client:load />
-      <ArticleList
-        client:load
-        articles={pageArticles}
-        title="全部文章"
-        subtitle="All Posts"
-        showViewAll={false}
-        pagination={{ currentPage: 1, totalPages, basePath: "/" }}
-        sidebarCategories={sidebarMeta.categories}
-        sidebarTags={sidebarMeta.tags}
-      />
+      <section id="home-main" class="scroll-mt-24">
+        <ArticleList
+          client:load
+          articles={pageArticles}
+          title="全部文章"
+          subtitle="All Posts"
+          showViewAll={false}
+          pagination={{ currentPage: 1, totalPages, basePath: "/" }}
+          sidebarCategories={sidebarMeta.categories}
+          sidebarTags={sidebarMeta.tags}
+        />
+      </section>
     </main>
     <Footer />
   </div>

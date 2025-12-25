@@ -46,5 +46,104 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
         document.addEventListener('swup:enable', setupSwupHooks)
       }
     </script>
+    <script is:inline>
+      // @ts-nocheck
+      const HOME_SCROLL_KEY = "homeScrollTarget"
+      const HOME_SCROLL_INSTANT_KEY = "homeScrollInstant"
+      const HOME_TARGET_FALLBACK = "home-main"
+      let handledBySwup = false
+      let previousScrollBehavior = null
+
+      const normalizePathname = () => {
+        const raw = window.location.pathname || "/"
+        const trimmed = raw.replace(/\/+$/, "")
+        return trimmed || "/"
+      }
+
+      const isPostDetail = () => {
+        const path = normalizePathname()
+        return path.startsWith("/posts/") && path !== "/posts"
+      }
+
+      const setInstantScroll = (enabled) => {
+        const root = document.documentElement
+        const body = document.body
+        if (enabled) {
+          if (!previousScrollBehavior) {
+            previousScrollBehavior = {
+              root: root.style.scrollBehavior,
+              body: body?.style.scrollBehavior ?? "",
+            }
+          }
+          root.style.scrollBehavior = "auto"
+          if (body) body.style.scrollBehavior = "auto"
+          return
+        }
+
+        if (!previousScrollBehavior) return
+        root.style.scrollBehavior = previousScrollBehavior.root
+        if (body) body.style.scrollBehavior = previousScrollBehavior.body
+        previousScrollBehavior = null
+      }
+
+      const rememberHomeTarget = (targetId) => {
+        if (!targetId || !isPostDetail()) return
+        sessionStorage.setItem(HOME_SCROLL_KEY, targetId)
+        sessionStorage.setItem(HOME_SCROLL_INSTANT_KEY, "1")
+        setInstantScroll(true)
+      }
+
+      const handleHomeLinkClick = (event) => {
+        const link = event.target?.closest?.("a[data-home-target]")
+        if (!link) return
+        const targetId = link.getAttribute("data-home-target") || HOME_TARGET_FALLBACK
+        rememberHomeTarget(targetId)
+      }
+
+      const scrollToRememberedTarget = () => {
+        if (normalizePathname() !== "/") return
+        const targetId = sessionStorage.getItem(HOME_SCROLL_KEY)
+        if (!targetId) return
+        const target = document.getElementById(targetId)
+        if (!target) return
+        if (sessionStorage.getItem(HOME_SCROLL_INSTANT_KEY)) {
+          setInstantScroll(true)
+        }
+        sessionStorage.removeItem(HOME_SCROLL_KEY)
+        sessionStorage.removeItem(HOME_SCROLL_INSTANT_KEY)
+        const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
+        target.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "auto", block: "start" })
+        requestAnimationFrame(() => setInstantScroll(false))
+      }
+
+      const handleSwupVisitStart = (event) => {
+        const visit = event?.detail?.visit
+        if (!visit) return
+        const targetId = sessionStorage.getItem(HOME_SCROLL_KEY)
+        if (!targetId) return
+        const toUrl = visit?.to?.url || ""
+        const normalized = toUrl.replace(/\?.*$/, "").replace(/\/+$/, "") || "/"
+        if (normalized !== "/") return
+        visit.scroll.target = `#${targetId}`
+        visit.scroll.animate = false
+        handledBySwup = true
+      }
+
+      const handleSwupPageView = () => {
+        if (handledBySwup) {
+          sessionStorage.removeItem(HOME_SCROLL_KEY)
+          sessionStorage.removeItem(HOME_SCROLL_INSTANT_KEY)
+          handledBySwup = false
+          requestAnimationFrame(() => setInstantScroll(false))
+          return
+        }
+        scrollToRememberedTarget()
+      }
+
+      document.addEventListener("click", handleHomeLinkClick, { capture: true })
+      document.addEventListener("swup:visit:start", handleSwupVisitStart)
+      window.addEventListener("pageshow", () => requestAnimationFrame(scrollToRememberedTarget))
+      document.addEventListener("swup:page:view", handleSwupPageView)
+    </script>
   </body>
 </html>

@@ -19,7 +19,11 @@ const categoryLabel = data.category?.toString().trim() || "未分类"
 <main class="pt-24 pb-20">
   <div class="px-6">
     <div class="max-w-3xl mx-auto">
-    <a href="/" class="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8 group">
+    <a
+      href="/"
+      data-home-target="home-main"
+      class="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8 group"
+    >
       <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
       </svg>
