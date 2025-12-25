@@ -10,7 +10,7 @@ export type ArticleMeta = {
   excerpt?: string
   category: string
   categoryLabel: string
-  tag: string
+  tags: string[]
   date: string
   wordCount?: number
   readTime?: string
@@ -37,12 +37,13 @@ export function ArticleList({ articles }: { articles: ArticleMeta[] }) {
   }, [articles])
 
   const tags = useMemo(() => {
-    return Array.from(new Set(articles.map((a) => a.tag))).sort((a, b) => a.localeCompare(b))
+    const allTags = articles.flatMap((article) => article.tags || [])
+    return Array.from(new Set(allTags)).sort((a, b) => a.localeCompare(b))
   }, [articles])
 
   const filteredArticles = articles.filter((article) => {
     const categoryMatch = activeCategory === "all" || article.category === activeCategory
-    const tagMatch = !activeTag || article.tag === activeTag
+    const tagMatch = !activeTag || article.tags.includes(activeTag)
     return categoryMatch && tagMatch
   })
 
@@ -70,7 +71,7 @@ export function ArticleList({ articles }: { articles: ArticleMeta[] }) {
           {/* Article list - Single column */}
           <div className="flex-1 space-y-4">
             {filteredArticles.length > 0 ? (
-              filteredArticles.map((article) => <ArticleCard key={article.id} article={article} />)
+              filteredArticles.map((article) => <ArticleCard key={article.slug} article={article} />)
             ) : (
               <div className="text-center py-12 text-muted-foreground">暂无符合条件的文章</div>
             )}
@@ -78,7 +79,7 @@ export function ArticleList({ articles }: { articles: ArticleMeta[] }) {
             {/* View all link */}
             <div className="pt-8 text-center">
               <a
-                href="/archive"
+                href="/posts"
                 className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors duration-200 group"
               >
                 <span>查看全部文章</span>

@@ -1,0 +1,19 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { Search as SearchPanel } from "@/components/search"
+
+const title = "搜索 | 思维边界"
+const description = "搜索全站文章"
+---
+
+<BaseLayout {title} {description}>
+  <div class="min-h-screen bg-background">
+    <Header client:load />
+    <main class="pt-24">
+      <SearchPanel client:load />
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

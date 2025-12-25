@@ -1,0 +1,19 @@
+---
+import { getSortedPosts } from "@/lib/posts"
+
+export async function getStaticPaths() {
+  const posts = await getSortedPosts(true)
+  return posts.map((post) => ({
+    params: { slug: post.slug.split("/") },
+  }))
+}
+
+const slugParam = Astro.params.slug
+const slug = Array.isArray(slugParam) ? slugParam.join("/") : slugParam
+
+if (slug) {
+  return Astro.redirect(`/posts/${slug}`)
+}
+
+return Astro.redirect("/")
+---

@@ -1,0 +1,58 @@
+---
+import { getDisclaimers } from "../data/disclaimers";
+
+export interface Props {
+	disclaimers?: string | string[];
+	publishedDate?: Date;
+}
+
+const { disclaimers, publishedDate } = Astro.props;
+
+function shouldAddOutdatedDisclaimer(targetDate?: Date): boolean {
+	if (!targetDate) {
+		return false;
+	}
+
+	const oneYearAgo = new Date();
+	oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+	return targetDate < oneYearAgo;
+}
+
+const normalizeDisclaimers = (items?: string | string[]): string[] => {
+	if (!items) {
+		return [];
+	}
+	if (typeof items === "string") {
+		return [items];
+	}
+	if (Array.isArray(items)) {
+		return [...items];
+	}
+	return [];
+};
+
+const finalDisclaimers = normalizeDisclaimers(disclaimers);
+
+if (
+	shouldAddOutdatedDisclaimer(publishedDate) &&
+	!finalDisclaimers.includes("过时内容")
+) {
+	finalDisclaimers.push("过时内容");
+}
+
+const disclaimerConfigs = getDisclaimers(finalDisclaimers);
+---
+
+{disclaimerConfigs.length > 0 && (
+  <div class="custom-md disclaimer-container">
+    {disclaimerConfigs.map((config) => (
+      <blockquote class={`admonition bdm-disclaimer bdm-disclaimer-${config.type.toLowerCase().replace(/\s+/g, '')}`}>
+        <span class="bdm-title">
+          {config.title}
+        </span>
+        <p>{config.content}</p>
+      </blockquote>
+    ))}
+  </div>
+)}

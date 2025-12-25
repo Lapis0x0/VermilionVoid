@@ -4,8 +4,12 @@ import { Calendar, Folder, Hash, ChevronRight } from "lucide-react"
 import type { ArticleMeta } from "./article-list"
 
 export function ArticleCard({ article }: { article: ArticleMeta }) {
+  const primaryTag = article.tags?.[0] ?? "未标签"
+  const wordCount = article.wordCount ? `${article.wordCount} 字` : "——"
+  const readTime = article.readTime ?? "——"
+
   return (
-    <a href={`/post/${article.slug}`} className="group block">
+    <a href={`/posts/${article.slug}`} className="group block">
       <article className="relative bg-card border border-border/50 rounded-xl p-5 transition-all duration-300 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5">
         {/* Pinned indicator */}
         {article.pinned && (
@@ -36,7 +40,7 @@ export function ArticleCard({ article }: { article: ArticleMeta }) {
               </span>
               <span className="flex items-center gap-1.5">
                 <Hash className="w-3.5 h-3.5" />
-                {article.tag}
+                {primaryTag}
               </span>
             </div>
 
@@ -45,9 +49,9 @@ export function ArticleCard({ article }: { article: ArticleMeta }) {
 
             {/* Footer stats */}
             <div className="flex items-center gap-3 text-xs text-muted-foreground">
-              <span>{article.wordCount} 字</span>
+              <span>{wordCount}</span>
               <span className="text-border">|</span>
-              <span>{article.readTime}</span>
+              <span>{readTime}</span>
             </div>
           </div>
 

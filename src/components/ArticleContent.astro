@@ -1,16 +1,19 @@
 ---
-import type { CollectionEntry } from 'astro:content'
-
-type ArticleEntry = CollectionEntry<'articles'>
+import type { CollectionEntry } from "astro:content"
 
 interface Props {
-  article: ArticleEntry
-  Content: any
+  post: CollectionEntry<"posts">
+  Content?: any
+  words?: number
+  minutes?: number
 }
 
-const { article, Content } = Astro.props as Props
-const data = article.data
-const formattedDate = data.date.toISOString().slice(0, 10)
+const { post, Content, words, minutes } = Astro.props as Props
+const hasSlot = Astro.slots.has("default")
+const data = post.data
+const formattedDate = data.published?.toISOString().slice(0, 10)
+const tags = data.tags ?? []
+const categoryLabel = data.category?.toString().trim() || "未分类"
 ---
 
 <main class="pt-24 pb-20">
@@ -23,7 +26,10 @@ const formattedDate = data.date.toISOString().slice(0, 10)
     </a>
 
     <header class="mb-12">
-      <h1 class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight mb-6 flex items-start gap-3">
+      <h1
+        class="font-serif text-3xl sm:text-4xl md:text-5xl font-bold text-foreground leading-tight mb-6 flex items-start gap-3"
+        data-pagefind-meta="title"
+      >
         <span class="w-1.5 h-8 sm:h-10 shrink-0 bg-primary rounded-full mt-1"></span>
         <span class="text-balance">{data.title}</span>
       </h1>
@@ -39,13 +45,13 @@ const formattedDate = data.date.toISOString().slice(0, 10)
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h10" />
           </svg>
-          {data.categoryLabel}
+          {categoryLabel}
         </span>
         <span class="flex items-center gap-2">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3a4 4 0 0 0-4 4v10a4 4 0 0 0 4 4h10a4 4 0 0 0 4-4V7a4 4 0 0 0-4-4H7z" />
           </svg>
-          {data.tag}
+          {tags[0] ?? "未标签"}
         </span>
       </div>
 
@@ -55,13 +61,13 @@ const formattedDate = data.date.toISOString().slice(0, 10)
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6l4 2" />
             </svg>
-            {data.wordCount ? `${data.wordCount} 字` : "——"}
+            {words ? `${words} 字` : "——"}
           </span>
           <span class="flex items-center gap-1.5">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z" />
             </svg>
-            {data.readTime ?? "——"}
+            {minutes ? `${minutes} 分钟` : "——"}
           </span>
         </div>
         <div class="flex items-center gap-2">
@@ -79,7 +85,14 @@ const formattedDate = data.date.toISOString().slice(0, 10)
       </div>
     </header>
 
+    {data.image && (
+      <div class="mb-10 overflow-hidden rounded-2xl border border-border/50 bg-muted/30">
+        <img src={data.image} alt={data.title} class="w-full h-auto object-cover" loading="lazy" />
+      </div>
+    )}
+
     <article
+      data-pagefind-body
       class="prose prose-neutral dark:prose-invert max-w-none
       prose-headings:font-serif prose-headings:font-bold
       prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:flex prose-h2:items-center prose-h2:gap-3
@@ -97,33 +110,41 @@ const formattedDate = data.date.toISOString().slice(0, 10)
       prose-td:px-4 prose-td:py-2 prose-td:border-t prose-td:border-border
       prose-hr:border-border prose-hr:my-8"
     >
-      <Content />
+      {hasSlot ? <slot /> : Content ? <Content /> : null}
     </article>
 
     <footer class="mt-16 pt-8 border-t border-border">
       <div class="flex items-center gap-3 mb-8">
         <span class="text-sm text-muted-foreground">标签：</span>
         <div class="flex flex-wrap gap-2">
-          <span class="px-3 py-1 text-xs bg-secondary text-secondary-foreground rounded-full">
-            {data.tag}
-          </span>
-          <span class="px-3 py-1 text-xs bg-secondary text-secondary-foreground rounded-full">
-            {data.categoryLabel}
-          </span>
+          {tags.length > 0 ? (
+            tags.map((tag: string) => (
+              <span class="px-3 py-1 text-xs bg-secondary text-secondary-foreground rounded-full">{tag}</span>
+            ))
+          ) : (
+            <span class="px-3 py-1 text-xs bg-secondary text-secondary-foreground rounded-full">未标签</span>
+          )}
+          <span class="px-3 py-1 text-xs bg-secondary text-secondary-foreground rounded-full">{categoryLabel}</span>
         </div>
       </div>
 
       <div class="grid sm:grid-cols-2 gap-4">
-        <a href="/" class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors">
+        <a
+          href={data.prevSlug ? `/posts/${data.prevSlug}` : "/"}
+          class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors"
+        >
           <span class="text-xs text-muted-foreground mb-1 block">上一篇</span>
           <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
-            探索更多文章...
+            {data.prevTitle || "探索更多文章..."}
           </span>
         </a>
-        <a href="/" class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors text-right">
+        <a
+          href={data.nextSlug ? `/posts/${data.nextSlug}` : "/"}
+          class="group p-4 border border-border rounded-xl hover:border-primary/30 transition-colors text-right"
+        >
           <span class="text-xs text-muted-foreground mb-1 block">下一篇</span>
           <span class="text-sm font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
-            探索更多文章...
+            {data.nextTitle || "探索更多文章..."}
           </span>
         </a>
       </div>

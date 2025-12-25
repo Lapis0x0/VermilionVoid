@@ -1,4 +1,5 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap');
+@import "katex/dist/katex.min.css";
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -39,6 +40,11 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.55 0.22 25);
+  --admonitions-color-tip: oklch(0.62 0.16 180);
+  --admonitions-color-note: oklch(0.62 0.16 250);
+  --admonitions-color-important: oklch(0.62 0.16 310);
+  --admonitions-color-warning: oklch(0.7 0.18 70);
+  --admonitions-color-caution: oklch(0.62 0.2 25);
 }
 
 .dark {
@@ -74,6 +80,11 @@
   --sidebar-accent-foreground: oklch(0.95 0 0);
   --sidebar-border: oklch(0.25 0 0);
   --sidebar-ring: oklch(0.65 0.22 25);
+  --admonitions-color-tip: oklch(0.7 0.18 180);
+  --admonitions-color-note: oklch(0.7 0.18 250);
+  --admonitions-color-important: oklch(0.7 0.18 310);
+  --admonitions-color-warning: oklch(0.75 0.2 70);
+  --admonitions-color-caution: oklch(0.7 0.22 25);
 }
 
 @theme inline {
@@ -135,4 +146,133 @@ html {
 /* Selection color */
 ::selection {
   background-color: oklch(0.55 0.22 25 / 0.2);
+}
+
+/* Markdown extensions */
+.admonition {
+  border-left: 4px solid var(--admonitions-color-note);
+  background: var(--secondary);
+  padding: 1rem 1.25rem;
+  border-radius: 0.75rem;
+  margin: 1.25rem 0;
+  color: var(--foreground);
+}
+
+.admonition .bdm-title {
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.admonition .bdm-title::before {
+  content: "";
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 999px;
+  background: currentColor;
+}
+
+.admonition.bdm-tip {
+  border-left-color: var(--admonitions-color-tip);
+}
+
+.admonition.bdm-tip .bdm-title {
+  color: var(--admonitions-color-tip);
+}
+
+.admonition.bdm-note {
+  border-left-color: var(--admonitions-color-note);
+}
+
+.admonition.bdm-note .bdm-title {
+  color: var(--admonitions-color-note);
+}
+
+.admonition.bdm-important {
+  border-left-color: var(--admonitions-color-important);
+}
+
+.admonition.bdm-important .bdm-title {
+  color: var(--admonitions-color-important);
+}
+
+.admonition.bdm-warning {
+  border-left-color: var(--admonitions-color-warning);
+}
+
+.admonition.bdm-warning .bdm-title {
+  color: var(--admonitions-color-warning);
+}
+
+.admonition.bdm-caution {
+  border-left-color: var(--admonitions-color-caution);
+}
+
+.admonition.bdm-caution .bdm-title {
+  color: var(--admonitions-color-caution);
+}
+
+.admonition.bdm-disclaimer {
+  border-left-color: var(--admonitions-color-important);
+  background: var(--card);
+}
+
+.disclaimer-container .admonition + .admonition {
+  margin-top: 0.75rem;
+}
+
+a.card-github {
+  display: block;
+  border: 1px solid var(--border);
+  background: var(--card);
+  border-radius: 0.75rem;
+  padding: 1rem 1.25rem;
+  margin: 0.75rem 0;
+  text-decoration: none;
+  color: inherit;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+a.card-github:hover {
+  border-color: color-mix(in oklab, var(--primary), transparent 60%);
+  box-shadow: 0 12px 30px oklch(0.2 0 0 / 0.08);
+  transform: translateY(-1px);
+}
+
+.gc-titlebar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.gc-titlebar-left {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.gc-avatar {
+  width: 1.4rem;
+  height: 1.4rem;
+  border-radius: 999px;
+  background-size: cover;
+  background-position: center;
+}
+
+.gc-description {
+  color: var(--muted-foreground);
+  margin-bottom: 0.5rem;
+  line-height: 1.5;
+}
+
+.gc-infobar {
+  display: flex;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
 }

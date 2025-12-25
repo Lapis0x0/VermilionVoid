@@ -1,0 +1,67 @@
+---
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import ArticleContent from "@/components/ArticleContent.astro"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { getPostsWithNav, type PostEntry } from "@/lib/posts"
+import Disclaimer from "@/components/Disclaimer.astro"
+import PasswordProtection from "@/components/PasswordProtection.astro"
+import Comments from "@/components/Comments.astro"
+import bcrypt from "bcryptjs"
+import CryptoJS from "crypto-js"
+
+export async function getStaticPaths() {
+  const posts = await getPostsWithNav()
+  return posts.map((post) => ({
+    params: { slug: post.slug.split("/") },
+    props: { post },
+  }))
+}
+
+const { post } = Astro.props as { post: PostEntry }
+
+if (!post) {
+  return Astro.redirect("/")
+}
+
+const { Content, remarkPluginFrontmatter } = await post.render()
+const words = remarkPluginFrontmatter?.words
+const minutes = remarkPluginFrontmatter?.minutes
+
+const description = post.data.description || post.data.title
+const title = `${post.data.title} | 思维边界`
+
+let encryptedData = null
+if (post.data.encrypted && post.data.password) {
+  const passwordHash = bcrypt.hashSync(post.data.password, 10)
+  const body = typeof post.body === "string" ? post.body : String(post.body || "")
+  const encrypted = CryptoJS.AES.encrypt(body, post.data.password).toString()
+  encryptedData = {
+    content: encrypted,
+    hash: passwordHash,
+  }
+}
+---
+
+<BaseLayout {title} {description}>
+  <div class="min-h-screen bg-background">
+    <Header client:load />
+    <ArticleContent post={post} {Content} {words} {minutes}>
+      <div class="mb-8">
+        <Disclaimer disclaimers={post.data.disclaimer} publishedDate={post.data.published} />
+      </div>
+      {encryptedData ? (
+        <div class="mb-6">
+          <PasswordProtection encryptedData={encryptedData} slug={post.slug} class="mb-6 rounded-xl" />
+          <div id={`article-content-${post.slug}`} class="mb-6 hidden encrypted-content">
+            <!-- 内容将在验证密码后动态插入 -->
+          </div>
+        </div>
+      ) : (
+        <Content />
+      )}
+    </ArticleContent>
+    <Comments />
+    <Footer />
+  </div>
+</BaseLayout>
