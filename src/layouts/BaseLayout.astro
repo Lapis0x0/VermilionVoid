@@ -52,6 +52,7 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
       const HOME_SCROLL_INSTANT_KEY = "homeScrollInstant"
       const HOME_TARGET_FALLBACK = "home-main"
       let handledBySwup = false
+      let instantScrollActive = false
       let previousScrollBehavior = null
 
       const normalizePathname = () => {
@@ -86,11 +87,22 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
         previousScrollBehavior = null
       }
 
+      const enableInstantScroll = () => {
+        setInstantScroll(true)
+        instantScrollActive = true
+      }
+
+      const disableInstantScroll = () => {
+        if (!instantScrollActive) return
+        setInstantScroll(false)
+        instantScrollActive = false
+      }
+
       const rememberHomeTarget = (targetId) => {
         if (!targetId || !isPostDetail()) return
         sessionStorage.setItem(HOME_SCROLL_KEY, targetId)
         sessionStorage.setItem(HOME_SCROLL_INSTANT_KEY, "1")
-        setInstantScroll(true)
+        enableInstantScroll()
       }
 
       const handleHomeLinkClick = (event) => {
@@ -107,26 +119,34 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
         const target = document.getElementById(targetId)
         if (!target) return
         if (sessionStorage.getItem(HOME_SCROLL_INSTANT_KEY)) {
-          setInstantScroll(true)
+          enableInstantScroll()
         }
         sessionStorage.removeItem(HOME_SCROLL_KEY)
         sessionStorage.removeItem(HOME_SCROLL_INSTANT_KEY)
-        const prefersReducedMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches
-        target.scrollIntoView({ behavior: prefersReducedMotion ? "auto" : "auto", block: "start" })
-        requestAnimationFrame(() => setInstantScroll(false))
+        target.scrollIntoView({ behavior: "auto", block: "start" })
       }
 
       const handleSwupVisitStart = (event) => {
         const visit = event?.detail?.visit
         if (!visit) return
+        if (visit?.history?.popstate) return
+        const hasHash = !!visit?.to?.hash
+        if (hasHash) return
         const targetId = sessionStorage.getItem(HOME_SCROLL_KEY)
-        if (!targetId) return
-        const toUrl = visit?.to?.url || ""
-        const normalized = toUrl.replace(/\?.*$/, "").replace(/\/+$/, "") || "/"
-        if (normalized !== "/") return
-        visit.scroll.target = `#${targetId}`
+        if (targetId) {
+          const toUrl = visit?.to?.url || ""
+          const normalized = toUrl.replace(/\?.*$/, "").replace(/\/+$/, "") || "/"
+          if (normalized === "/") {
+            visit.scroll.target = `#${targetId}`
+            visit.scroll.animate = false
+            handledBySwup = true
+            enableInstantScroll()
+            return
+          }
+        }
+
         visit.scroll.animate = false
-        handledBySwup = true
+        enableInstantScroll()
       }
 
       const handleSwupPageView = () => {
@@ -134,15 +154,21 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
           sessionStorage.removeItem(HOME_SCROLL_KEY)
           sessionStorage.removeItem(HOME_SCROLL_INSTANT_KEY)
           handledBySwup = false
-          requestAnimationFrame(() => setInstantScroll(false))
+          requestAnimationFrame(() => disableInstantScroll())
           return
         }
         scrollToRememberedTarget()
+        requestAnimationFrame(() => disableInstantScroll())
       }
 
       document.addEventListener("click", handleHomeLinkClick, { capture: true })
       document.addEventListener("swup:visit:start", handleSwupVisitStart)
-      window.addEventListener("pageshow", () => requestAnimationFrame(scrollToRememberedTarget))
+      window.addEventListener("pageshow", () => {
+        requestAnimationFrame(() => {
+          scrollToRememberedTarget()
+          requestAnimationFrame(() => disableInstantScroll())
+        })
+      })
       document.addEventListener("swup:page:view", handleSwupPageView)
     </script>
   </body>
