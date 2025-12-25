@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Header } from "./header"
 import { Footer } from "./footer"
-import { BookOpen, Filter, Search, ExternalLink, ThumbsUp, Minus, ThumbsDown, Calendar } from "lucide-react"
+import { BookOpen, Filter, Search, ThumbsUp, Minus, ThumbsDown, Calendar } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import booksData from "../../public/data/books.json"
@@ -262,24 +262,6 @@ export function BookshelfContent() {
             </div>
           )}
 
-          {/* Data Source Notice */}
-          <div className="mt-16 p-6 bg-muted/20 rounded-2xl border border-border/50">
-            <div className="flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center flex-shrink-0">
-                <ExternalLink className="w-5 h-5 text-primary" />
-              </div>
-              <div>
-                <h4 className="font-medium text-foreground mb-1">数据源</h4>
-                <p className="text-sm text-muted-foreground">
-                  本书架数据来源于飞书云文档，持续更新中。如需获取完整书单或阅读笔记，欢迎
-                  <a href="#" className="text-primary hover:underline ml-1">
-                    联系我
-                  </a>
-                  。
-                </p>
-              </div>
-            </div>
-          </div>
         </div>
       </main>
 
