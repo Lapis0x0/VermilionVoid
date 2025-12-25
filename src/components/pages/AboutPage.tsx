@@ -1,6 +1,7 @@
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
-import { MapPin, Mail, Github, Twitter, BookOpen, TrendingUp, Users, Cpu } from "lucide-react"
+import { MapPin, Github, MessageCircle, Music, BookOpen, TrendingUp, Users, Cpu } from "lucide-react"
+import { profile } from "@/data/profile"
 
 const skills = [
   { icon: TrendingUp, name: "金融学", desc: "量化投资、宏观经济分析、金融市场结构" },
@@ -28,8 +29,8 @@ export default function AboutPage() {
               <div className="shrink-0">
                 <div className="w-36 h-36 rounded-2xl overflow-hidden border-2 border-border shadow-lg">
                   <img
-                    src="/minimalist-avatar-illustration.jpg"
-                    alt="作者头像"
+                    src={profile.avatar}
+                    alt={profile.name}
                     width={144}
                     height={144}
                     loading="lazy"
@@ -44,7 +45,7 @@ export default function AboutPage() {
                   <span className="w-1 h-8 bg-primary rounded-full" />
                   关于我
                 </h1>
-                <p className="text-xl text-muted-foreground mb-4">跨学科研究者 / 独立思考者</p>
+                <p className="text-xl text-muted-foreground mb-4">{profile.bio}</p>
 
                 <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground mb-6">
                   <span className="flex items-center gap-1.5">
@@ -63,31 +64,21 @@ export default function AboutPage() {
 
                 {/* Social Links */}
                 <div className="flex items-center gap-3">
-                  <a
-                    href="mailto:hello@example.com"
-                    className="p-2.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
-                    aria-label="Email"
-                  >
-                    <Mail className="w-5 h-5 text-muted-foreground" />
-                  </a>
-                  <a
-                    href="https://github.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
-                    aria-label="GitHub"
-                  >
-                    <Github className="w-5 h-5 text-muted-foreground" />
-                  </a>
-                  <a
-                    href="https://twitter.com"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
-                    aria-label="Twitter"
-                  >
-                    <Twitter className="w-5 h-5 text-muted-foreground" />
-                  </a>
+                  {profile.links.map((link) => {
+                    const Icon = link.type === "qq" ? MessageCircle : link.type === "music" ? Music : Github
+                    return (
+                      <a
+                        key={link.name}
+                        href={link.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2.5 rounded-lg bg-secondary hover:bg-secondary/80 transition-colors"
+                        aria-label={link.name}
+                      >
+                        <Icon className="w-5 h-5 text-muted-foreground" />
+                      </a>
+                    )
+                  })}
                 </div>
               </div>
             </div>

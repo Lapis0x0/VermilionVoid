@@ -15,7 +15,7 @@ const articles = posts.map((post) => toPostMeta(post))
   <div class="min-h-screen bg-background">
     <Header client:load />
     <main class="pt-24">
-      <ArticleList client:load articles={articles} />
+      <ArticleList client:load articles={articles} title="全部文章" subtitle="All Posts" showViewAll={false} />
     </main>
     <Footer />
   </div>

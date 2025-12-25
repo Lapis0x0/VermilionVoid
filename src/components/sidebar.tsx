@@ -1,7 +1,8 @@
 "use client"
 
 import { cn } from "@/lib/utils"
-import { Calendar, Github, Mail, Twitter } from "lucide-react"
+import { Calendar, Github, MessageCircle, Music } from "lucide-react"
+import { profile } from "@/data/profile"
 
 interface SidebarProps {
   categories: { id: string; name: string; count: number }[]
@@ -18,34 +19,29 @@ export function Sidebar({ categories, tags, activeCategory, onCategoryChange, ac
       {/* Author Card */}
       <div className="bg-card border border-border/50 rounded-xl p-6 text-center">
         <div className="w-24 h-24 mx-auto mb-4 rounded-full overflow-hidden border-2 border-primary/20">
-          <img src="/assets/Eu.png" alt="作者头像" className="w-full h-full object-cover" />
+          <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
         </div>
-        <h3 className="font-serif text-xl font-medium text-foreground mb-1">Your Name</h3>
+        <h3 className="font-serif text-xl font-medium text-foreground mb-1">{profile.name}</h3>
         <div className="w-8 h-0.5 bg-primary mx-auto mb-3" />
-        <p className="text-sm text-muted-foreground leading-relaxed mb-4">
-          探索金融、社会与 AI 的交汇处，记录跨学科的思考与洞见。
-        </p>
+        <p className="text-sm text-muted-foreground leading-relaxed mb-4">{profile.bio}</p>
 
         {/* Social Links */}
         <div className="flex items-center justify-center gap-3 mb-4">
-          <a
-            href="#"
-            className="p-2 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-colors"
-          >
-            <Twitter className="w-4 h-4" />
-          </a>
-          <a
-            href="#"
-            className="p-2 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-colors"
-          >
-            <Github className="w-4 h-4" />
-          </a>
-          <a
-            href="#"
-            className="p-2 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-colors"
-          >
-            <Mail className="w-4 h-4" />
-          </a>
+          {profile.links.map((link) => {
+            const Icon = link.type === "qq" ? MessageCircle : link.type === "music" ? Music : Github
+            return (
+              <a
+                key={link.name}
+                href={link.url}
+                target="_blank"
+                rel="noreferrer"
+                className="p-2 rounded-full bg-secondary hover:bg-primary hover:text-primary-foreground transition-colors"
+                aria-label={link.name}
+              >
+                <Icon className="w-4 h-4" />
+              </a>
+            )
+          })}
         </div>
 
         {/* Quick Stats */}

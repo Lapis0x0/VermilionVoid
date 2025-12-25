@@ -13,7 +13,7 @@ import CryptoJS from "crypto-js"
 export async function getStaticPaths() {
   const posts = await getPostsWithNav()
   return posts.map((post) => ({
-    params: { slug: post.slug.split("/") },
+    params: { slug: post.slug },
     props: { post },
   }))
 }

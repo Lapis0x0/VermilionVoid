@@ -1,8 +1,11 @@
-const socialLinks = [
-  { name: "Twitter", href: "#", icon: "𝕏" },
-  { name: "GitHub", href: "#", icon: "◐" },
-  { name: "Email", href: "#", icon: "✉" },
-]
+import { Github, MessageCircle, Music } from "lucide-react"
+import { profile, type ProfileLinkType } from "@/data/profile"
+
+const iconMap: Record<ProfileLinkType, typeof Github> = {
+  qq: MessageCircle,
+  music: Music,
+  github: Github,
+}
 
 export function Footer() {
   return (
@@ -44,16 +47,21 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-medium text-foreground mb-4 uppercase tracking-wide">联系</h4>
             <div className="flex items-center gap-4">
-              {socialLinks.map((link) => (
-                <a
-                  key={link.name}
-                  href={link.href}
-                  className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-200"
-                  aria-label={link.name}
-                >
-                  {link.icon}
-                </a>
-              ))}
+              {profile.links.map((link) => {
+                const Icon = iconMap[link.type]
+                return (
+                  <a
+                    key={link.name}
+                    href={link.url}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-200"
+                    aria-label={link.name}
+                  >
+                    <Icon className="w-4 h-4" />
+                  </a>
+                )
+              })}
             </div>
             <p className="text-muted-foreground text-sm mt-6">订阅邮件通讯，获取最新文章更新。</p>
             <div className="mt-3 flex gap-2">

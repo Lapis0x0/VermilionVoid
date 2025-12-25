@@ -18,7 +18,17 @@ export type ArticleMeta = {
   pinned?: boolean
 }
 
-export function ArticleList({ articles }: { articles: ArticleMeta[] }) {
+export function ArticleList({
+  articles,
+  title = "近期文章",
+  subtitle = "Latest Posts",
+  showViewAll = true,
+}: {
+  articles: ArticleMeta[]
+  title?: string
+  subtitle?: string
+  showViewAll?: boolean
+}) {
   const [activeCategory, setActiveCategory] = useState("all")
   const [activeTag, setActiveTag] = useState<string | null>(null)
 
@@ -52,8 +62,8 @@ export function ArticleList({ articles }: { articles: ArticleMeta[] }) {
       <div className="max-w-6xl mx-auto">
         {/* Section header */}
         <div className="mb-10">
-          <span className="text-primary text-sm font-medium tracking-wide uppercase mb-2 block">Latest Posts</span>
-          <h2 className="font-serif text-3xl sm:text-4xl font-medium text-foreground">近期文章</h2>
+          <span className="text-primary text-sm font-medium tracking-wide uppercase mb-2 block">{subtitle}</span>
+          <h2 className="font-serif text-3xl sm:text-4xl font-medium text-foreground">{title}</h2>
         </div>
 
         {/* Main layout: Sidebar + Articles */}
@@ -77,22 +87,24 @@ export function ArticleList({ articles }: { articles: ArticleMeta[] }) {
             )}
 
             {/* View all link */}
-            <div className="pt-8 text-center">
-              <a
-                href="/posts"
-                className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors duration-200 group"
-              >
-                <span>查看全部文章</span>
-                <svg
-                  className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+            {showViewAll && (
+              <div className="pt-8 text-center">
+                <a
+                  href="/posts"
+                  className="inline-flex items-center gap-2 text-muted-foreground hover:text-primary transition-colors duration-200 group"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </a>
-            </div>
+                  <span>查看全部文章</span>
+                  <svg
+                    className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                  </svg>
+                </a>
+              </div>
+            )}
           </div>
         </div>
       </div>

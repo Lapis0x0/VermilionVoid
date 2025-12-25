@@ -17,7 +17,7 @@ const articles = posts.map((post) => toPostMeta(post))
     <Header client:load />
     <main>
       <Hero client:load />
-      <ArticleList client:load articles={articles} />
+      <ArticleList client:load articles={articles} title="全部文章" subtitle="All Posts" showViewAll={false} />
     </main>
     <Footer />
   </div>
