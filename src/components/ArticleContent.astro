@@ -17,7 +17,8 @@ const categoryLabel = data.category?.toString().trim() || "未分类"
 ---
 
 <main class="pt-24 pb-20">
-  <div class="max-w-3xl mx-auto px-6">
+  <div class="px-6">
+    <div class="max-w-3xl mx-auto">
     <a href="/" class="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-primary transition-colors mb-8 group">
       <svg class="w-4 h-4 transition-transform group-hover:-translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
@@ -31,7 +32,7 @@ const categoryLabel = data.category?.toString().trim() || "未分类"
         data-pagefind-meta="title"
       >
         <span class="w-1.5 h-8 sm:h-10 shrink-0 bg-primary rounded-full mt-[0.3em]"></span>
-        <span class="text-balance">{data.title}</span>
+        <span class="text-pretty">{data.title}</span>
       </h1>
 
       <div class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-muted-foreground mb-6">
@@ -84,16 +85,17 @@ const categoryLabel = data.category?.toString().trim() || "未分类"
         </div>
       </div>
     </header>
+    </div>
 
     {data.image && (
-      <div class="mb-10 overflow-hidden rounded-2xl border border-border/50 bg-muted/30">
+      <div class="mb-10 overflow-hidden rounded-2xl border border-border/50 bg-muted/30 max-w-4xl mx-auto">
         <img src={data.image} alt={data.title} class="w-full h-auto object-cover" loading="lazy" />
       </div>
     )}
 
     <article
       data-pagefind-body
-      class="prose prose-neutral dark:prose-invert max-w-none
+      class="prose prose-neutral dark:prose-invert max-w-3xl mx-auto
       prose-headings:font-serif prose-headings:font-bold
       prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:flex prose-h2:items-center prose-h2:gap-3
       prose-h3:text-xl prose-h3:mt-8 prose-h3:mb-3
@@ -113,7 +115,7 @@ const categoryLabel = data.category?.toString().trim() || "未分类"
       {hasSlot ? <slot /> : Content ? <Content /> : null}
     </article>
 
-    <footer class="mt-16 pt-8 border-t border-border">
+    <footer class="mt-16 pt-8 border-t border-border max-w-3xl mx-auto">
       <div class="flex items-center gap-3 mb-8">
         <span class="text-sm text-muted-foreground">标签：</span>
         <div class="flex flex-wrap gap-2">
