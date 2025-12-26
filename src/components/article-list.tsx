@@ -283,7 +283,7 @@ export function ArticleList({
         {/* Main layout: Sidebar + Articles */}
         <div className="flex flex-col lg:flex-row gap-8">
           {/* Sidebar */}
-          <div className="onload-animation" style={{ animationDelay: "100ms" }}>
+          <div className="order-2 lg:order-1 onload-animation" style={{ animationDelay: "100ms" }}>
             <Sidebar
               categories={categories}
               tags={tags}
@@ -297,7 +297,7 @@ export function ArticleList({
           </div>
 
           {/* Article list - Single column */}
-          <div className="flex-1 space-y-4">
+          <div className="order-1 lg:order-2 flex-1 space-y-4">
             {pagedArticles.length > 0 ? (
               pagedArticles.map((article, index) => (
                 <ArticleCard
