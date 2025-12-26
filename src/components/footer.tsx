@@ -21,9 +21,7 @@ export function Footer() {
               <span className="text-foreground font-medium">时歌的博客</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
-              在金融、社会与人工智能的交汇处，
-              <br />
-              探索思维的边界。
+              理解以真实为本，但真实本身并不会自动呈现
             </p>
           </div>
 

@@ -130,7 +130,10 @@ export function Hero() {
           </blockquote>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="group flex items-center gap-2 px-8 py-3 bg-foreground text-background rounded-full font-medium text-sm hover:bg-foreground/90 transition-all duration-300">
+            <a
+              href="#home-main"
+              className="group flex items-center gap-2 px-8 py-3 bg-foreground text-background rounded-full font-medium text-sm hover:bg-foreground/90 transition-all duration-300"
+            >
               浏览文章
               <svg
                 className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1"
@@ -140,10 +143,13 @@ export function Hero() {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
               </svg>
-            </button>
-            <button className="px-8 py-3 border border-border rounded-full font-medium text-sm text-foreground hover:border-foreground/40 transition-all duration-300">
+            </a>
+            <a
+              href="/about/"
+              className="px-8 py-3 border border-border rounded-full font-medium text-sm text-foreground hover:border-foreground/40 transition-all duration-300"
+            >
               关于我
-            </button>
+            </a>
           </div>
         </div>
       </div>
