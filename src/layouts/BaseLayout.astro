@@ -1,5 +1,6 @@
 ---
 import "@/styles/global.css"
+import { ViewTransitions } from "astro:transitions"
 
 interface Props {
   title?: string
@@ -72,25 +73,9 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
         }
       })();
     </script>
+    <ViewTransitions />
   </head>
   <body class="bg-background text-foreground">
-    <div id="swup-container" class="transition-swup-fade">
-      <slot />
-    </div>
-    <script is:inline>
-      // @ts-nocheck
-      const setupSwupHooks = () => {
-        if (!window?.swup?.hooks) return
-        window.swup.hooks.on('link:click', () => {
-          document.documentElement.style.setProperty('--content-delay', '0ms')
-        })
-      }
-
-      if (window?.swup?.hooks) {
-        setupSwupHooks()
-      } else {
-        document.addEventListener('swup:enable', setupSwupHooks)
-      }
-    </script>
+    <slot />
   </body>
 </html>
