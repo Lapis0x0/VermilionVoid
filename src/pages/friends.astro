@@ -1,6 +1,7 @@
 ---
 import BaseLayout from "@/layouts/BaseLayout.astro"
 import FriendsPage from "@/components/pages/FriendsPage"
+import Comments from "@/components/Comments.astro"
 
 const title = "友链 | 时歌的博客"
 const description = "与更多创作者建立连接，发现有趣的内容"
@@ -8,4 +9,5 @@ const description = "与更多创作者建立连接，发现有趣的内容"
 
 <BaseLayout {title} {description}>
   <FriendsPage client:load />
+  <Comments />
 </BaseLayout>

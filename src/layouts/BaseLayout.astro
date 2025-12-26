@@ -74,6 +74,28 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
       })();
     </script>
     <script is:inline>
+      // 主题切换按钮（无水合也可用）
+      (function() {
+        if (window.__themeToggleBound) return;
+        window.__themeToggleBound = true;
+        const toggleTheme = () => {
+          const isDark = document.documentElement.classList.contains('dark');
+          const next = isDark ? 'light' : 'dark';
+          localStorage.setItem('theme', next);
+          document.documentElement.classList.toggle('dark', next === 'dark');
+        };
+        window.__toggleTheme = toggleTheme;
+        document.addEventListener('click', (event) => {
+          const target = event.target;
+          if (!(target instanceof Element)) return;
+          const button = target.closest('[data-theme-toggle]');
+          if (!button) return;
+          event.preventDefault();
+          toggleTheme();
+        });
+      })();
+    </script>
+    <script is:inline>
       // 预过滤标记：避免带 tag/category 查询的首页渲染闪动
       (function() {
         try {
