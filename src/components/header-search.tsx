@@ -189,7 +189,7 @@ export function HeaderSearch() {
 
       {/* Search panel */}
       <div className={cn(
-        "absolute top-full right-0 mt-2 w-[calc(100vw-2rem)] md:w-96",
+        "fixed left-4 right-4 top-16 md:absolute md:top-full md:left-auto md:right-0 md:w-96 md:mt-2",
         "bg-background/95 backdrop-blur-xl border border-border rounded-xl shadow-lg",
         "transition-all duration-200 overflow-hidden",
         showPanel ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-2 pointer-events-none"
