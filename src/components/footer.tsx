@@ -87,7 +87,15 @@ export function Footer() {
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-muted-foreground text-sm">© 2025 时歌. All rights reserved.</p>
-          <p className="text-muted-foreground text-xs">Built with Next.js & ❤️</p>
+          <a
+            href="https://github.com/Lapis0x0/VermilionVoid"
+            target="_blank"
+            rel="noreferrer"
+            className="flex items-center gap-2 text-muted-foreground text-xs hover:text-foreground transition-colors duration-200 group"
+          >
+            <Github className="w-3.5 h-3.5" />
+            <span>博客主题：朱墨留白 | VermilionVoid</span>
+          </a>
         </div>
       </div>
     </footer>
