@@ -18,7 +18,7 @@ export function Footer() {
               <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
                 <span className="text-primary-foreground font-serif text-sm font-semibold">思</span>
               </div>
-              <span className="text-foreground font-medium">思维边界</span>
+              <span className="text-foreground font-medium">时歌的博客</span>
             </div>
             <p className="text-muted-foreground text-sm leading-relaxed">
               在金融、社会与人工智能的交汇处，
@@ -79,7 +79,7 @@ export function Footer() {
 
         {/* Bottom */}
         <div className="mt-16 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-muted-foreground text-sm">© 2025 思维边界. All rights reserved.</p>
+          <p className="text-muted-foreground text-sm">© 2025 时歌. All rights reserved.</p>
           <p className="text-muted-foreground text-xs">Built with Next.js & ❤️</p>
         </div>
       </div>
