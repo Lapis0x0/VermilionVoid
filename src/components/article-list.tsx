@@ -152,6 +152,7 @@ export function ArticleList({
     pagination && pagination.currentPage > 1 ? getPageHref(pagination.currentPage - 1, basePath) : undefined
   const nextUrl =
     pagination && pagination.currentPage < pagination.totalPages ? getPageHref(pagination.currentPage + 1, basePath) : undefined
+  const homeTargetForHref = (href?: string) => (href === "/" ? "home-main" : undefined)
 
   return (
     <section className="px-6 py-16 bg-muted/30">
@@ -223,6 +224,7 @@ export function ArticleList({
                         tabIndex={previousUrl ? undefined : -1}
                         className={cn("gap-1 px-2.5", !previousUrl && "pointer-events-none opacity-50")}
                         rel={previousUrl ? "prev" : undefined}
+                        data-home-target={homeTargetForHref(previousUrl)}
                       >
                         <ChevronLeft className="size-4" />
                         <span className="hidden sm:block">上一页</span>
@@ -237,6 +239,7 @@ export function ArticleList({
                           <PaginationLink
                             href={getPageHref(page, basePath)}
                             isActive={pagination.currentPage === page}
+                            data-home-target={homeTargetForHref(getPageHref(page, basePath))}
                           >
                             {page}
                           </PaginationLink>
@@ -252,6 +255,7 @@ export function ArticleList({
                         tabIndex={nextUrl ? undefined : -1}
                         className={cn("gap-1 px-2.5", !nextUrl && "pointer-events-none opacity-50")}
                         rel={nextUrl ? "next" : undefined}
+                        data-home-target={homeTargetForHref(nextUrl)}
                       >
                         <span className="hidden sm:block">下一页</span>
                         <ChevronRight className="size-4" />

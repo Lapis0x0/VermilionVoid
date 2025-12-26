@@ -79,6 +79,11 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
         return path.startsWith("/posts/") && path !== "/posts"
       }
 
+      const isHomePagination = () => {
+        const path = normalizePathname()
+        return /^\/\d+$/.test(path)
+      }
+
       const setInstantScroll = (enabled) => {
         const root = document.documentElement
         const body = document.body
@@ -112,7 +117,8 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
       }
 
       const rememberHomeTarget = (targetId) => {
-        if (!targetId || !isPostDetail()) return
+        if (!targetId) return
+        if (!isPostDetail() && !isHomePagination()) return
         sessionStorage.setItem(HOME_SCROLL_KEY, targetId)
         sessionStorage.setItem(HOME_SCROLL_INSTANT_KEY, "1")
         enableInstantScroll()
