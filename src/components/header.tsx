@@ -34,17 +34,17 @@ export function Header() {
         scrolled ? "bg-background/80 backdrop-blur-xl border-b border-border/50 py-4" : "bg-transparent py-6",
       )}
     >
-      <div className="max-w-6xl mx-auto px-6 flex items-center justify-between">
-        {/* Logo */}
-        <a href="/" data-home-target="home-main" className="group flex items-center gap-3">
+      <div className="max-w-6xl mx-auto px-6 grid grid-cols-[1fr_auto_1fr] items-center">
+        {/* Left: Logo */}
+        <a href="/" data-home-target="home-main" className="group flex items-center gap-3 justify-self-start">
           <div className="w-8 h-8 rounded-full overflow-hidden border border-primary/20 bg-secondary transition-transform duration-300 group-hover:scale-105">
             <img src={profile.avatar} alt={profile.name} className="w-full h-full object-cover" />
           </div>
           <span className="text-foreground font-medium tracking-tight hidden sm:block">时歌的博客</span>
         </a>
 
-        {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center gap-8">
+        {/* Center: Navigation */}
+        <nav className="hidden md:flex items-center gap-8 justify-self-center">
           {navItems.map((item) => (
             <a
               key={item.name}
@@ -58,12 +58,16 @@ export function Header() {
               <span className="absolute -bottom-1 left-0 w-0 h-px bg-primary transition-all duration-300 group-hover:w-full" />
             </a>
           ))}
-          <HeaderSearch />
-          <ThemeToggle />
         </nav>
 
+        {/* Right: Search + Theme Toggle */}
+        <div className="hidden md:flex items-center gap-4 justify-self-end">
+          <HeaderSearch />
+          <ThemeToggle />
+        </div>
+
         {/* Mobile: Search + Theme + Menu Button */}
-        <div className="flex items-center gap-2 md:hidden">
+        <div className="flex items-center gap-2 md:hidden col-start-3 justify-self-end">
           <HeaderSearch />
           <ThemeToggle />
           <button
