@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { cn } from "@/lib/utils"
 import { HeaderSearch } from "./header-search"
+import { ThemeToggle } from "./theme-toggle"
 import { profile } from "@/data/profile"
 
 const navItems: { name: string; href: string; external?: boolean }[] = [
@@ -58,11 +59,13 @@ export function Header() {
             </a>
           ))}
           <HeaderSearch />
+          <ThemeToggle />
         </nav>
 
-        {/* Mobile: Search + Menu Button */}
+        {/* Mobile: Search + Theme + Menu Button */}
         <div className="flex items-center gap-2 md:hidden">
           <HeaderSearch />
+          <ThemeToggle />
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
             className="p-2"

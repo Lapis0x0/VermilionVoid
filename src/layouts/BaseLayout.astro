@@ -26,6 +26,19 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
     <link rel="icon" href="/icon-dark-32x32.png" media="(prefers-color-scheme: dark)" />
     <link rel="icon" href="/icon.svg" type="image/svg+xml" />
     <link rel="apple-touch-icon" href="/apple-icon.png" />
+    <script is:inline>
+      // 主题初始化 - 防止页面加载闪烁
+      (function() {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (prefersDark ? 'dark' : 'light');
+        if (theme === 'dark') {
+          document.documentElement.classList.add('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+        }
+      })();
+    </script>
   </head>
   <body class="bg-background text-foreground">
     <div id="swup-container" class="transition-swup-fade">
