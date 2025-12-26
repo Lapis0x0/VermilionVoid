@@ -98,5 +98,36 @@ const { title = defaultTitle, description = defaultDescription } = Astro.props a
         window.addEventListener("pageshow", applyTheme)
       })()
     </script>
+    <script is:inline>
+      // Copy button functionality for Expressive Code
+      function initCopyButtons() {
+        document.querySelectorAll('.expressive-code .copy-btn').forEach(function(btn) {
+          if (btn.dataset.initialized) return;
+          btn.dataset.initialized = 'true';
+          btn.addEventListener('click', async function() {
+            const pre = btn.closest('pre');
+            if (!pre) return;
+            const code = pre.querySelector('code');
+            if (!code) return;
+            // 只提取 .code 元素的内容，排除行号 (.gutter)
+            const lines = code.querySelectorAll('.ec-line .code');
+            const text = Array.from(lines).map(function(line) {
+              return line.textContent || '';
+            }).join('\n');
+            try {
+              await navigator.clipboard.writeText(text);
+              btn.classList.add('copied');
+              setTimeout(function() {
+                btn.classList.remove('copied');
+              }, 2000);
+            } catch (err) {
+              console.error('Failed to copy:', err);
+            }
+          });
+        });
+      }
+      document.addEventListener('DOMContentLoaded', initCopyButtons);
+      document.addEventListener('astro:page-load', initCopyButtons);
+    </script>
   </body>
 </html>
