@@ -29,13 +29,22 @@ export function Footer() {
           <div>
             <h4 className="text-sm font-medium text-foreground mb-4 uppercase tracking-wide">导航</h4>
             <nav className="flex flex-col gap-3">
-              {["首页", "金融", "社会", "AI", "关于", "归档"].map((item) => (
+              {[
+                { name: "首页", href: "/" },
+                { name: "时间线", href: "/timeline/" },
+                { name: "书架", href: "/bookshelf/" },
+                { name: "友链", href: "/friends/" },
+                { name: "关于", href: "/about/" },
+                { name: "开往", href: "https://www.travellings.cn/go.html", external: true },
+              ].map((item) => (
                 <a
-                  key={item}
-                  href="#"
+                  key={item.name}
+                  href={item.href}
+                  target={item.external ? "_blank" : undefined}
+                  rel={item.external ? "noreferrer" : undefined}
                   className="text-muted-foreground text-sm hover:text-foreground transition-colors duration-200"
                 >
-                  {item}
+                  {item.name}
                 </a>
               ))}
             </nav>
