@@ -1,0 +1,42 @@
+---
+import type { GetStaticPaths } from "astro"
+import BaseLayout from "@/layouts/BaseLayout.astro"
+import { ThoughtList } from "@/components/thought-list"
+import { Footer } from "@/components/footer"
+import { Header } from "@/components/header"
+import { PAGE_SIZE } from "@/lib/constants"
+import { getSortedThoughts, toThoughtMeta, buildThoughtsTags } from "@/lib/thoughts"
+
+const description = "零散的想法与灵感"
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const allThoughts = await getSortedThoughts()
+  const thoughtsWithContent = allThoughts.map((thought) => toThoughtMeta(thought))
+  const pages = paginate(thoughtsWithContent, { pageSize: PAGE_SIZE })
+  return pages.filter(({ props }) => props.page.currentPage > 1)
+}) satisfies GetStaticPaths
+
+const { page } = Astro.props
+const currentPage = page.currentPage
+const allThoughts = await getSortedThoughts()
+const thoughtsWithContent = allThoughts.map((thought) => toThoughtMeta(thought))
+const tags = buildThoughtsTags(thoughtsWithContent)
+const title = `偶得 · 第 ${currentPage} 页 | Serendipity`
+---
+
+<BaseLayout {title} {description}>
+  <div class="min-h-screen bg-background dark:bg-muted/30">
+    <Header client:load />
+    <main class="pt-24">
+      <section id="thoughts-main" class="scroll-mt-24">
+        <ThoughtList
+          client:load
+          thoughts={thoughtsWithContent}
+          tags={tags}
+          pagination={{ currentPage, pageSize: PAGE_SIZE, basePath: "/thoughts" }}
+        />
+      </section>
+    </main>
+    <Footer />
+  </div>
+</BaseLayout>

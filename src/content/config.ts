@@ -41,4 +41,13 @@ const posts = defineCollection({
   }),
 })
 
-export const collections = { articles, posts }
+const thoughts = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string().optional(),
+    published: z.date(),
+    tags: z.array(z.string()).optional().default([]),
+  }),
+})
+
+export const collections = { articles, posts, thoughts }
