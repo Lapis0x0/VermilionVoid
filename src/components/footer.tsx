@@ -88,6 +88,14 @@ export function Footer() {
         <div className="mt-16 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
           <p className="text-muted-foreground text-sm">© 2025 时歌. All rights reserved.</p>
           <a
+            href="https://beian.miit.gov.cn/"
+            target="_blank"
+            rel="noreferrer"
+            className="text-muted-foreground text-xs hover:text-foreground transition-colors duration-200"
+          >
+            辽ICP备2023010881号-1
+          </a>
+          <a
             href="https://github.com/Lapis0x0/VermilionVoid"
             target="_blank"
             rel="noreferrer"

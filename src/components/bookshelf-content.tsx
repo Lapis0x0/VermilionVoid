@@ -108,7 +108,7 @@ export function BookshelfContent() {
               <h1 className="text-4xl md:text-5xl font-bold text-foreground">书架</h1>
             </div>
             <p className="text-muted-foreground text-lg">
-              阅读是跨学科思维的基础。这里记录了我读过的书籍，涵盖金融、社会学、AI 等多个领域。
+              博学而笃志，切问而近思
             </p>
           </div>
 
