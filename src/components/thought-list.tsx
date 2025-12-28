@@ -104,12 +104,19 @@ function ThoughtCard({ thought, index }: { thought: ThoughtMeta; index: number }
       {/* Content card */}
       <div className="bg-card border border-border/50 rounded-xl p-5 hover:border-primary/30 hover:shadow-lg hover:shadow-primary/5 transition-all duration-300">
         {thought.title && (
-          <h3 className="font-serif text-lg font-medium text-foreground mb-3">
+          <h3 className="font-serif text-xl font-semibold text-foreground mb-3">
             {thought.title}
           </h3>
         )}
         <div
-          className="text-muted-foreground leading-relaxed prose prose-sm max-w-none"
+          className="prose prose-neutral dark:prose-invert max-w-none
+          prose-p:text-base prose-p:leading-8 prose-p:my-4 prose-p:text-foreground/90
+          prose-a:text-primary prose-a:no-underline prose-a:hover:underline
+          prose-strong:text-foreground prose-strong:font-semibold
+          prose-code:text-primary prose-code:bg-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
+          prose-blockquote:border-l-primary prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-muted-foreground
+          prose-ol:text-foreground/90 prose-ul:text-foreground/90 prose-ol:my-4 prose-ul:my-4
+          prose-li:marker:text-primary prose-li:my-1.5"
           dangerouslySetInnerHTML={{ __html: thought.content }}
         />
         {thought.tags.length > 0 && (
