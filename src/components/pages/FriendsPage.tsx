@@ -24,7 +24,7 @@ const friends = friendsData as FriendCategory[]
 const siteInfo = {
   name: "时歌的博客",
   url: "https://www.lapis.cafe",
-  avatar: "https://www.lapis.cafe/images/avatar.webp",
+  avatar: "https://www.lapis.cafe/avatar.webp",
   desc: "理解以真实为本，但真实本身并不会自动呈现",
   rss: "https://lapis.cafe/rss.xml",
   email: "lapiscafe@foxmail.com"
