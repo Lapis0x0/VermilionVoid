@@ -110,7 +110,7 @@ function ThoughtCard({ thought, index }: { thought: ThoughtMeta; index: number }
         )}
         <div
           className="prose prose-neutral dark:prose-invert max-w-none
-          prose-p:text-base prose-p:leading-8 prose-p:my-4 prose-p:text-foreground/90
+          prose-p:text-base prose-p:leading-8 prose-p:my-4 prose-p:first:mt-0 prose-p:text-foreground/90
           prose-a:text-primary prose-a:no-underline prose-a:hover:underline
           prose-strong:text-foreground prose-strong:font-semibold
           prose-code:text-primary prose-code:bg-secondary prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:text-sm prose-code:before:content-none prose-code:after:content-none
