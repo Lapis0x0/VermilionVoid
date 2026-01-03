@@ -102,7 +102,7 @@ export function Footer() {
             href="https://github.com/Lapis0x0/VermilionVoid"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 text-muted-foreground text-xs hover:text-foreground transition-colors duration-200 group md:justify-end"
+            className="flex items-center gap-2 text-muted-foreground text-xs hover:text-foreground transition-colors duration-200 group md:justify-end md:pr-4"
           >
             <Github className="w-3.5 h-3.5" />
             <span>博客主题：朱墨留白 | VermilionVoid</span>
