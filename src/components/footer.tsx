@@ -26,9 +26,10 @@ export function Footer() {
           </div>
 
           {/* Navigation */}
-          <div>
-            <h4 className="text-sm font-medium text-foreground mb-4 uppercase tracking-wide">导航</h4>
-            <nav className="flex flex-col gap-3">
+          <div className="md:flex md:justify-center">
+            <div>
+              <h4 className="text-sm font-medium text-foreground mb-4 uppercase tracking-wide">导航</h4>
+              <nav className="flex flex-col gap-3">
               {[
                 { name: "首页", href: "/" },
                 { name: "时间线", href: "/timeline/" },
@@ -48,49 +49,52 @@ export function Footer() {
                 </a>
               ))}
             </nav>
+            </div>
           </div>
 
           {/* Connect */}
-          <div>
-            <h4 className="text-sm font-medium text-foreground mb-4 uppercase tracking-wide">联系</h4>
-            <div className="flex items-center gap-4">
-              {profile.links.map((link) => {
-                const Icon = iconMap[link.type]
-                return (
-                  <a
-                    key={link.name}
-                    href={link.url}
-                    target="_blank"
-                    rel="noreferrer"
-                    className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-200"
-                    aria-label={link.name}
-                  >
-                    <Icon className="w-4 h-4" />
-                  </a>
-                )
-              })}
+          <div className="md:flex md:justify-end">
+            <div>
+              <h4 className="text-sm font-medium text-foreground mb-4 uppercase tracking-wide">联系</h4>
+              <div className="flex items-center gap-4">
+                {profile.links.map((link) => {
+                  const Icon = iconMap[link.type]
+                  return (
+                    <a
+                      key={link.name}
+                      href={link.url}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="w-10 h-10 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:text-foreground hover:border-primary/50 transition-all duration-200"
+                      aria-label={link.name}
+                    >
+                      <Icon className="w-4 h-4" />
+                    </a>
+                  )
+                })}
+              </div>
+              <p className="text-muted-foreground text-sm mt-6">通过 RSS 订阅，获取最新文章更新。</p>
+              <a
+                href="/rss.xml"
+                target="_blank"
+                rel="noreferrer"
+                className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity duration-200"
+              >
+                <Rss className="w-4 h-4" />
+                订阅 RSS
+              </a>
             </div>
-            <p className="text-muted-foreground text-sm mt-6">通过 RSS 订阅，获取最新文章更新。</p>
-            <a
-              href="/rss.xml"
-              target="_blank"
-              rel="noreferrer"
-              className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity duration-200"
-            >
-              <Rss className="w-4 h-4" />
-              订阅 RSS
-            </a>
           </div>
         </div>
 
         {/* Bottom */}
-        <div className="mt-16 pt-8 border-t border-border/50 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="mt-16 pt-8 border-t border-border/50 grid gap-4 md:grid-cols-3">
           <p className="text-muted-foreground text-sm">© 2025 时歌. All rights reserved.</p>
           <a
             href="https://beian.miit.gov.cn/"
             target="_blank"
             rel="noreferrer"
-            className="text-muted-foreground text-xs hover:text-foreground transition-colors duration-200"
+            className="text-muted-foreground text-xs hover:text-foreground transition-colors duration-200 md:text-center"
           >
             辽ICP备2023010881号-1
           </a>
@@ -98,7 +102,7 @@ export function Footer() {
             href="https://github.com/Lapis0x0/VermilionVoid"
             target="_blank"
             rel="noreferrer"
-            className="flex items-center gap-2 text-muted-foreground text-xs hover:text-foreground transition-colors duration-200 group"
+            className="flex items-center gap-2 text-muted-foreground text-xs hover:text-foreground transition-colors duration-200 group md:justify-end"
           >
             <Github className="w-3.5 h-3.5" />
             <span>博客主题：朱墨留白 | VermilionVoid</span>
