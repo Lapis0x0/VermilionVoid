@@ -3,9 +3,9 @@
 import { useEffect, useState, useCallback, useRef } from "react"
 
 const phrases = [
+  { prefix: "探求 AI 的", highlight: "边界" },
   { prefix: "追问金融的", highlight: "理性" },
   { prefix: "分析社会的", highlight: "结构" },
-  { prefix: "探求 AI 的", highlight: "边界" },
   { prefix: "记录跨学科", highlight: "洞见" },
 ]
 
