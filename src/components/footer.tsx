@@ -1,4 +1,4 @@
-import { Github, MessageCircle, Music } from "lucide-react"
+import { Github, MessageCircle, Music, Rss } from "lucide-react"
 import { profile, type ProfileLinkType } from "@/data/profile"
 
 const iconMap: Record<ProfileLinkType, typeof Github> = {
@@ -70,17 +70,16 @@ export function Footer() {
                 )
               })}
             </div>
-            <p className="text-muted-foreground text-sm mt-6">订阅邮件通讯，获取最新文章更新。</p>
-            <div className="mt-3 flex gap-2">
-              <input
-                type="email"
-                placeholder="your@email.com"
-                className="flex-1 px-4 py-2 text-sm bg-secondary border border-border rounded-lg focus:outline-none focus:border-primary/50 transition-colors duration-200"
-              />
-              <button className="px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity duration-200">
-                订阅
-              </button>
-            </div>
+            <p className="text-muted-foreground text-sm mt-6">通过 RSS 订阅，获取最新文章更新。</p>
+            <a
+              href="/rss.xml"
+              target="_blank"
+              rel="noreferrer"
+              className="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-sm font-medium rounded-lg hover:opacity-90 transition-opacity duration-200"
+            >
+              <Rss className="w-4 h-4" />
+              订阅 RSS
+            </a>
           </div>
         </div>
 
