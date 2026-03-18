@@ -99,12 +99,12 @@ export function Footer() {
         <div className="mt-16 pt-8 border-t border-border/50 grid gap-4 md:grid-cols-3">
           <p className="text-muted-foreground text-sm">© {new Date().getFullYear()} Faber. 保留所有权利。</p>
           <a
-            href="#"
+            href="https://beian.miit.gov.cn/"
             target="_blank"
             rel="noreferrer"
             className="text-muted-foreground text-xs hover:text-foreground transition-colors duration-200 md:text-center"
           >
-            ICP 备案号
+            粤ICP备2026025174号
           </a>
           <a
             href="https://github.com/Lapis0x0/VermilionVoid"
