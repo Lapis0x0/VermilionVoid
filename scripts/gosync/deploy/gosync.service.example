@@ -1,0 +1,29 @@
+# 复制为 /etc/systemd/system/gosync.service 并修改下列路径与用户。
+# 要求：WorkingDirectory 为仓库根目录（含 .git、src/content/posts、.env）。
+#
+# sudo cp gosync.service.example /etc/systemd/system/gosync.service
+# sudo nano /etc/systemd/system/gosync.service   # 改路径
+# sudo systemctl daemon-reload && sudo systemctl enable --now gosync
+
+[Unit]
+Description=VermilionVoid gosync (S3 sync + AI + git push)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# 与仓库属主一致，且需具备 git push 权限（deploy 密钥或 credential helper）
+User=blog
+Group=blog
+WorkingDirectory=/home/web/CopyBlog-Website
+EnvironmentFile=-/home/web/CopyBlog-Website/.env
+ExecStart=/usr/local/bin/gosync
+Restart=on-failure
+RestartSec=5
+
+# 安全加固（按需取消注释）
+# NoNewPrivileges=true
+# PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
