@@ -2,9 +2,9 @@ name: Deploy Astro Blog to Server
 
 on:
   push:
-    # 监听 main 分支的变动
+    # 仅 deploy：gosync / 手动合并后的内容发布；main 不触发部署
     branches:
-      - main
+      - deploy
 
 jobs:
   build_and_deploy:
@@ -14,8 +14,7 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
-          # 确保拉取 main 分支
-          ref: main
+          ref: ${{ github.ref_name }}
 
       - name: Install pnpm
         uses: pnpm/action-setup@v3
