@@ -4,6 +4,7 @@ import (
 	"gosync/config"
 	"log"
 	"os/exec"
+	"strings"
 )
 
 func runCommand(dir string, name string, args ...string) error {
@@ -15,6 +16,16 @@ func runCommand(dir string, name string, args ...string) error {
 		return err
 	}
 	return nil
+}
+
+func gitWorktreeDirty(dir string) bool {
+	cmd := exec.Command("git", "status", "--porcelain")
+	cmd.Dir = dir
+	out, err := cmd.Output()
+	if err != nil {
+		return true
+	}
+	return len(strings.TrimSpace(string(out))) > 0
 }
 
 func PushToGit(cfg *config.Config) error {
@@ -40,11 +51,30 @@ func PushToGit(cfg *config.Config) error {
 		log.Println("Git commit returned error (possibly no changes). Proceeding anyway.")
 	}
 
+	// 未暂存的本地修改（如你在服务器上改过 scripts/gosync）会阻止 pull/rebase，先 stash
+	stashed := false
+	if gitWorktreeDirty(cfg.ProjectRootDir) {
+		log.Println("Worktree has unstaged/untracked changes; stashing before pull --rebase")
+		if err := runCommand(cfg.ProjectRootDir, "git", "stash", "push", "-u", "-m", "gosync:auto"); err != nil {
+			log.Printf("git stash failed: %v\n", err)
+			return err
+		}
+		stashed = true
+	}
+	if stashed {
+		defer func() {
+			if err := runCommand(cfg.ProjectRootDir, "git", "stash", "pop"); err != nil {
+				log.Printf("git stash pop failed (请在本机 git stash list 查看): %v\n", err)
+			}
+		}()
+	}
+
 	// 远端可能已有新提交（例如 GitHub 上合并）；先 rebase 再推，避免 non-fast-forward
 	err = runCommand(cfg.ProjectRootDir, "git", "pull", "--rebase", "origin", "deploy")
 	if err != nil {
 		return err
 	}
+	log.Println("git pull --rebase origin deploy: ok")
 
 	err = runCommand(cfg.ProjectRootDir, "git", "push", "origin", "deploy")
 	if err != nil {
