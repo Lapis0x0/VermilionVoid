@@ -29,7 +29,7 @@ func gitWorktreeDirty(dir string) bool {
 }
 
 func PushToGit(cfg *config.Config) error {
-	log.Println("Starting Git Push process to 'deploy' branch...")
+	log.Println("PushToGit: fetch/checkout → add posts → commit → stash-if-dirty → pull --rebase → push (with retry)")
 
 	if err := runCommand(cfg.ProjectRootDir, "git", "fetch", "origin"); err != nil {
 		return err
