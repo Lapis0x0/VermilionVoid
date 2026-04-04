@@ -67,7 +67,10 @@ func runSyncPipeline(cfg *config.Config, syncer *s3sync.S3Syncer, gen *ai.Genera
 	gen.ProcessMissingFrontmatters()
 
 	log.Println(">> Pipeline Step: Pushing to Git Deploy Branch")
-	builder.PushToGit(cfg)
+	if err := builder.PushToGit(cfg); err != nil {
+		log.Printf(">> Git push step failed: %v\n", err)
+		return
+	}
 
 	log.Println(">> Pipeline Complete")
 }

@@ -48,7 +48,17 @@ func PushToGit(cfg *config.Config) error {
 
 	err = runCommand(cfg.ProjectRootDir, "git", "push", "origin", "deploy")
 	if err != nil {
-		return err
+		// 并发同步或远端恰有新提交时，再拉一次后重试推一次
+		log.Println("Push rejected, retrying after fetch + pull --rebase...")
+		if err2 := runCommand(cfg.ProjectRootDir, "git", "fetch", "origin"); err2 != nil {
+			return err2
+		}
+		if err2 := runCommand(cfg.ProjectRootDir, "git", "pull", "--rebase", "origin", "deploy"); err2 != nil {
+			return err2
+		}
+		if err2 := runCommand(cfg.ProjectRootDir, "git", "push", "origin", "deploy"); err2 != nil {
+			return err2
+		}
 	}
 
 	log.Println("Successfully pushed to deploy branch!")
