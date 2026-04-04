@@ -1,10 +1,11 @@
 package builder
 
 import (
-	"gosync/config"
 	"log"
 	"os/exec"
 	"strings"
+
+	"gosync/config"
 )
 
 func runCommand(dir string, name string, args ...string) error {
@@ -28,8 +29,19 @@ func gitWorktreeDirty(dir string) bool {
 	return len(strings.TrimSpace(string(out))) > 0
 }
 
+// rebaseOntoOriginDeploy 等价于 pull --rebase，但不依赖 git pull.rebase 全局配置（Git 2.27+ 否则可能报错）。
+func rebaseOntoOriginDeploy(dir string) error {
+	if err := runCommand(dir, "git", "fetch", "origin", "deploy"); err != nil {
+		return err
+	}
+	if err := runCommand(dir, "git", "rebase", "origin/deploy"); err != nil {
+		return err
+	}
+	return nil
+}
+
 func PushToGit(cfg *config.Config) error {
-	log.Println("PushToGit: fetch/checkout → add posts → commit → stash-if-dirty → pull --rebase → push (with retry)")
+	log.Println("Starting Git Push process to 'deploy' branch...")
 
 	if err := runCommand(cfg.ProjectRootDir, "git", "fetch", "origin"); err != nil {
 		return err
@@ -54,7 +66,7 @@ func PushToGit(cfg *config.Config) error {
 	// 未暂存的本地修改（如你在服务器上改过 scripts/gosync）会阻止 pull/rebase，先 stash
 	stashed := false
 	if gitWorktreeDirty(cfg.ProjectRootDir) {
-		log.Println("Worktree has unstaged/untracked changes; stashing before pull --rebase")
+		log.Println("Worktree has unstaged/untracked changes; stashing before rebase onto origin/deploy")
 		if err := runCommand(cfg.ProjectRootDir, "git", "stash", "push", "-u", "-m", "gosync:auto"); err != nil {
 			log.Printf("git stash failed: %v\n", err)
 			return err
@@ -69,21 +81,21 @@ func PushToGit(cfg *config.Config) error {
 		}()
 	}
 
-	// 远端可能已有新提交（例如 GitHub 上合并）；先 rebase 再推，避免 non-fast-forward
-	err = runCommand(cfg.ProjectRootDir, "git", "pull", "--rebase", "origin", "deploy")
+	// 远端可能已有新提交；fetch + rebase 到 origin/deploy，避免依赖 pull.rebase 配置
+	err = rebaseOntoOriginDeploy(cfg.ProjectRootDir)
 	if err != nil {
 		return err
 	}
-	log.Println("git pull --rebase origin deploy: ok")
+	log.Println("git rebase origin/deploy: ok")
 
 	err = runCommand(cfg.ProjectRootDir, "git", "push", "origin", "deploy")
 	if err != nil {
-		// 并发同步或远端恰有新提交时，再拉一次后重试推一次
-		log.Println("Push rejected, retrying after fetch + pull --rebase...")
+		// 并发同步或远端恰有新提交时，再 rebase 一次后重试推
+		log.Println("Push rejected, retrying after fetch + rebase...")
 		if err2 := runCommand(cfg.ProjectRootDir, "git", "fetch", "origin"); err2 != nil {
 			return err2
 		}
-		if err2 := runCommand(cfg.ProjectRootDir, "git", "pull", "--rebase", "origin", "deploy"); err2 != nil {
+		if err2 := rebaseOntoOriginDeploy(cfg.ProjectRootDir); err2 != nil {
 			return err2
 		}
 		if err2 := runCommand(cfg.ProjectRootDir, "git", "push", "origin", "deploy"); err2 != nil {

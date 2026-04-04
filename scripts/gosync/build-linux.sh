@@ -18,5 +18,6 @@ if [[ -z "${GOSUMDB:-}" ]]; then
 fi
 
 mkdir -p dist
-GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -trimpath -ldflags="-s -w" -o dist/gosync-linux-amd64 .
+# 仓库若处于 divergent 等异常状态，Go 会尝试读 VCS 并失败；关闭嵌入版本信息
+GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -buildvcs=false -trimpath -ldflags="-s -w" -o dist/gosync-linux-amd64 .
 echo "OK: dist/gosync-linux-amd64"

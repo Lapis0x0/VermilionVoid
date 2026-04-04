@@ -11,9 +11,6 @@ import (
 	"gosync/s3sync"
 )
 
-// 部署新二进制后应在 journalctl 中看到该版本号；若仍是旧日志则说明未覆盖 /usr/local/bin/gosync 或未 restart。
-const gosyncBuildTag = "20260405-pull-stash-main-err"
-
 type StatusResponse struct {
 	Status  string `json:"status"`
 	Message string `json:"message"`
@@ -56,7 +53,7 @@ func main() {
 	})
 
 	port := config.GetEnvOrDefault("PORT", "3001")
-	log.Printf("Sync API server [%s] is listening on port %s...\n", gosyncBuildTag, port)
+	log.Printf("Sync API server is listening on port %s...\n", port)
 	if err := http.ListenAndServe(":"+port, nil); err != nil {
 		log.Fatal(err)
 	}
