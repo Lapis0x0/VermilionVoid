@@ -115,7 +115,6 @@ func (g *Generator) ProcessMissingFrontmatters() error {
 }
 
 type FMResponse struct {
-	Title       string   `json:"title"`
 	Description string   `json:"description"`
 	Category    string   `json:"category"`
 	Tags        []string `json:"tags"`
@@ -124,32 +123,20 @@ type FMResponse struct {
 func (g *Generator) generateFrontmatter(filename, content string) (*FMResponse, error) {
 	snippet := content
 	if len(snippet) > 6000 {
-		snippet = snippet[:6000] // Process first ~2000 chars roughly
+		snippet = snippet[:6000]
 	}
 
-	prompt := fmt.Sprintf(`请分析以下文章内容，并提取或生成适用作为博客系统头信息（Frontmatter）的 JSON 格式数据。
-要求严格且只返回包含以下字段的 JSON 对象，不要含有任何额外文本或 Markdown 标记结构。
-{
-  "title": "文章标题（尽量使用原标题或精确总结）",
-  "description": "1-2句话的文章内容摘要",
-  "category": "文章分类（如: 技术, 随笔, 思考, 读书等，返回单个字符串）",
-  "tags": ["标签1", "标签2", "标签3"]
-}
-
-文章内容：
-%s`, snippet)
+	userPrompt := fmt.Sprintf(userPromptFrontmatterFmt, filename, snippet)
 
 	resp, err := g.client.CreateChatCompletion(
 		context.TODO(),
 		openai.ChatCompletionRequest{
 			Model: g.cfg.AIModel,
 			Messages: []openai.ChatCompletionMessage{
-				{
-					Role:    openai.ChatMessageRoleUser,
-					Content: prompt,
-				},
+				{Role: openai.ChatMessageRoleSystem, Content: systemPromptFrontmatter},
+				{Role: openai.ChatMessageRoleUser, Content: userPrompt},
 			},
-			Temperature: 0.5,
+			Temperature: 0.3,
 			MaxTokens:   500,
 		},
 	)
@@ -177,10 +164,7 @@ func (g *Generator) generateFrontmatter(filename, content string) (*FMResponse, 
 }
 
 func buildFmString(data *FMResponse, filename, fullPath string) string {
-	title := data.Title
-	if title == "" {
-		title = strings.TrimSuffix(filename, ".md")
-	}
+	title := strings.TrimSuffix(filename, ".md")
 	title = strings.ReplaceAll(title, "\"", "\\\"")
 	desc := strings.ReplaceAll(data.Description, "\"", "\\\"")
 
