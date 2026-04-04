@@ -1,9 +1,9 @@
 package builder
 
 import (
+	"gosync/config"
 	"log"
 	"os/exec"
-	"gosync/config"
 )
 
 func runCommand(dir string, name string, args ...string) error {
@@ -19,26 +19,38 @@ func runCommand(dir string, name string, args ...string) error {
 
 func PushToGit(cfg *config.Config) error {
 	log.Println("Starting Git Push process to 'deploy' branch...")
-	
-	// Optional: Ensure we are on deploy branch. Skip if already on deploy or causes issues parsing.
-	// runCommand(cfg.ProjectRootDir, "git", "checkout", "deploy")
-	
+
+	if err := runCommand(cfg.ProjectRootDir, "git", "fetch", "origin"); err != nil {
+		return err
+	}
+	if err := runCommand(cfg.ProjectRootDir, "git", "checkout", "deploy"); err != nil {
+		if err2 := runCommand(cfg.ProjectRootDir, "git", "checkout", "-B", "deploy", "origin/deploy"); err2 != nil {
+			return err2
+		}
+	}
+
 	err := runCommand(cfg.ProjectRootDir, "git", "add", "src/content/posts/")
 	if err != nil {
 		return err
 	}
-	
+
 	err = runCommand(cfg.ProjectRootDir, "git", "commit", "-m", "Auto sync Obsidian posts & generate AI frontmatter")
 	if err != nil {
 		// It's possible there are no changes to commit.
 		log.Println("Git commit returned error (possibly no changes). Proceeding anyway.")
 	}
 
+	// 远端可能已有新提交（例如 GitHub 上合并）；先 rebase 再推，避免 non-fast-forward
+	err = runCommand(cfg.ProjectRootDir, "git", "pull", "--rebase", "origin", "deploy")
+	if err != nil {
+		return err
+	}
+
 	err = runCommand(cfg.ProjectRootDir, "git", "push", "origin", "deploy")
 	if err != nil {
 		return err
 	}
-	
+
 	log.Println("Successfully pushed to deploy branch!")
 	return nil
 }
