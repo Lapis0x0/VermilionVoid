@@ -7,12 +7,39 @@ import (
 	"log"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 	"time"
 
 	"gosync/config"
+
 	openai "github.com/sashabaranov/go-openai"
 )
+
+var (
+	reYAMLTitle     = regexp.MustCompile(`(?m)^title:\s*\S`)
+	reYAMLPublished = regexp.MustCompile(`(?m)^published:\s*\S`)
+)
+
+// splitFrontmatter 解析首块 YAML（以首行 --- 与下一个换行后的 --- 为界）。
+func splitFrontmatter(s string) (fmBlock, body string, ok bool) {
+	s = strings.TrimLeft(s, " \t\r\n")
+	if !strings.HasPrefix(s, "---") {
+		return "", s, false
+	}
+	rest := s[3:]
+	idx := strings.Index(rest, "\n---")
+	if idx == -1 {
+		return "", s, false
+	}
+	fmBlock = strings.TrimSpace(rest[:idx])
+	body = strings.TrimSpace(rest[idx+4:])
+	return fmBlock, body, true
+}
+
+func hasCompleteAstroFrontmatter(fmBlock string) bool {
+	return reYAMLTitle.MatchString(fmBlock) && reYAMLPublished.MatchString(fmBlock)
+}
 
 type Generator struct {
 	client *openai.Client
@@ -29,11 +56,6 @@ func NewGenerator(cfg *config.Config) *Generator {
 }
 
 func (g *Generator) ProcessMissingFrontmatters() error {
-	if g.cfg.AIApiKey == "" {
-		log.Println("AI_API_KEY is empty, skipping AI frontmatter generation.")
-		return nil
-	}
-
 	files, err := os.ReadDir(g.cfg.LocalPostsDir)
 	if err != nil {
 		return err
@@ -50,24 +72,43 @@ func (g *Generator) ProcessMissingFrontmatters() error {
 			continue
 		}
 		content := string(contentBytes)
-
 		trimmed := strings.TrimLeft(content, " \t\r\n")
-		if strings.HasPrefix(trimmed, "---") {
-			continue // Already has frontmatter
+
+		fmBlock, body, hasFM := splitFrontmatter(trimmed)
+		if hasFM && hasCompleteAstroFrontmatter(fmBlock) {
+			continue
 		}
 
-		log.Printf("[%s] 🤖 Processing with AI...", file.Name())
-		
-		fmData, err := g.generateFrontmatter(file.Name(), content)
+		bodyForAI := trimmed
+		if hasFM {
+			bodyForAI = body
+			if strings.TrimSpace(bodyForAI) == "" {
+				bodyForAI = trimmed
+			}
+		}
+
+		if g.cfg.AIApiKey == "" {
+			log.Printf("[%s] 补全默认 frontmatter（未配置 AI_API_KEY）\n", file.Name())
+			fmString := buildFmString(&FMResponse{}, file.Name(), path)
+			finalContent := fmString + "\n\n" + strings.TrimSpace(bodyForAI)
+			if err := os.WriteFile(path, []byte(finalContent), 0644); err != nil {
+				log.Printf("write %s: %v\n", file.Name(), err)
+			}
+			continue
+		}
+
+		log.Printf("[%s] 🤖 Processing with AI...\n", file.Name())
+		fmData, err := g.generateFrontmatter(file.Name(), bodyForAI)
 		if err != nil {
 			log.Printf("AI generation failed for %s: %v\n", file.Name(), err)
 			continue
 		}
 
 		fmString := buildFmString(fmData, file.Name(), path)
-		finalContent := fmString + "\n\n" + trimmed
-		
-		os.WriteFile(path, []byte(finalContent), 0644)
+		finalContent := fmString + "\n\n" + strings.TrimSpace(bodyForAI)
+		if err := os.WriteFile(path, []byte(finalContent), 0644); err != nil {
+			log.Printf("write %s: %v\n", file.Name(), err)
+		}
 	}
 
 	return nil
@@ -142,7 +183,7 @@ func buildFmString(data *FMResponse, filename, fullPath string) string {
 	}
 	title = strings.ReplaceAll(title, "\"", "\\\"")
 	desc := strings.ReplaceAll(data.Description, "\"", "\\\"")
-	
+
 	tagsJSON, err := json.Marshal(data.Tags)
 	if err != nil || string(tagsJSON) == "null" {
 		tagsJSON = []byte("[]")
