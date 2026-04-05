@@ -10,11 +10,12 @@ import (
 	"strings"
 	"time"
 
+	"gosync/config"
+
 	"github.com/aws/aws-sdk-go-v2/aws"
 	awsconfig "github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/s3"
-	"gosync/config"
 )
 
 type S3Syncer struct {
@@ -58,6 +59,9 @@ func (s *S3Syncer) SyncArticles() error {
 
 	log.Printf("Starting sync from %s/%s to %s\n", s.cfg.S3BucketName, s.cfg.S3Prefix, s.cfg.LocalPostsDir)
 
+	// 桶内当前存在的 .md 文件名（basename），用于删除已在 Obsidian/S3 侧移除的本地副本
+	remoteMD := make(map[string]struct{})
+
 	paginator := s3.NewListObjectsV2Paginator(s.client, &s3.ListObjectsV2Input{
 		Bucket: aws.String(s.cfg.S3BucketName),
 		Prefix: aws.String(s.cfg.S3Prefix),
@@ -76,6 +80,7 @@ func (s *S3Syncer) SyncArticles() error {
 			}
 
 			filename := filepath.Base(key)
+			remoteMD[filename] = struct{}{}
 			localPath := filepath.Join(s.cfg.LocalPostsDir, filename)
 			s3MTime := obj.LastModified
 
@@ -94,7 +99,29 @@ func (s *S3Syncer) SyncArticles() error {
 		}
 	}
 
-	log.Printf("Sync completed. Downloaded/updated %d articles.\n", s.downloadCount)
+	removed := 0
+	entries, err := os.ReadDir(s.cfg.LocalPostsDir)
+	if err != nil {
+		return fmt.Errorf("read posts dir: %w", err)
+	}
+	for _, e := range entries {
+		if e.IsDir() || !strings.EqualFold(filepath.Ext(e.Name()), ".md") {
+			continue
+		}
+		name := e.Name()
+		if _, ok := remoteMD[name]; ok {
+			continue
+		}
+		p := filepath.Join(s.cfg.LocalPostsDir, name)
+		log.Printf("[%s] 🗑️  Removing (no longer under S3 prefix)...\n", name)
+		if err := os.Remove(p); err != nil {
+			log.Printf("remove %s: %v\n", name, err)
+			continue
+		}
+		removed++
+	}
+
+	log.Printf("Sync completed. Downloaded/updated %d, removed locally %d.\n", s.downloadCount, removed)
 	return nil
 }
 
@@ -169,6 +196,6 @@ func (s *S3Syncer) downloadFileImpl(ctx context.Context, key, dest string) error
 	if out.LastModified != nil {
 		os.Chtimes(dest, time.Now(), *out.LastModified)
 	}
-	
+
 	return err
 }
