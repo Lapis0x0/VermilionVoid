@@ -120,14 +120,51 @@ type FMResponse struct {
 	Tags        []string `json:"tags"`
 }
 
+const (
+	frontmatterTokensFirst  = 2048
+	frontmatterTokensRetry  = 4096
+	frontmatterRetryUserAdd = `
+
+【再次请求】上一段输出无法作为合法 JSON 解析（或内容为空）。请只输出一个 JSON 对象，从 { 开始到 } 结束；键只能是 description、category、tags；不要使用 markdown 代码块或其它文字。`
+)
+
 func (g *Generator) generateFrontmatter(filename, content string) (*FMResponse, error) {
 	snippet := content
 	if len(snippet) > 6000 {
 		snippet = snippet[:6000]
 	}
 
-	userPrompt := fmt.Sprintf(userPromptFrontmatterFmt, filename, snippet)
+	userBase := fmt.Sprintf(userPromptFrontmatterFmt, filename, snippet)
+	limits := []int{frontmatterTokensFirst, frontmatterTokensRetry}
+	var lastErr error
 
+	for attempt, lim := range limits {
+		userPrompt := userBase
+		if attempt > 0 {
+			userPrompt = userBase + frontmatterRetryUserAdd
+		}
+		data, err := g.chatFrontmatterOnce(userPrompt, lim)
+		if err == nil {
+			return data, nil
+		}
+		lastErr = err
+		if !isRetriableFrontmatterErr(err) {
+			break
+		}
+	}
+
+	return nil, lastErr
+}
+
+func isRetriableFrontmatterErr(err error) bool {
+	s := err.Error()
+	return strings.Contains(s, "JSON parse") ||
+		strings.Contains(s, "empty model content") ||
+		strings.Contains(s, "no choices") ||
+		strings.Contains(s, "output truncated")
+}
+
+func (g *Generator) chatFrontmatterOnce(userPrompt string, outputLimit int) (*FMResponse, error) {
 	resp, err := CreateChatCompletionCompat(
 		context.TODO(),
 		g.client,
@@ -137,21 +174,33 @@ func (g *Generator) generateFrontmatter(filename, content string) (*FMResponse, 
 				{Role: openai.ChatMessageRoleSystem, Content: systemPromptFrontmatter},
 				{Role: openai.ChatMessageRoleUser, Content: userPrompt},
 			},
-			// 不传 temperature / top_p 等：部分 beta/网关模型要求这些参数固定，传 0.3 会整请求被拒。
 		},
-		defaultChatOutputLimit,
+		outputLimit,
 	)
 	if err != nil {
 		return nil, err
 	}
+	if len(resp.Choices) == 0 {
+		return nil, fmt.Errorf("no choices in response")
+	}
 
-	reply := strings.TrimSpace(resp.Choices[0].Message.Content)
+	ch := resp.Choices[0]
+	if ch.FinishReason == openai.FinishReasonLength {
+		return nil, fmt.Errorf("output truncated (finish_reason=length)")
+	}
+
+	reply := strings.TrimSpace(ch.Message.Content)
 	reply = strings.ReplaceAll(reply, "```json", "")
 	reply = strings.ReplaceAll(reply, "```", "")
+	reply = strings.TrimSpace(reply)
+
+	if reply == "" {
+		return nil, fmt.Errorf("empty model content (finish_reason=%s)", ch.FinishReason)
+	}
 
 	start := strings.Index(reply, "{")
 	end := strings.LastIndex(reply, "}")
-	if start != -1 && end != -1 {
+	if start != -1 && end != -1 && end >= start {
 		reply = reply[start : end+1]
 	}
 
