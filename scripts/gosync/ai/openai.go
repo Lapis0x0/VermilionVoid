@@ -137,7 +137,7 @@ func (g *Generator) generateFrontmatter(filename, content string) (*FMResponse, 
 				{Role: openai.ChatMessageRoleSystem, Content: systemPromptFrontmatter},
 				{Role: openai.ChatMessageRoleUser, Content: userPrompt},
 			},
-			Temperature: 0.3,
+			// 不传 temperature / top_p 等：部分 beta/网关模型要求这些参数固定，传 0.3 会整请求被拒。
 		},
 		defaultChatOutputLimit,
 	)

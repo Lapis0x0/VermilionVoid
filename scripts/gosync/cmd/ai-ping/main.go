@@ -58,7 +58,6 @@ func main() {
 			Messages: []openai.ChatCompletionMessage{
 				{Role: openai.ChatMessageRoleUser, Content: "只回复一个字：好"},
 			},
-			Temperature: 0,
 		},
 		8,
 	)
