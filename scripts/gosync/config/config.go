@@ -67,9 +67,12 @@ func LoadConfig() *Config {
 	}
 
 	envPath := filepath.Join(rootDir, ".env")
-	err := godotenv.Load(envPath)
+	// systemd 的 EnvironmentFile 会在进程启动时先写入环境变量；godotenv.Load 不会覆盖已有变量，
+	// 导致磁盘上 .env 的修正永远不生效，且 systemd 对行尾注释、引号的解析与 dotenv 不一致时会出现
+	// AI_BASE_URL 损坏（上游报 Invalid URL POST /v1）。Overload 以文件为准覆盖。
+	err := godotenv.Overload(envPath)
 	if err != nil {
-		log.Println("Note: .env file not loaded, using system environment variables")
+		log.Println("Note: .env file not loaded, using system environment variables only")
 	}
 
 	return &Config{

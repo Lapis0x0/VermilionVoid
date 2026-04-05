@@ -25,6 +25,9 @@ func main() {
 	}
 
 	aiGenerator := ai.NewGenerator(cfg)
+	if cfg.AIApiKey != "" {
+		log.Printf("AI: 使用 BaseURL=%s Model=%s（密钥已配置）\n", cfg.AIBaseURL, cfg.AIModel)
+	}
 
 	http.HandleFunc("/api/sync", func(w http.ResponseWriter, r *http.Request) {
 		if r.Method != http.MethodPost {
