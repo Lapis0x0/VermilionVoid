@@ -2,11 +2,48 @@ package config
 
 import (
 	"log"
+	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
+
+// defaultAIBaseURL 须与 go-openai 约定一致：库会拼接 “/chat/completions”。
+const defaultAIBaseURL = "https://api.openai.com/v1"
+
+// CleanEnvString 去掉 BOM、首尾空格及成对引号（systemd / 手写 .env 常把整段值包在引号里）。
+func CleanEnvString(s string) string {
+	s = strings.TrimSpace(s)
+	s = strings.TrimPrefix(s, "\ufeff")
+	if len(s) >= 2 {
+		f, l := s[0], s[len(s)-1]
+		if (f == '"' && l == '"') || (f == '\'' && l == '\'') {
+			s = strings.TrimSpace(s[1 : len(s)-1])
+		}
+	}
+	return strings.TrimSpace(s)
+}
+
+// NormalizeAIBaseURL 修正常见 .env 错误（首尾空格、多余尾斜杠、只填域名漏 /v1），
+// 避免上游返回 “Invalid URL (POST /v1)” 一类 404。
+func NormalizeAIBaseURL(raw string) string {
+	s := CleanEnvString(raw)
+	if s == "" {
+		return defaultAIBaseURL
+	}
+	s = strings.TrimRight(s, "/")
+	u, err := url.Parse(s)
+	if err != nil || (u.Scheme != "http" && u.Scheme != "https") || u.Host == "" {
+		log.Printf("AI_BASE_URL 无效 %q，已回退为 %s", raw, defaultAIBaseURL)
+		return defaultAIBaseURL
+	}
+	if u.Path == "" || u.Path == "/" {
+		u.Path = "/v1"
+	}
+	return strings.TrimRight(u.String(), "/")
+}
 
 type Config struct {
 	S3Endpoint     string
@@ -42,9 +79,9 @@ func LoadConfig() *Config {
 		S3SecretKey:    os.Getenv("S3_SECRET_KEY"),
 		S3BucketName:   os.Getenv("S3_BUCKET_NAME"),
 		S3Prefix:       GetEnvOrDefault("S3_PREFIX", "website/"),
-		AIApiKey:       os.Getenv("AI_API_KEY"),
-		AIBaseURL:      GetEnvOrDefault("AI_BASE_URL", "https://api.openai.com/v1"),
-		AIModel:        GetEnvOrDefault("AI_MODEL", "gpt-4o-mini"),
+		AIApiKey:       CleanEnvString(os.Getenv("AI_API_KEY")),
+		AIBaseURL:      NormalizeAIBaseURL(envCleanOrDefault("AI_BASE_URL", defaultAIBaseURL)),
+		AIModel:        envCleanOrDefault("AI_MODEL", "gpt-4o-mini"),
 		WebhookSecret:  os.Getenv("WEBHOOK_SECRET"),
 		LocalPostsDir:  filepath.Join(rootDir, "src", "content", "posts"),
 		ProjectRootDir: rootDir,
@@ -56,4 +93,12 @@ func GetEnvOrDefault(key, def string) string {
 		return val
 	}
 	return def
+}
+
+func envCleanOrDefault(key, def string) string {
+	v := CleanEnvString(os.Getenv(key))
+	if v == "" {
+		return def
+	}
+	return v
 }

@@ -128,8 +128,9 @@ func (g *Generator) generateFrontmatter(filename, content string) (*FMResponse, 
 
 	userPrompt := fmt.Sprintf(userPromptFrontmatterFmt, filename, snippet)
 
-	resp, err := g.client.CreateChatCompletion(
+	resp, err := CreateChatCompletionCompat(
 		context.TODO(),
+		g.client,
 		openai.ChatCompletionRequest{
 			Model: g.cfg.AIModel,
 			Messages: []openai.ChatCompletionMessage{
@@ -137,10 +138,9 @@ func (g *Generator) generateFrontmatter(filename, content string) (*FMResponse, 
 				{Role: openai.ChatMessageRoleUser, Content: userPrompt},
 			},
 			Temperature: 0.3,
-			MaxTokens:   500,
 		},
+		defaultChatOutputLimit,
 	)
-
 	if err != nil {
 		return nil, err
 	}

@@ -10,7 +10,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/credentials v1.17.16
 	github.com/aws/aws-sdk-go-v2/service/s3 v1.53.1
 	github.com/joho/godotenv v1.5.1
-	github.com/sashabaranov/go-openai v1.24.0
+	github.com/sashabaranov/go-openai v1.41.2
 )
 
 require (
