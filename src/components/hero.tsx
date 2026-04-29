@@ -3,10 +3,10 @@
 import { useEffect, useState, useCallback } from "react"
 
 const phrases = [
-  { prefix: "欢迎来到 ", highlight: "我的博客" },
-  { prefix: "基于 ", highlight: "Astro" },
-  { prefix: "样式来自 ", highlight: "Tailwind" },
-  { prefix: "驱动于 ", highlight: "React" },
+  { prefix: "这里是 ", highlight: "Faber", suffix: "的私人空间" },
+  { prefix: "分享人生", highlight: "奥德赛", suffix: "体验" },
+  { prefix: "一个相信", highlight: "闪念", suffix: "的世界" },
+  { prefix: "无限的", highlight: "思绪", suffix: "就在其中" },
 ]
 
 export function Hero() {
@@ -31,7 +31,7 @@ export function Hero() {
 
   const typeWriter = useCallback(() => {
     const currentPhrase = phrases[phraseIndex]
-    const fullText = currentPhrase.prefix + currentPhrase.highlight
+    const fullText = currentPhrase.prefix + currentPhrase.highlight + currentPhrase.suffix
 
     if (!isDeleting) {
       if (displayText.length < fullText.length) {
@@ -63,14 +63,23 @@ export function Hero() {
   const renderText = () => {
     const currentPhrase = phrases[phraseIndex]
     const prefixLength = currentPhrase.prefix.length
+    const highlightEnd = prefixLength + currentPhrase.highlight.length
 
     if (displayText.length <= prefixLength) {
       return <span>{displayText}</span>
-    } else {
+    } else if (displayText.length <= highlightEnd) {
       return (
         <>
           <span>{currentPhrase.prefix}</span>
           <span className="text-primary">{displayText.slice(prefixLength)}</span>
+        </>
+      )
+    } else {
+      return (
+        <>
+          <span>{currentPhrase.prefix}</span>
+          <span className="text-primary">{currentPhrase.highlight}</span>
+          <span>{displayText.slice(highlightEnd)}</span>
         </>
       )
     }
@@ -94,7 +103,7 @@ export function Hero() {
             }`}
         >
           <p className="text-xs sm:text-sm tracking-[0.3em] text-muted-foreground uppercase mb-8">
-            Astro · Tailwind · React
+            AI的创业驱动 · 认知开源 · 奥德赛的二十岁
           </p>
 
           <h1 className="font-sans text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[1.1] mb-8 min-h-[1.2em]">
