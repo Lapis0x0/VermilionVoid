@@ -19,13 +19,14 @@ export const adminLogin = async (c: Context<{ Bindings: Bindings }>) => {
 	}
 
 	// 2. 验证用户名密码
-	// 绝不能有默认口令：没配置 secret 时一律拒绝登录，而不是回退到 Admin/password
-	const ADMIN_NAME = c.env.ADMIN_NAME;
+	// 用户名不是秘密，可以有默认值；密码绝不能有默认口令——
+	// 未配置 ADMIN_PASSWORD 时一律拒绝登录，而不是回退到 'password'
+	const ADMIN_NAME = c.env.ADMIN_NAME || 'Admin';
 	const ADMIN_PASSWORD = c.env.ADMIN_PASSWORD;
-	if (!ADMIN_NAME || !ADMIN_PASSWORD) {
-		console.error('AdminLogin:credentialsNotConfigured');
+	if (!ADMIN_PASSWORD) {
+		console.error('AdminLogin:passwordNotConfigured');
 		return c.json(
-			{ message: '后台凭据未配置，请先设置 ADMIN_NAME / ADMIN_PASSWORD' },
+			{ message: '后台密码未配置，请先设置 ADMIN_PASSWORD secret' },
 			503
 		);
 	}
