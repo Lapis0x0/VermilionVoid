@@ -12,6 +12,7 @@ import {
   EmailNotificationSettings
 } from '../../utils/email';
 import { loadTelegramSettings, sendTelegramMessage } from '../../utils/telegram';
+import { guardPostSlug, toPageUrl } from '../../utils/allowedOrigin';
 
 // 检查内容，将<script>标签之间的内容删除
 export function checkContent(content: string): string {
@@ -23,11 +24,15 @@ export const postComment = async (c: Context<{ Bindings: Bindings }>) => {
   if (!data || typeof data !== 'object') {
     return c.json({ message: '无效的请求体' }, 400);
   }
-  const { post_slug, content: rawContent, name: rawName, email, url, post_title, post_url, adminToken } = data;
+  const { post_slug, content: rawContent, name: rawName, email, url, post_title, adminToken } = data;
   const parentId = (data as any).parent_id ?? (data as any).parentId ?? null;
   if (!post_slug || typeof post_slug !== 'string') {
     return c.json({ message: 'post_slug 必填' }, 400);
   }
+  const rejected = await guardPostSlug(c, post_slug);
+  if (rejected) return rejected;
+  // 通知里的链接一律由服务端从已校验的 post_slug 得出，请求体里的 post_url 直接丢弃
+  const pageUrl = toPageUrl(post_slug) || '';
   if (!rawContent || typeof rawContent !== 'string') {
     return c.json({ message: '评论内容不能为空' }, 400);
   }
@@ -238,7 +243,7 @@ export const postComment = async (c: Context<{ Bindings: Bindings }>) => {
                   parentComment: parentComment.content_html,
                   replyAuthor: name,
                   replyContent: contentHtml,
-                  postUrl: data.post_url,
+                  postUrl: pageUrl,
                 }, notifySettings.smtp, notifySettings.templates?.reply);
                 console.log('PostComment:mailDispatch:userReply:sent', {
                   toEmail: parentComment.email
@@ -249,7 +254,7 @@ export const postComment = async (c: Context<{ Bindings: Bindings }>) => {
             console.log('PostComment:mailDispatch:admin:send');
             await sendCommentNotification(c.env, {
               postTitle: data.post_title,
-              postUrl: data.post_url,
+              postUrl: pageUrl,
               commentAuthor: name,
               commentContent: contentHtml
             }, notifySettings.smtp, notifySettings.templates?.admin);
@@ -271,7 +276,7 @@ export const postComment = async (c: Context<{ Bindings: Bindings }>) => {
 
           const message = `
 💬 *新评论*
-文章: [${data.post_title || 'Untitled'}](${data.post_url || '#'})
+文章: [${data.post_title || 'Untitled'}](${pageUrl || '#'})
 作者: ${name} (${email})
 状态: ${defaultStatus === 'pending' ? '⏳ 待审核' : '✅ 已通过'}
 

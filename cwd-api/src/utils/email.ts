@@ -114,6 +114,18 @@ function replaceTemplate(template: string, variables: Record<string, string>) {
   return template.replace(/\$\{(\w+)\}/g, (_, key) => variables[key] || '');
 }
 
+// 模板是裸插值，所以标题、昵称这类访客可控的纯文本字段必须先转义。
+// 评论正文（parentComment / replyContent / commentContent）是有意保留的 HTML，已由 xss() 过滤，不能再转义。
+function escapeHtml(value: string | null | undefined): string {
+  if (!value) return '';
+  return String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
 async function dispatchMail(
   env: Bindings,
   payload: MailGatewayPayload,
@@ -340,13 +352,13 @@ export async function sendCommentReplyNotification(
   });
 
   const html = replaceTemplate(template || DEFAULT_REPLY_TEMPLATE, {
-    toEmail,
-    toName,
-    postTitle,
+    toEmail: escapeHtml(toEmail),
+    toName: escapeHtml(toName),
+    postTitle: escapeHtml(postTitle),
     parentComment,
-    replyAuthor,
+    replyAuthor: escapeHtml(replyAuthor),
     replyContent,
-    postUrl
+    postUrl: escapeHtml(postUrl)
   });
 
   if (!isValidEmail(toEmail)) {
@@ -383,9 +395,9 @@ export async function sendCommentNotification(
   const toEmail = await getAdminNotifyEmail(env);
 
   const html = replaceTemplate(template || DEFAULT_ADMIN_TEMPLATE, {
-    postTitle,
-    postUrl,
-    commentAuthor,
+    postTitle: escapeHtml(postTitle),
+    postUrl: escapeHtml(postUrl),
+    commentAuthor: escapeHtml(commentAuthor),
     commentContent
   });
 

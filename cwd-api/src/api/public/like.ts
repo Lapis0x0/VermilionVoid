@@ -1,5 +1,6 @@
 import type { Context } from 'hono';
 import type { Bindings } from '../../bindings';
+import { guardPostSlug } from '../../utils/allowedOrigin';
 
 type LikeStatusResponse = {
 	liked: boolean;
@@ -112,6 +113,9 @@ export const likePage = async (
 		if (!rawPostSlug) {
 			return c.json({ message: 'postSlug is required' }, 400);
 		}
+
+		const rejected = await guardPostSlug(c, rawPostSlug);
+		if (rejected) return rejected;
 
 		const userId = getUserIdFromRequest(c);
 

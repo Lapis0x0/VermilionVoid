@@ -1,5 +1,6 @@
 import type { Context } from 'hono';
 import type { Bindings } from '../../bindings';
+import { guardPostSlug } from '../../utils/allowedOrigin';
 
 type TrackVisitBody = {
 	postSlug?: string;
@@ -37,6 +38,9 @@ export const trackVisit = async (c: Context<{ Bindings: Bindings }>) => {
 		if (!rawPostSlug) {
 			return c.json({ message: 'postSlug is required' }, 400);
 		}
+
+		const rejected = await guardPostSlug(c, rawPostSlug);
+		if (rejected) return rejected;
 
 		await c.env.CWD_DB.prepare(
 			'CREATE TABLE IF NOT EXISTS page_stats (id INTEGER PRIMARY KEY AUTOINCREMENT, post_slug TEXT UNIQUE NOT NULL, post_title TEXT, post_url TEXT, pv INTEGER NOT NULL DEFAULT 0, last_visit_at INTEGER, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)'
