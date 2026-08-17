@@ -133,17 +133,13 @@ export function Hero() {
   }, [])
 
   return (
-    <section ref={sectionRef} className="relative min-h-[90vh] flex items-center justify-center px-6 bg-surface-subtle">
+    <section ref={sectionRef} className="relative min-h-[72vh] flex items-center justify-center px-6 bg-surface-subtle">
       <div className="max-w-4xl mx-auto text-center">
         <div
           className={`transition-all duration-1000 ease-out ${
             mounted ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
           }`}
         >
-          <p className="text-xs sm:text-sm tracking-[0.3em] text-muted-foreground uppercase mb-8">
-            金融学 · 社会学 · AI 大模型
-          </p>
-
           <h1 className="font-sans text-[min(10.5vw,3rem)] sm:text-6xl md:text-7xl lg:text-8xl font-bold tracking-tight text-foreground leading-[1.1] mb-8 min-h-[1.2em] whitespace-nowrap">
             {renderText()}
             <span
