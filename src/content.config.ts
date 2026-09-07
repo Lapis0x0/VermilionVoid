@@ -1,23 +1,8 @@
 import { defineCollection, z } from "astro:content"
-
-const articles = defineCollection({
-  type: "content",
-  schema: z.object({
-    title: z.string(),
-    excerpt: z.string().optional(),
-    category: z.string(),
-    categoryLabel: z.string(),
-    tag: z.string(),
-    date: z.coerce.date(),
-    wordCount: z.number().optional(),
-    readTime: z.string().optional(),
-    image: z.string().optional(),
-    pinned: z.boolean().optional(),
-  }),
-})
+import { glob } from "astro/loaders"
 
 const posts = defineCollection({
-  type: "content",
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/posts" }),
   schema: z.object({
     title: z.string(),
     published: z.date(),
@@ -42,7 +27,7 @@ const posts = defineCollection({
 })
 
 const thoughts = defineCollection({
-  type: "content",
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/thoughts" }),
   schema: z.object({
     title: z.string().optional(),
     published: z.date(),
@@ -51,9 +36,9 @@ const thoughts = defineCollection({
 })
 
 const studies = defineCollection({
-  type: "content",
-  // 注意：frontmatter 里的 `slug` 字段被 Astro 当 reserved key 处理（用作 URL slug），
-  // 不会出现在 schema 校验的 data 里。所以这里不声明 slug，直接读 entry.slug。
+  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/studies" }),
+  // 注意：frontmatter 里的 `slug` 字段在 glob loader 下不再是保留字，也不参与 URL 生成；
+  // URL 用 entry.id（= 相对 base 的文件路径）。这里不声明 slug，正文里的 slug: 字段是冗余的。
   schema: z.object({
     title: z.string(),
     status: z.enum(["在读", "沉淀中", "暂搁", "已结"]),
@@ -64,4 +49,4 @@ const studies = defineCollection({
   }),
 })
 
-export const collections = { articles, posts, thoughts, studies }
+export const collections = { posts, thoughts, studies }

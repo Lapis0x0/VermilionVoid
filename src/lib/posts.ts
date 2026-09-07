@@ -41,11 +41,11 @@ export async function getSortedPosts(ignorePinned = false): Promise<PostEntry[]>
 export async function getPostsWithNav(): Promise<PostEntry[]> {
   const sorted = await getSortedPosts()
   for (let i = 1; i < sorted.length; i += 1) {
-    sorted[i].data.nextSlug = sorted[i - 1].slug
+    sorted[i].data.nextSlug = sorted[i - 1].id
     sorted[i].data.nextTitle = sorted[i - 1].data.title
   }
   for (let i = 0; i < sorted.length - 1; i += 1) {
-    sorted[i].data.prevSlug = sorted[i + 1].slug
+    sorted[i].data.prevSlug = sorted[i + 1].id
     sorted[i].data.prevTitle = sorted[i + 1].data.title
   }
   return sorted
@@ -63,7 +63,7 @@ export const toPostMeta = (post: PostEntry) => {
   const category = (post.data.category ?? "").toString().trim() || "未分类"
 
   return {
-    slug: post.slug,
+    slug: post.id,
     title: post.data.title,
     excerpt,
     category,

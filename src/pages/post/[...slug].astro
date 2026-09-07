@@ -4,7 +4,7 @@ import { getSortedPosts } from "@/lib/posts"
 export async function getStaticPaths() {
   const posts = await getSortedPosts(true)
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
   }))
 }
 

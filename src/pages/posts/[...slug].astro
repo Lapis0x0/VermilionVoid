@@ -3,6 +3,7 @@ import BaseLayout from "@/layouts/BaseLayout.astro"
 import ArticleContent from "@/components/ArticleContent.astro"
 import SiteHeader from "@/components/site-header.astro"
 import { Footer } from "@/components/footer"
+import { render } from "astro:content"
 import { getPostsWithNav, type PostEntry } from "@/lib/posts"
 import Disclaimer from "@/components/Disclaimer.astro"
 import PasswordProtection from "@/components/PasswordProtection.astro"
@@ -13,7 +14,7 @@ import CryptoJS from "crypto-js"
 export async function getStaticPaths() {
   const posts = await getPostsWithNav()
   return posts.map((post) => ({
-    params: { slug: post.slug },
+    params: { slug: post.id },
     props: { post },
   }))
 }
@@ -24,7 +25,7 @@ if (!post) {
   return Astro.redirect("/")
 }
 
-const { Content, remarkPluginFrontmatter } = await post.render()
+const { Content, remarkPluginFrontmatter } = await render(post)
 const words = remarkPluginFrontmatter?.words
 const minutes = remarkPluginFrontmatter?.minutes
 
@@ -111,8 +112,8 @@ if (post.data.encrypted && post.data.password) {
       </div>
       {encryptedData ? (
         <div class="mb-6">
-          <PasswordProtection encryptedData={encryptedData} slug={post.slug} class="mb-6 rounded-xl" />
-          <div id={`article-content-${post.slug}`} class="mb-6 hidden encrypted-content">
+          <PasswordProtection encryptedData={encryptedData} slug={post.id} class="mb-6 rounded-xl" />
+          <div id={`article-content-${post.id}`} class="mb-6 hidden encrypted-content">
             <!-- 内容将在验证密码后动态插入 -->
           </div>
         </div>

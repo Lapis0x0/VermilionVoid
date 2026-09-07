@@ -43,7 +43,7 @@ export const toThoughtMeta = (thought: ThoughtEntry) => {
   const content = md.render(body)
 
   return {
-    slug: thought.slug,
+    slug: thought.id,
     title: thought.data.title,
     content,
     date: formatDate(thought.data.published),
@@ -57,7 +57,7 @@ export const toThoughtPreview = (thought: ThoughtEntry, maxLength = 96) => {
   const text = stripHtml(content)
 
   return {
-    slug: thought.slug,
+    slug: thought.id,
     title: thought.data.title,
     date: formatDate(thought.data.published),
     excerpt: truncateText(text, maxLength),

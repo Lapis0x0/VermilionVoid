@@ -11,7 +11,7 @@ const posts = await getSortedPosts(true)
 
 // 转换为时间线所需的简化数据
 const timelineItems = posts.map((post) => ({
-  slug: post.slug,
+  slug: post.id,
   title: post.data.title,
   date: post.data.published.toISOString().slice(0, 10),
 }))

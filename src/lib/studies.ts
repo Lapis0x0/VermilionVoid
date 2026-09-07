@@ -307,8 +307,8 @@ function shape(entry: StudyEntry, idx: number): StudyData {
   const no = String(idx + 1).padStart(2, "0")
 
   return {
-    id: entry.slug,
-    slug: entry.slug,
+    id: entry.id,
+    slug: entry.id,
     no,
     title: entry.data.title,
     subtitle: entry.data.subtitle,
@@ -337,7 +337,7 @@ export async function getAllStudies(): Promise<StudyData[]> {
     if (pa.y !== pb.y) return pa.y - pb.y
     if (pa.m !== pb.m) return pa.m - pb.m
     if (pa.d !== pb.d) return pa.d - pb.d
-    return a.slug.localeCompare(b.slug)
+    return a.id.localeCompare(b.id)
   })
   return sorted.map((entry: StudyEntry, idx: number) => shape(entry, idx))
 }
