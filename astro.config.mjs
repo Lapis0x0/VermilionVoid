@@ -1,4 +1,6 @@
 import { defineConfig } from "astro/config"
+import { unified } from "@astrojs/markdown-remark"
+import tailwindcss from "@tailwindcss/vite"
 import react from "@astrojs/react"
 import sitemap from "@astrojs/sitemap"
 import mdx from "@astrojs/mdx"
@@ -30,10 +32,15 @@ const createAdmonitionComponent = (type) => (properties = {}, children = []) => 
 export default defineConfig({
   srcDir: "./src",
   output: "static",
+  // v7 默认值从 true 改成 'jsx'，会吃掉行内元素之间的空格。保持旧行为。
+  compressHTML: true,
   site: "https://www.lapis.cafe",
   trailingSlash: "always",
   alias: {
     "@": "./src",
+  },
+  vite: {
+    plugins: [tailwindcss()],
   },
   integrations: [
     expressiveCode({
@@ -84,7 +91,10 @@ export default defineConfig({
     sitemap(),
     mdx(),
   ],
+  // v7 默认把 markdown 管线换成了 Sätteri。本站有 11 个 remark/rehype 插件
+  // （含 src/plugins/ 下 6 个自研的）+ KaTeX，暂不 port，显式留在 unified 上。
   markdown: {
+    processor: unified(),
     remarkPlugins: [
       remarkMath,
       remarkReadingTime,
