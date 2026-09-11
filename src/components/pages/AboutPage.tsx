@@ -59,11 +59,11 @@ export default function AboutPage() {
           {/* Bio Section */}
           <section className="mb-16">
             <div className="prose prose-neutral dark:prose-invert max-w-none
-              prose-p:text-base prose-p:leading-8 prose-p:my-5 prose-p:text-foreground/90
+              prose-p:text-base prose-p:leading-8 prose-p:my-5 prose-p:text-foreground/90 dark:prose-p:text-foreground
               prose-a:text-primary prose-a:no-underline prose-a:hover:underline
               prose-blockquote:border-l-primary prose-blockquote:border-l-2 prose-blockquote:pl-4 prose-blockquote:italic prose-blockquote:text-content-secondary prose-blockquote:font-normal prose-blockquote:bg-surface-subtle prose-blockquote:py-2 prose-blockquote:rounded-r-lg
               prose-strong:text-foreground prose-strong:font-semibold
-              prose-ul:text-foreground/90 prose-ul:my-5
+              prose-ul:text-foreground/90 dark:prose-ul:text-foreground prose-ul:my-5
               prose-li:marker:text-primary prose-li:my-1.5"
             >
               <blockquote>
