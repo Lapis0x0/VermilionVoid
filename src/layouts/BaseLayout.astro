@@ -10,6 +10,7 @@ interface Props {
   ogTitle?: string
   ogDescription?: string
   ogUrl?: string
+  ogImage?: string
   twitterCard?: string
   twitterTitle?: string
   twitterDescription?: string
@@ -28,7 +29,8 @@ const {
   ogTitle,
   ogDescription,
   ogUrl,
-  twitterCard = "summary",
+  ogImage,
+  twitterCard,
   twitterTitle,
   twitterDescription,
   robots,
@@ -40,6 +42,15 @@ const canonicalUrl = canonical || Astro.url.toString()
 const resolvedOgTitle = ogTitle || title
 const resolvedOgDescription = ogDescription || description
 const resolvedOgUrl = ogUrl || canonicalUrl
+// 封面图：绝对 URL 原样用，站内路径（/ 开头）补全成绝对地址；./ 相对路径无法解析，忽略
+const resolvedOgImage = ogImage?.trim()
+  ? /^https?:\/\//i.test(ogImage.trim())
+    ? ogImage.trim()
+    : ogImage.trim().startsWith("/")
+      ? new URL(ogImage.trim(), Astro.site ?? Astro.url).toString()
+      : undefined
+  : undefined
+const resolvedTwitterCard = twitterCard || (resolvedOgImage ? "summary_large_image" : "summary")
 const resolvedTwitterTitle = twitterTitle || title
 const resolvedTwitterDescription = twitterDescription || description
 ---
@@ -59,9 +70,11 @@ const resolvedTwitterDescription = twitterDescription || description
     <meta property="og:url" content={resolvedOgUrl} />
     <meta property="og:site_name" content="时歌的博客" />
     <meta property="og:locale" content="zh_CN" />
-    <meta name="twitter:card" content={twitterCard} />
+    {resolvedOgImage ? <meta property="og:image" content={resolvedOgImage} /> : null}
+    <meta name="twitter:card" content={resolvedTwitterCard} />
     <meta name="twitter:title" content={resolvedTwitterTitle} />
     <meta name="twitter:description" content={resolvedTwitterDescription} />
+    {resolvedOgImage ? <meta name="twitter:image" content={resolvedOgImage} /> : null}
     <slot name="head" />
     <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

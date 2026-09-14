@@ -34,11 +34,12 @@ const buildMetaDescription = (primary: string, fallback: string, title: string, 
   const preferred = normalizeText(primary)
   const backup = normalizeText(fallback)
 
+  // 手写 description 优先；没有才用正文摘要，摘要太短再退回标题
   let result = preferred
-  if (!result || result.length < 60) {
+  if (!result) {
     result = backup
   }
-  if (!result || result.length < 60) {
+  if (!result || (!preferred && result.length < 60)) {
     result = encrypted ? `${title}｜此文章已加密，输入密码后阅读。` : title
   }
   return result.length > 160 ? result.slice(0, 160) : result
@@ -93,6 +94,7 @@ if (post.data.encrypted && post.data.password) {
   {title}
   {description}
   ogType="article"
+  ogImage={post.data.image}
   robots={post.data.encrypted ? "noindex, nofollow" : undefined}
 >
   <Fragment slot="head">
