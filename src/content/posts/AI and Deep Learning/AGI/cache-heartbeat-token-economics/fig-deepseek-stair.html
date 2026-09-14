@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>DeepSeek V4.1 Flash 的心跳阶梯</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    /* 页面令牌：对齐博客 src/styles/global.css（浅色模式） */
+    --bg:oklch(0.994 0.002 85);          /* --background 极淡暖白 */
+    --surface:oklch(0.998 0.002 85);     /* --card */
+    --border:oklch(0.92 0.003 85);       /* --border */
+    --ink:oklch(0.15 0 0);               /* --foreground */
+    --text2:oklch(0.36 0 0);             /* --content-secondary */
+    --muted:oklch(0.45 0 0);             /* --muted-foreground */
+    --axis:oklch(0.82 0.004 85);
+    --grid:oklch(0.945 0.003 85);
+    --row-hover:oklch(0.982 0.003 85);   /* --surface-subtle */
+    --font-sans:"Inter","Noto Sans SC","PingFang SC","Microsoft YaHei",system-ui,sans-serif;
+    /* 数据色（均已过 dataviz 六项校验）：
+       租约型 = 博客主色朱红 --primary（≈#D40924）及其深一级（≈#940015）
+       DeepSeek = 专属靛蓝（≈#4364DF）
+       仓储型 Gemini = 博客 admonition tip 青绿（≈#00A38A） */
+    --accent:oklch(0.55 0.22 25);
+    --accent-deep:oklch(0.42 0.17 25);
+    --ds:oklch(0.55 0.19 268);
+    --store:oklch(0.62 0.16 180);
+    /* 图 1 阶梯线用 Claude 自己的陶土色 */
+    --claude:#D97757;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{background:var(--bg)}
+  body{background:var(--bg);color:var(--ink);padding:56px 24px 96px;-webkit-font-smoothing:antialiased;font-family:var(--font-sans)}
+  .page{max-width:880px;margin:0 auto}
+  .pagehead{margin-bottom:32px;padding:0 4px}
+  .pagehead h1{font-size:20px;font-weight:600;letter-spacing:-.01em}
+  .pagehead p{font-size:12.5px;color:var(--muted);margin-top:8px;line-height:1.7;max-width:640px}
+
+  .fig{position:relative;background:var(--surface);border:1px solid var(--border);border-radius:14px;
+    padding:26px 30px 22px;margin:0 0 24px}
+  .fig-num{font-size:11px;font-weight:600;letter-spacing:.1em;color:var(--muted)}
+  .fig-title{font-size:16px;font-weight:600;line-height:1.5;margin-top:6px;letter-spacing:-.01em}
+  .fig-sub{font-size:13px;color:var(--text2);margin-top:5px;line-height:1.7}
+  .legend{display:flex;flex-wrap:wrap;gap:6px 22px;font-size:12px;color:var(--text2);margin:18px 0 6px}
+  .legend span{display:inline-flex;align-items:center;gap:7px;white-space:nowrap}
+  .legend i{display:inline-block;flex:none}
+  .k-line{width:18px;height:2px;border-radius:1px}
+  .k-hair{width:18px;height:1.5px}
+  .k-dot{width:10px;height:10px;border-radius:50%;box-shadow:0 0 0 2px #fff}
+  .k-ring{width:8px;height:8px;border-radius:50%;border:2px solid;background:#fff}
+  .k-bar{width:18px;height:6px;border-radius:3px}
+  svg{width:100%;display:block;overflow:visible}
+  svg text{font-family:var(--font-sans)}
+  .fig-src{font-size:11.5px;color:var(--muted);margin-top:16px;padding-top:12px;border-top:1px solid var(--grid);line-height:1.7}
+
+  .tip{position:absolute;left:0;top:0;pointer-events:none;background:oklch(0.22 0.01 25);color:#fff;font-size:12px;line-height:1.6;
+    padding:8px 11px;border-radius:8px;max-width:270px;opacity:0;transition:opacity .12s;z-index:2;
+    box-shadow:0 6px 18px rgba(28,27,26,.16)}
+  .tip.on{opacity:1}
+  .tip b{font-weight:600}
+  .tip .m{color:rgba(255,255,255,.66)}
+  .tip .ok{color:#8FD0A8}
+  .tip .no{color:#F2A58A}
+
+  .reveal{opacity:0;transition:opacity .6s ease}
+  .reveal.in{opacity:1}
+  @media (prefers-reduced-motion:reduce){.reveal{transition:none}}
+  @media (max-width:640px){.fig{padding:20px 18px 18px;border-radius:12px}}
+
+  /* 嵌入博客 <Sketch> iframe：外框由博客容器提供 */
+  body{padding:0;background:var(--surface)}
+  .page{max-width:none}
+  .fig{border:0;border-radius:0;margin:0}
+</style>
+</head>
+<body>
+<div class="page">
+  <!-- 图 2 · DeepSeek V4.1 Flash -->
+  <figure class="fig" id="figDS">
+    <div class="fig-num">图 2</div>
+    <div class="fig-title">DeepSeek V4.1 Flash：第 50 次心跳越线、近 12 天才不划算，但重建一次也只要 $0.15</div>
+    <div class="fig-sub">DeepSeek V4.1 Flash（deepseek-flash）· 500k tokens 上下文 · 高峰价：未命中 ¥2/M，命中 ¥0.04/M，按 1 美元 = 6.71 元换算 · 不收写入费</div>
+    <div class="legend">
+      <span><i class="k-line" style="background:var(--ds)"></i>心跳累计成本（每次 +$0.003）</span>
+      <span><i class="k-hair" style="background:var(--accent)"></i>放手：回来重建 $0.15</span>
+      <span><i class="k-dot" style="background:var(--ink)"></i>盈亏平衡点</span>
+    </div>
+    <svg id="mechDS" viewBox="0 0 880 300" preserveAspectRatio="xMidYMid meet" class="reveal"></svg>
+    <div class="fig-src">TTL 官方未公布，按 6 小时假设，心跳间隔 5.7 小时 · 心跳自身的输出 token 忽略不计</div>
+    <div class="tip"></div>
+  </figure>
+</div>
+
+<script>
+const css=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+const C={ink:css('--ink'),text2:css('--text2'),mut:css('--muted'),axis:css('--axis'),grid:css('--grid'),
+  accent:css('--accent'),deep:css('--accent-deep'),store:css('--store'),ds:css('--ds'),claude:css('--claude'),hover:css('--row-hover')};
+const NS='http://www.w3.org/2000/svg';
+const el=(p,t,a={})=>{const n=document.createElementNS(NS,t);for(const k in a)n.setAttribute(k,a[k]);p.appendChild(n);return n};
+const txt=(p,a,s)=>{const n=el(p,'text',a);n.textContent=s;return n};
+const HALO='paint-order:stroke;stroke:#fff;stroke-width:4px;stroke-linejoin:round';
+const money=v=>'$'+(v<.01?v.toFixed(4):v.toFixed(2));
+const fmtMin=m=>m<60?+m.toFixed(2)+' 分钟':m<1440?+(m/60).toFixed(1)+' 小时':+(m/1440).toFixed(1)+' 天';
+const fmtAx=t=>t<60?Math.round(t)+'m':t<1440?+(t/60).toFixed(1)+'h':+(t/1440).toFixed(1)+'d';
+
+// 工具提示：跟随鼠标，贴在 figure 内
+const tipOf=fig=>{
+  const t=fig.querySelector('.tip');
+  return {
+    show(ev,html){
+      t.innerHTML=html;t.classList.add('on');
+      const r=fig.getBoundingClientRect();
+      let x=ev.clientX-r.left+14,y=ev.clientY-r.top+16;
+      const w=t.offsetWidth,h=t.offsetHeight;
+      if(x+w>r.width-8)x=ev.clientX-r.left-w-14;
+      if(y+h>r.height-8)y=ev.clientY-r.top-h-12;
+      t.style.transform=`translate(${x}px,${y}px)`;
+    },
+    hide(){t.classList.remove('on')}
+  };
+};
+const svgPt=(s,ev)=>{const p=s.createSVGPoint();p.x=ev.clientX;p.y=ev.clientY;return p.matrixTransform(s.getScreenCTM().inverse())};
+const reveal=(id,fn)=>{
+  const n=document.getElementById(id);if(!n)return;fn(n);
+  const io=new IntersectionObserver(es=>{if(es[0].isIntersecting){n.classList.add('in');io.disconnect()}},{threshold:.15});
+  io.observe(n);
+};
+
+// ════ 图 1 / 图 2 · 心跳阶梯 vs 重建成本 ════
+// 横轴 = 已发出的心跳次数；阶梯 = 心跳累计成本；水平细线 = 放手后回来重建的成本；圆点 = 阶梯越过细线的那一步。
+(()=>{
+function drawStair(s,o){
+  const {X0=56,X1=836,top=26,base=240,kmax,kstep,cmax,yt,fy,hit,tiers,line=C.ink}=o;
+  const x=k=>X0+k/kmax*(X1-X0),y=c=>base-c/cmax*(base-top),cum=k=>hit*(k+1);
+  tiers.forEach(T=>{const n=Math.round((T.write-hit)/hit*1e6)/1e6;T.kx=Math.floor(n)+1});
+  const kxs=new Set(tiers.map(T=>T.kx));
+
+  // 网格 / 坐标轴
+  yt.forEach(c=>{
+    if(c)el(s,'line',{x1:X0,y1:y(c),x2:X1,y2:y(c),stroke:C.grid,'stroke-width':1});
+    txt(s,{x:X0-10,y:y(c)+4,'font-size':12,fill:C.mut,'text-anchor':'end'},fy(c));
+  });
+  el(s,'line',{x1:X0,y1:base,x2:X1,y2:base,stroke:C.axis,'stroke-width':1});
+  for(let k=0;k<=kmax;k+=kstep){
+    if(kxs.has(k))continue;
+    txt(s,{x:x(k),y:base+20,'font-size':12,fill:C.mut,'text-anchor':'middle'},k);
+  }
+  txt(s,{x:(X0+X1)/2,y:base+44,'font-size':12.5,fill:C.text2,'text-anchor':'middle'},'已发出的心跳次数');
+
+  // 重建成本参考线（实线、细、右端直接标注）
+  tiers.forEach(T=>{
+    el(s,'line',{x1:X0,y1:y(T.write),x2:X1,y2:y(T.write),stroke:T.col,'stroke-width':1.5});
+    txt(s,{x:X0+2,y:y(T.write)-7,'font-size':12,fill:C.text2,style:HALO},T.ref);
+  });
+
+  // 阶梯
+  let d=`M${x(0)} ${y(cum(0))}`;
+  for(let k=1;k<=kmax;k++)d+=` H${x(k)} V${y(cum(k))}`;
+  el(s,'path',{d,fill:'none',stroke:line,'stroke-width':2,'stroke-linejoin':'round','stroke-linecap':'round'});
+
+  // 盈亏平衡点：下垂线 + 加粗刻度 + 圆点 + 标注
+  tiers.forEach(T=>{
+    const px=x(T.kx),py=y(T.write);   // 第 kx 次心跳的竖边穿过参考线的位置
+    el(s,'line',{x1:px,y1:py,x2:px,y2:base,stroke:T.col,'stroke-width':1,'stroke-opacity':.55});
+    txt(s,{x:px,y:base+20,'font-size':12,'font-weight':600,fill:C.ink,'text-anchor':'middle'},T.kx);
+    el(s,'circle',{cx:px,cy:py,r:5,fill:T.col,stroke:'#fff','stroke-width':2});
+    txt(s,{x:px-11,y:py-9,'font-size':12.5,'font-weight':600,fill:C.ink,'text-anchor':'end',style:HALO},T.label);
+  });
+
+  // 悬停：十字线 + 提示
+  const tip=tipOf(s.closest('.fig'));
+  const g=el(s,'g',{opacity:0});
+  const vl=el(g,'line',{y1:top,y2:base,stroke:C.axis,'stroke-width':1});
+  const hd=el(g,'circle',{r:4.5,fill:'#fff',stroke:line,'stroke-width':2});
+  const hot=el(s,'rect',{x:X0,y:top-10,width:X1-X0,height:base-top+22,fill:'transparent'});
+  hot.addEventListener('mousemove',ev=>{
+    const p=svgPt(s,ev);
+    const k=Math.max(0,Math.min(kmax,Math.round((p.x-X0)/(X1-X0)*kmax)));
+    const cx=x(k),cy=y(cum(k));
+    vl.setAttribute('x1',cx);vl.setAttribute('x2',cx);hd.setAttribute('cx',cx);hd.setAttribute('cy',cy);
+    g.setAttribute('opacity',1);
+    let h=`<b>已发出 ${k} 次心跳</b> · 累计 ${money(cum(k))}`;
+    tiers.forEach(T=>{
+      const ok=cum(k)<T.write;
+      h+=`<br><span class="m">${T.name}</span> 已续命 ${fmtMin(k*T.iv)} · 重建 ${money(T.write)} · <span class="${ok?'ok':'no'}">${ok?'继续心跳更划算':'该放手了'}</span>`;
+    });
+    tip.show(ev,h);
+  });
+  hot.addEventListener('mouseleave',()=>{g.setAttribute('opacity',0);tip.hide()});
+}
+
+reveal('mechClaude',s=>drawStair(s,{
+  kmax:24,kstep:4,cmax:6.6,yt:[0,2,4,6],fy:c=>'$'+c,hit:.25,line:C.claude,
+  tiers:[
+    {name:'5 分钟档',write:3.125,iv:4.75,col:C.accent,ref:'5 分钟档 · 回来重建 $3.13',label:'第 12 次心跳越线 · 约 57 分钟'},
+    {name:'1 小时档',write:5,iv:57,col:C.accent,ref:'1 小时档 · 回来重建 $5.00',label:'第 20 次心跳越线 · 约 19 小时'},
+  ]}));
+
+reveal('mechDS',s=>drawStair(s,{
+  kmax:60,kstep:10,cmax:.205,yt:[0,.05,.1,.15,.2],fy:c=>'$'+c.toFixed(2),hit:.02/6.71,line:C.ds,
+  tiers:[
+    {name:'放手重建',write:1/6.71,iv:342,col:C.accent,ref:'放手 · 回来重建 $0.15',label:'第 50 次心跳越线 · 约 11.9 天'},
+  ]}));
+})();
+
+// ════ 图 3 · 盈亏平衡刻度尺 ════
+(()=>{
+const GROUPS=[
+  {title:'仓储型 · 按时长付仓租',rows:[
+    {name:'Gemini 3.8 Flash',tag:'显式',note:'仓租 $0.5/M·h · 命中 0.1×',kind:'store',tstar:81,miss:'$0.14'}]},
+  {title:'租约型 · 命中即续期',rows:[
+    {name:'Grok 4.6',note:'命中 0.25× · TTL 5m（假设）',ttl:5,w:1,h:.25,miss:'$0.30'},
+    {name:'MiniMax-M3',note:'命中 0.2× · TTL 5m（假设）',ttl:5,w:1,h:.2,miss:'$0.048'},
+    {name:'Claude Opus 5',tag:'5m',note:'写入 1.25× · 命中 0.1× · TTL 5m',ttl:5,w:1.25,h:.1,miss:'$1.15'},
+    {name:'Qwen3.8-max',tag:'显式',note:'写入 1.25× · 命中 0.083× · TTL 5m',ttl:5,w:1.25,h:1/12,miss:'$0.42'},
+    {name:'GLM-5.2',note:'命中 0.25× · TTL 30m（假设）',ttl:30,w:1,h:.25,miss:'$0.18'},
+    {name:'Kimi K3',note:'命中 0.1× · TTL 30m（假设）',ttl:30,w:1,h:.1,miss:'$0.54'},
+    {name:'GPT-5.6 Sol',note:'写入 1.25× · 命中 0.1× · TTL 30m',ttl:30,w:1.25,h:.1,miss:'$0.92'},
+    {name:'Claude Opus 5',tag:'1h',note:'写入 2× · 命中 0.1× · TTL 1h',ttl:60,w:2,h:.1,miss:'$1.90'},
+    {name:'DeepSeek V4 Pro',note:'命中 0.033× · TTL 6h（假设）',ttl:360,w:1,h:1/30,ds:true,miss:'$0.26'},
+    {name:'DeepSeek V4.1 Flash',note:'命中 0.02× · TTL 6h（假设）',ttl:360,w:1,h:.02,ds:true,miss:'$0.058'}]},
+];
+const HB=0.95;  // 心跳间隔 = TTL × 95%
+reveal('ruler',s=>{
+  const W=880,X0=238,X1=812,TMIN=3,TMAX=30000,RH=48,GH=34;
+  const x=t=>X0+Math.log(t/TMIN)/Math.log(TMAX/TMIN)*(X1-X0);
+  const items=[];let y=8;
+  GROUPS.forEach((g,gi)=>{if(gi)y+=14;items.push({head:g.title,y});y+=GH;
+    g.rows.forEach(r=>{items.push({r,y});y+=RH})});
+  const TOP=0,BOT=y+6;
+  const tip=tipOf(s.closest('.fig'));
+
+  // 网格与坐标轴
+  [[5,'5m'],[15,'15m'],[60,'1h'],[240,'4h'],[1440,'1d'],[10080,'7d'],[20160,'14d']].forEach(([t,l])=>{
+    el(s,'line',{x1:x(t),y1:TOP,x2:x(t),y2:BOT,stroke:C.grid,'stroke-width':1});
+    txt(s,{x:x(t),y:BOT+20,'font-size':12,fill:C.mut,'text-anchor':'middle'},l);
+  });
+  el(s,'line',{x1:X0,y1:BOT,x2:X1,y2:BOT,stroke:C.axis,'stroke-width':1});
+  txt(s,{x:(X0+X1)/2,y:BOT+46,'font-size':12.5,fill:C.text2,'text-anchor':'middle'},'用户离开的时长（对数轴）');
+
+  items.forEach(it=>{
+    if(it.head){
+      txt(s,{x:0,y:it.y+18,'font-size':11.5,'font-weight':600,fill:C.mut,'letter-spacing':'.04em'},it.head);
+      return;
+    }
+    const r=it.r,ry=it.y,ly=ry+RH/2,store=r.kind==='store',col=store?C.store:r.ds?C.ds:C.accent;
+    const bg=el(s,'rect',{x:-12,y:ry+2,width:W+24,height:RH-4,rx:8,fill:C.hover,opacity:0});
+
+    // 左栏：名称 + 说明
+    txt(s,{x:0,y:ly-3,'font-size':13.5,'font-weight':600,fill:C.ink},r.name+(r.tag?' · '+r.tag:''));
+    txt(s,{x:0,y:ly+13,'font-size':11.5,fill:C.mut},r.note);
+
+    // 区间条
+    let tstar,n,x0;
+    if(store){tstar=r.tstar;x0=X0}
+    else{n=Math.floor(Math.round((r.w-r.h)/r.h*1000)/1000);tstar=r.ttl*HB*(n+1);x0=x(r.ttl)}
+    const x1=x(tstar);
+    el(s,'rect',{x:x0,y:ly-3,width:Math.max(0,x1-x0),height:6,rx:3,fill:col,opacity:.3});
+    if(!store){
+      el(s,'circle',{cx:x0,cy:ly,r:4,fill:'#fff',stroke:col,'stroke-width':2});
+    }
+    el(s,'circle',{cx:x1,cy:ly,r:5,fill:col,stroke:'#fff','stroke-width':2});
+
+    // 右侧标注：平衡时长（加粗）+ 心跳次数（次要）
+    txt(s,{x:x1+12,y:ly-1,'font-size':13,'font-weight':600,fill:C.ink,style:HALO},fmtAx(tstar));
+    txt(s,{x:x1+12,y:ly+14,'font-size':11,fill:C.mut,style:HALO},store?'不需要心跳':`第 ${n+1} 次心跳越线`);
+
+    // 悬停
+    const hot=el(s,'rect',{x:-12,y:ry,width:W+24,height:RH,fill:'transparent'});
+    const title=r.name+(r.tag?' · '+r.tag:'');
+    const body=store
+      ?`按时长付仓租，不需要心跳<br>保活 <b>${fmtMin(tstar)}</b> 后，仓租超过重建成本`
+      :`TTL ${fmtMin(r.ttl)} · 每 ${fmtMin(r.ttl*HB)} 心跳一次<br>第 <b>${n+1} 次</b>心跳越线 · 平衡点 <b>${fmtMin(tstar)}</b>`;
+    hot.addEventListener('mousemove',ev=>{bg.setAttribute('opacity',1);
+      tip.show(ev,`<b>${title}</b><br>${body}<br><span class="m">离开更久就放手，回来重建 ${r.miss}</span>`)});
+    hot.addEventListener('mouseleave',()=>{bg.setAttribute('opacity',0);tip.hide()});
+  });
+  s.setAttribute('viewBox',`0 0 ${W} ${BOT+58}`);
+});
+})();
+</script>
+</body>
+</html>
