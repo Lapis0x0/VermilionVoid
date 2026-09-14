@@ -5,7 +5,7 @@ description: "一、耐心资本与长期主义 不谋全局者，不足谋一�
 image: ""
 tags: ["Weekly通讯"]
 category: 浅度报告
-draft: false
+draft: true
 ---
 # 一、耐心资本与长期主义
 

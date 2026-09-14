@@ -6,7 +6,7 @@ tags: ["测试"]
 category: "核心页面"
 encrypted: true
 password: "123456"
-draft: false
+draft: true
 ---
 
 # 这是一篇加密文章

@@ -5,7 +5,7 @@ description: "一、不要随意的做出预言和定论 很多营销号和所�
 image: ""
 tags: ["Weekly通讯"]
 category: 浅度报告
-draft: false
+draft: true
 ---
 
 # 一、不要随意的做出预言和定论

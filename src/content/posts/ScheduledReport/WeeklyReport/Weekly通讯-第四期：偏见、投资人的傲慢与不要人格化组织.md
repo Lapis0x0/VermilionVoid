@@ -5,7 +5,7 @@ description: "一、大模型的偏见—人类互联网的偏见 大模型的�
 image: ""
 tags: ["Weekly通讯"]
 category: 浅度报告
-draft: false
+draft: true
 ---
 
 # 一、大模型的偏见—人类互联网的偏见

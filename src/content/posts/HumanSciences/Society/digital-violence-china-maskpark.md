@@ -5,7 +5,7 @@ description: "哪怕光芒微弱，也比假装黑暗不存在强得多"
 image: ""
 tags: ["亚文化研究"]
 category: 人类研究
-draft: false
+draft: true
 disclaimer: ["暴论"]
 ---
 
