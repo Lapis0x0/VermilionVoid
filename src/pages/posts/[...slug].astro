@@ -94,6 +94,8 @@ if (post.data.encrypted && post.data.password) {
   {title}
   {description}
   ogType="article"
+  ogTitle={post.data.title}
+  twitterTitle={post.data.title}
   ogImage={post.data.image}
   robots={post.data.encrypted ? "noindex, nofollow" : undefined}
 >
