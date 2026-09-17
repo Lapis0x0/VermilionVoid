@@ -32,7 +32,8 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          git add -A src/content/thoughts public/thoughts
+          # public/thoughts 在没有图片时不存在，直接 add 会报 pathspec 错误，所以 add 整个 public
+          git add -A src/content/thoughts public
           if git diff --staged --quiet; then
             echo "No changes to commit."
             exit 0
