@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react"
 import { cn } from "@/lib/utils"
+import { articleProseClass } from "@/lib/article-prose"
 
 export type ThoughtMeta = {
   slug: string
@@ -178,7 +179,7 @@ function QuietMode({
         <div className="flex justify-center mb-10 sm:hidden">
           <ModeSwitch mode="quiet" onChange={onSwitchMode} />
         </div>
-        <div className="text-center mb-10">
+        <div className="text-center mb-11">
           <div
             className="font-serif italic text-[11px] text-muted-foreground uppercase"
             style={{ letterSpacing: 5 }}
@@ -211,42 +212,30 @@ function QuietMode({
           </div>
         </div>
 
-        {t.title ? (
+        {t.title && (
           <h1
             className="font-serif font-bold text-center text-foreground"
             style={{
               fontSize: "clamp(32px, 6vw, 52px)",
               fontWeight: 500,
-              margin: "0 0 60px",
+              margin: "0 0 44px",
               letterSpacing: 4,
               lineHeight: 1.3,
             }}
           >
             {t.title}
           </h1>
-        ) : (
-          <div
-            className="text-center font-serif italic text-muted-foreground"
-            style={{ fontSize: 20, marginBottom: 60, letterSpacing: 2 }}
-          >
-            — 无题 —
-          </div>
         )}
 
         <div
-          className="font-serif text-foreground thoughts-quiet-body"
-          style={{
-            fontSize: 18,
-            lineHeight: 2.0,
-            textAlign: "left",
-          }}
+          className={cn(articleProseClass, "max-w-none text-left thoughts-body")}
           dangerouslySetInnerHTML={{ __html: t.content }}
         />
 
         {t.tags.length > 0 && (
           <div
             className="flex items-center justify-center gap-6 font-mono text-[12px] text-muted-foreground"
-            style={{ marginTop: 80, letterSpacing: 1 }}
+            style={{ marginTop: 44, letterSpacing: 1 }}
           >
             <span className="inline-block h-px w-10 bg-border" />
             <span>{t.tags.map((tag) => "#" + tag).join("  ·  ")}</span>
@@ -304,7 +293,7 @@ function TimelineMode({
         <div className="mb-8 flex justify-center sm:hidden">
           <ModeSwitch mode="timeline" onChange={onSwitchMode} />
         </div>
-        <div className="mb-3.5">
+        <div className="mb-8">
           <div
             className="font-mono text-[11px] uppercase text-muted-foreground mb-2.5"
             style={{ letterSpacing: 3 }}
@@ -318,10 +307,6 @@ function TimelineMode({
             </div>
           </div>
         </div>
-        <div className="mb-8 font-serif text-base leading-relaxed text-muted-foreground">
-          那些没有长成一篇文章的碎念。短的一两行，长的几段话。按时间倒序排列，共 {thoughts.length} 则。
-        </div>
-
         <div className="mb-10 flex flex-wrap gap-1.5 border-b border-border pb-5">
           {["全部", ...allTags].map((tag) => {
             const on = activeTag === tag
@@ -390,7 +375,7 @@ function TimelineMode({
                         </div>
                       )}
                       <div
-                        className="font-serif text-base leading-[1.9] text-foreground thoughts-timeline-body"
+                        className={cn(articleProseClass, "max-w-none thoughts-body")}
                         dangerouslySetInnerHTML={{ __html: t.content }}
                       />
                     </div>

@@ -12,7 +12,7 @@ const allThoughts = await getSortedThoughts()
 const thoughtsWithContent = allThoughts.map((thought) => toThoughtMeta(thought))
 ---
 
-<BaseLayout {title} {description} fontProfile="interface">
+<BaseLayout {title} {description}>
   <div class="min-h-screen bg-background dark:bg-surface-subtle">
     <SiteHeader />
     <main class="pt-20">

@@ -7,7 +7,8 @@ const md = new MarkdownIt()
 
 const formatDate = (date?: Date) => {
   if (!date) return ""
-  return date.toISOString().slice(0, 10)
+  // 按北京时间取日期：flomo 同步的偶得带具体时刻，UTC 截取会把凌晨的条目算到前一天
+  return date.toLocaleDateString("sv-SE", { timeZone: "Asia/Shanghai" })
 }
 
 const stripHtml = (html: string) => {

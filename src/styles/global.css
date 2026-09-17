@@ -731,57 +731,18 @@ a.card-github:hover .github-logo {
   color: var(--muted-foreground);
 }
 
-.thoughts-quiet-body > :first-child { margin-top: 0; }
-.thoughts-quiet-body p { margin: 0; }
-.thoughts-quiet-body p + p { margin-top: 28px; }
-.thoughts-quiet-body hr {
-  border: 0;
-  border-top: 1px solid var(--border);
-  margin: 48px 0;
-  width: 100%;
+/* 偶得正文沿用文章 prose 排版，只去掉首尾外边距，贴合卡片 */
+.thoughts-body > :first-child { margin-top: 0; }
+.thoughts-body > :last-child { margin-bottom: 0; }
+/* 截图多为竖长图，限高避免一张图占满一屏；点击图片打开原图 */
+.thoughts-body img {
+  display: block;
+  width: auto;
+  max-width: min(100%, 360px);
+  max-height: 480px;
+  object-fit: contain;
+  margin: 0;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  cursor: zoom-in;
 }
-.thoughts-quiet-body blockquote {
-  margin: 28px 0;
-  padding: 4px 0 4px 20px;
-  border-left: 3px solid var(--border);
-  color: var(--muted-foreground);
-}
-.thoughts-quiet-body blockquote > :first-child { margin-top: 0; }
-.thoughts-quiet-body blockquote > :last-child { margin-bottom: 0; }
-.thoughts-quiet-body ul,
-.thoughts-quiet-body ol {
-  margin: 28px 0;
-  padding-left: 1.6em;
-}
-.thoughts-quiet-body ul { list-style: disc; }
-.thoughts-quiet-body ol { list-style: decimal; }
-.thoughts-quiet-body li + li { margin-top: 6px; }
-.thoughts-quiet-body li > ul,
-.thoughts-quiet-body li > ol { margin: 6px 0; }
-
-.thoughts-timeline-body > :first-child { margin-top: 0; }
-.thoughts-timeline-body p { margin: 0; }
-.thoughts-timeline-body p + p { margin-top: 10px; }
-.thoughts-timeline-body hr {
-  border: 0;
-  border-top: 1px solid var(--border);
-  margin: 24px 0;
-}
-.thoughts-timeline-body blockquote {
-  margin: 12px 0;
-  padding: 2px 0 2px 14px;
-  border-left: 2px solid var(--border);
-  color: var(--muted-foreground);
-}
-.thoughts-timeline-body blockquote > :first-child { margin-top: 0; }
-.thoughts-timeline-body blockquote > :last-child { margin-bottom: 0; }
-.thoughts-timeline-body ul,
-.thoughts-timeline-body ol {
-  margin: 12px 0;
-  padding-left: 1.5em;
-}
-.thoughts-timeline-body ul { list-style: disc; }
-.thoughts-timeline-body ol { list-style: decimal; }
-.thoughts-timeline-body li + li { margin-top: 4px; }
-.thoughts-timeline-body li > ul,
-.thoughts-timeline-body li > ol { margin: 4px 0; }

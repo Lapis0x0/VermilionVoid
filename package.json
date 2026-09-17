@@ -8,8 +8,7 @@
     "build": "astro build && pagefind --site dist",
     "preview": "astro preview",
     "check": "astro check",
-    "sync-thoughts": "node scripts/sync-thoughts.mjs",
-    "migrate-thoughts": "node scripts/migrate-thoughts.mjs",
+    "sync-flomo": "node scripts/sync-flomo.mjs",
     "sync-studies": "node scripts/sync-studies.mjs"
   },
   "dependencies": {
