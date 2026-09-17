@@ -1,0 +1,46 @@
+name: Sync 偶得 from flomo
+
+on:
+  schedule:
+    - cron: '17 * * * *'  # 每小时一次；GitHub 的定时任务可能延迟几分钟到几十分钟
+  workflow_dispatch:
+
+concurrency:
+  group: sync-flomo
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # sync-flomo.mjs 只用 Node 内置模块，不需要安装依赖
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Sync thoughts from flomo
+        env:
+          FLOMO_TOKEN: ${{ secrets.FLOMO_TOKEN }}
+        run: node scripts/sync-flomo.mjs
+
+      - name: Commit and push if changed
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add -A src/content/thoughts public/thoughts
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore: 同步 flomo 偶得"
+          # 与其他同步 workflow 同时推送时，rebase 后重试
+          for i in 1 2 3; do
+            git pull --rebase origin main && git push && exit 0
+            sleep 5
+          done
+          exit 1
