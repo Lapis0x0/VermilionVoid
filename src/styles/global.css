@@ -734,7 +734,7 @@ a.card-github:hover .github-logo {
 /* 偶得正文沿用文章 prose 排版，只去掉首尾外边距，贴合卡片 */
 .thoughts-body > :first-child { margin-top: 0; }
 .thoughts-body > :last-child { margin-bottom: 0; }
-/* 截图多为竖长图，限高避免一张图占满一屏；点击图片打开原图 */
+/* 截图多为竖长图，限高避免一张图占满一屏；点击图片在页内预览（见 thoughts-view 的 ImageLightbox） */
 .thoughts-body img {
   display: block;
   width: auto;
@@ -745,4 +745,11 @@ a.card-github:hover .github-logo {
   border: 1px solid var(--border);
   border-radius: 8px;
   cursor: zoom-in;
+}
+/* 专注视图：正文框收缩到内容宽度后整体居中，文字仍左对齐。
+   不满一行的短句、纯图片自然居中；超过一行时框撑满，表现和普通正文一致 */
+.thoughts-quiet-body {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
 }

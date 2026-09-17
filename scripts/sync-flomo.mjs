@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 // Sync 偶得 from flomo into src/content/thoughts/.
 //
-// Source of truth: flomo memos tagged `#blog` (or a child tag like `#blog/AI`).
+// Source of truth: flomo memos tagged `#偶得` (or a child tag like `#偶得/AI`).
 // Reads flomo Web's own (undocumented) API: GET /api/v1/memo/updated/ with an MD5 signature.
 // Every run fetches all memos and rebuilds the directory, so there is no local state:
 // untagging or deleting a memo removes its file on the next run.
 //
 // Env:
 //   FLOMO_TOKEN  the Bearer token from flomo Web (copy from any api/v1 request header)
-//   FLOMO_TAG    publish tag, default `blog`
+//   FLOMO_TAG    publish tag, default `偶得`
 // Flags:
 //   --preview N  ignore the tag and render the latest N memos (local preview only, never commit)
 
@@ -24,7 +24,7 @@ const IMAGES_DIR = path.join(REPO_ROOT, "public", "thoughts")
 const IMAGES_URL = "/thoughts"
 
 const TOKEN = (process.env.FLOMO_TOKEN || "").replace(/^Bearer\s+/i, "").trim()
-const TAG = (process.env.FLOMO_TAG || "blog").replace(/^#/, "")
+const TAG = (process.env.FLOMO_TAG || "偶得").replace(/^#/, "")
 const previewIdx = process.argv.indexOf("--preview")
 const PREVIEW = previewIdx === -1 ? 0 : Number(process.argv[previewIdx + 1] || 20)
 
@@ -201,7 +201,7 @@ function htmlToMarkdown(html) {
 const isPublishTag = (t) => t === TAG || t.startsWith(`${TAG}/`)
 
 function stripTags(html, tags) {
-  // Longest first so `#blog/AI` is removed before `#blog`.
+  // Longest first so `#偶得/AI` is removed before `#偶得`.
   let out = html
   for (const t of [...tags].sort((a, b) => b.length - a.length)) {
     const escaped = t.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")
@@ -238,7 +238,7 @@ function memoToFile(memo) {
   const title = heading?.[1].trim()
   if (heading) body = body.slice(heading[0].length)
   if (imageNames.length) {
-    body += `\n\n${imageNames.map((n) => `[![](${IMAGES_URL}/${n})](${IMAGES_URL}/${n})`).join("\n\n")}`
+    body += `\n\n${imageNames.map((n) => `![](${IMAGES_URL}/${n})`).join("\n\n")}`
   }
 
   const frontmatter = [

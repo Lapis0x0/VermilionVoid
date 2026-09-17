@@ -21,6 +21,60 @@ function stripHtmlToPreview(html: string, max = 10) {
   return text.length > max ? text.slice(0, max) + "…" : text
 }
 
+const LIGHTBOX_ATTR = "data-thoughts-lightbox"
+const isLightboxOpen = () => document.documentElement.hasAttribute(LIGHTBOX_ATTR)
+
+// 点击正文图片时在当前页放大预览，点任意处或按 Esc 退出。
+function ImageLightbox() {
+  const [src, setSrc] = useState<string | null>(null)
+
+  useEffect(() => {
+    const onClick = (e: MouseEvent) => {
+      if (e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey) return
+      const img = (e.target as HTMLElement | null)?.closest?.(".thoughts-body img")
+      if (!(img instanceof HTMLImageElement)) return
+      e.preventDefault()
+      setSrc(img.currentSrc || img.src)
+    }
+    document.addEventListener("click", onClick)
+    return () => document.removeEventListener("click", onClick)
+  }, [])
+
+  useEffect(() => {
+    if (!src) return
+    const root = document.documentElement
+    const prevOverflow = root.style.overflow
+    root.setAttribute(LIGHTBOX_ATTR, "")
+    root.style.overflow = "hidden"
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSrc(null)
+    }
+    window.addEventListener("keydown", onKey)
+    return () => {
+      root.removeAttribute(LIGHTBOX_ATTR)
+      root.style.overflow = prevOverflow
+      window.removeEventListener("keydown", onKey)
+    }
+  }, [src])
+
+  if (!src) return null
+  return (
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="图片预览"
+      className="thoughts-cross-fade fixed inset-0 z-[100] flex cursor-zoom-out items-center justify-center bg-black/85 p-4 backdrop-blur-sm sm:p-8"
+      onClick={() => setSrc(null)}
+    >
+      <img
+        src={src}
+        alt=""
+        className="thoughts-fade-up max-h-full max-w-full rounded-lg object-contain shadow-2xl"
+      />
+    </div>
+  )
+}
+
 function ModeSwitch({ mode, onChange }: { mode: Mode; onChange: (m: Mode) => void }) {
   const btn = (key: Mode, label: string, icon: React.ReactNode) => {
     const on = mode === key
@@ -87,6 +141,7 @@ function QuietMode({
   useEffect(() => {
     const len = thoughts.length
     const onKey = (e: KeyboardEvent) => {
+      if (isLightboxOpen()) return
       if (e.target instanceof HTMLElement) {
         const tag = e.target.tagName
         if (tag === "INPUT" || tag === "TEXTAREA" || e.target.isContentEditable) return
@@ -109,6 +164,7 @@ function QuietMode({
     const onTouchEnd = (e: TouchEvent) => {
       if (!tracking) return
       tracking = false
+      if (isLightboxOpen()) return
       const t = e.changedTouches[0]
       const dx = t.clientX - startX
       const dy = t.clientY - startY
@@ -228,7 +284,7 @@ function QuietMode({
         )}
 
         <div
-          className={cn(articleProseClass, "max-w-none text-left thoughts-body")}
+          className={cn(articleProseClass, "text-left thoughts-body thoughts-quiet-body")}
           dangerouslySetInnerHTML={{ __html: t.content }}
         />
 
@@ -487,7 +543,7 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
     )
   }
 
-  return mode === "quiet" ? (
+  const view = mode === "quiet" ? (
     <QuietMode
       thoughts={thoughts}
       idx={Math.min(idx, total - 1)}
@@ -501,5 +557,12 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
       onTagChange={handleTagChange}
       onSwitchMode={handleSwitchMode}
     />
+  )
+
+  return (
+    <>
+      {view}
+      <ImageLightbox />
+    </>
   )
 }
