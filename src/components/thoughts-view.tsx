@@ -229,8 +229,10 @@ function QuietMode({
       {/* content */}
       <article
         key={t.slug}
-        className="thoughts-fade-up mx-auto"
-        style={{ maxWidth: 640, padding: "56px 24px 80px" }}
+        className="thoughts-fade-up mx-auto flex flex-col"
+        // 至少占满首屏（减去 5rem 的顶栏）：编号/日期贴上方，翻页提示贴下方，正文在中间上下居中；
+        // 正文长过一屏时中间区域自然撑开，退化为普通的从上往下排
+        style={{ maxWidth: 640, padding: "56px 24px 80px", minHeight: "calc(100svh - 5rem)" }}
       >
         <div className="flex justify-center mb-10 sm:hidden">
           <ModeSwitch mode="quiet" onChange={onSwitchMode} />
@@ -268,36 +270,41 @@ function QuietMode({
           </div>
         </div>
 
-        {t.title && (
-          <h1
-            className="font-serif font-bold text-center text-foreground"
-            style={{
-              fontSize: "clamp(32px, 6vw, 52px)",
-              fontWeight: 500,
-              margin: "0 0 44px",
-              letterSpacing: 4,
-              lineHeight: 1.3,
-            }}
-          >
-            {t.title}
-          </h1>
-        )}
+        {/* 上下留白按 2:3 分配而不是 1:1：视觉中心在几何中心略偏上，且顶部信息比底部翻页提示厚 */}
+        <div className="flex flex-1 flex-col">
+          <div className="flex-[2]" />
+          {t.title && (
+            <h1
+              className="font-serif font-bold text-center text-foreground"
+              style={{
+                fontSize: "clamp(32px, 6vw, 52px)",
+                fontWeight: 500,
+                margin: "0 0 44px",
+                letterSpacing: 4,
+                lineHeight: 1.3,
+              }}
+            >
+              {t.title}
+            </h1>
+          )}
 
-        <div
-          className={cn(articleProseClass, "text-left thoughts-body thoughts-quiet-body")}
-          dangerouslySetInnerHTML={{ __html: t.content }}
-        />
-
-        {t.tags.length > 0 && (
           <div
-            className="flex items-center justify-center gap-6 font-mono text-[12px] text-muted-foreground"
-            style={{ marginTop: 44, letterSpacing: 1 }}
-          >
-            <span className="inline-block h-px w-10 bg-border" />
-            <span>{t.tags.map((tag) => "#" + tag).join("  ·  ")}</span>
-            <span className="inline-block h-px w-10 bg-border" />
-          </div>
-        )}
+            className={cn(articleProseClass, "text-left thoughts-body thoughts-quiet-body")}
+            dangerouslySetInnerHTML={{ __html: t.content }}
+          />
+
+          {t.tags.length > 0 && (
+            <div
+              className="flex items-center justify-center gap-6 font-mono text-[12px] text-muted-foreground"
+              style={{ marginTop: 44, letterSpacing: 1 }}
+            >
+              <span className="inline-block h-px w-10 bg-border" />
+              <span>{t.tags.map((tag) => "#" + tag).join("  ·  ")}</span>
+              <span className="inline-block h-px w-10 bg-border" />
+            </div>
+          )}
+          <div className="flex-[3]" />
+        </div>
 
         <div
           className="mt-11 text-center font-mono text-[11px] text-muted-foreground"

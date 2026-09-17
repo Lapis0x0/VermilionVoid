@@ -15,7 +15,8 @@ const thoughtsWithContent = allThoughts.map((thought) => toThoughtMeta(thought))
 <BaseLayout {title} {description}>
   <div class="min-h-screen bg-background dark:bg-surface-subtle">
     <SiteHeader />
-    <main class="pt-20">
+    <!-- 至少占满一屏：偶得很短时页脚不会被顶到正文下方 -->
+    <main class="pt-20 min-h-svh">
       <section id="thoughts-main" class="scroll-mt-24">
         <ThoughtsView client:idle thoughts={thoughtsWithContent} />
       </section>
