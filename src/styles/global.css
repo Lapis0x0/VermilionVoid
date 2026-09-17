@@ -748,6 +748,15 @@ a.card-github:hover .github-logo {
 }
 /* 专注视图：正文框收缩到内容宽度后整体居中，文字仍左对齐。
    不满一行的短句、纯图片自然居中；超过一行时框撑满，表现和普通正文一致 */
+/* 专注视图字号随窗口宽度连续放大：≤1280px 时与文章正文一致（16.5px），约 2380px 起封顶 22px。
+   正文栏宽度按同一比例放宽（16.5px 时内容区 592px），每行字数不变；所有偶得同屏同字号 */
+.thoughts-quiet {
+  --thought-fs: clamp(16.5px, 0.5vw + 10.1px, 22px);
+  max-width: calc(var(--thought-fs) * 592 / 16.5 + 48px);
+}
+.thoughts-quiet-body :is(p, ul, ol, li, blockquote) {
+  font-size: var(--thought-fs);
+}
 .thoughts-quiet-body {
   width: fit-content;
   max-width: 100%;

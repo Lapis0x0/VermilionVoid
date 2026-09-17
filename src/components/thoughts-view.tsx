@@ -229,10 +229,10 @@ function QuietMode({
       {/* content */}
       <article
         key={t.slug}
-        className="thoughts-fade-up mx-auto flex flex-col"
+        className="thoughts-fade-up thoughts-quiet mx-auto flex flex-col"
         // 至少占满首屏（减去 5rem 的顶栏）：编号/日期贴上方，翻页提示贴下方，正文在中间上下居中；
         // 正文长过一屏时中间区域自然撑开，退化为普通的从上往下排
-        style={{ maxWidth: 640, padding: "56px 24px 80px", minHeight: "calc(100svh - 5rem)" }}
+        style={{ padding: "56px 24px 80px", minHeight: "calc(100svh - 5rem)" }}
       >
         <div className="flex justify-center mb-10 sm:hidden">
           <ModeSwitch mode="quiet" onChange={onSwitchMode} />
