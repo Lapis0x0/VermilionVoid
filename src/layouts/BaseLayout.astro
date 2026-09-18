@@ -76,7 +76,8 @@ const resolvedTwitterDescription = twitterDescription || description
     <meta name="twitter:description" content={resolvedTwitterDescription} />
     {resolvedOgImage ? <meta name="twitter:image" content={resolvedOgImage} /> : null}
     <slot name="head" />
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="时歌的博客" href="/rss.xml" />
+    <link rel="alternate" type="application/rss+xml" title="时歌的偶得" href="/thoughts/rss.xml" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     {useHarmonySans ? <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin /> : null}
