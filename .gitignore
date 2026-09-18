@@ -16,3 +16,4 @@ Design/
 .agents/
 .opencode/
 .DS_Store
+.dev.vars

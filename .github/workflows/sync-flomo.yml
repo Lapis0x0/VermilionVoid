@@ -2,7 +2,10 @@ name: Sync 偶得 from flomo
 
 on:
   schedule:
-    - cron: '17 * * * *'  # 每小时一次；GitHub 的定时任务可能延迟几分钟到几十分钟
+    # 日常的每小时触发由 sync-trigger/ 那个 Cloudflare Worker 打 workflow_dispatch 完成。
+    # GitHub 自己的 schedule 在本仓库实测稳定延迟 3~5 小时、积压时还会整段跳过，
+    # 所以这里只留一个 6 小时一次的兜底，防止 Worker 挂掉或 PAT 过期时同步彻底停摆。
+    - cron: '17 */6 * * *'
   workflow_dispatch:
     inputs:
       force_prune:

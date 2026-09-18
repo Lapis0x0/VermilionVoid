@@ -1,0 +1,8 @@
+# 本目录自成一个 pnpm 根：不写这个文件的话，pnpm 会向上找到仓库根的
+# pnpm-workspace.yaml，把这里当成非成员目录而让 install 空转。
+packages:
+  - '.'
+
+allowBuilds:
+  esbuild: true
+  workerd: true

@@ -1,0 +1,26 @@
+/**
+ * 只有 cron 触发器的 Worker：没有 fetch handler，也不开 workers.dev 域名，
+ * 对外没有任何可访问入口。
+ *
+ * 注意：GH_TOKEN 必须是 secret（`wrangler secret put GH_TOKEN`），不要写进
+ * vars，也不要在面板上配成明文变量——`wrangler deploy` 会用本文件覆盖 vars，
+ * 明文变量会被抹掉，secret 不受影响。
+ */
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "vermilion-sync-trigger",
+  "main": "src/index.ts",
+  "compatibility_date": "2026-01-03",
+  "workers_dev": false,
+  "triggers": {
+    "crons": ["0 * * * *"]
+  },
+  "observability": {
+    "enabled": true
+  },
+  "vars": {
+    "GH_REPO": "Lapis0x0/VermilionVoid",
+    "GH_WORKFLOW": "sync-flomo.yml",
+    "GH_REF": "main"
+  }
+}
