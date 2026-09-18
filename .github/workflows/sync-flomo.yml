@@ -2,8 +2,13 @@ name: Sync 偶得 from flomo
 
 on:
   schedule:
-    - cron: '17 0,6,14 * * *'  # 北京时间 8:17 / 14:17 / 22:17；GitHub 的定时任务可能延迟几分钟到几十分钟
+    - cron: '17 * * * *'  # 每小时一次；GitHub 的定时任务可能延迟几分钟到几十分钟
   workflow_dispatch:
+    inputs:
+      force_prune:
+        description: '跳过"发布数骤降"保护，允许本次批量删除偶得'
+        type: boolean
+        default: false
 
 concurrency:
   group: sync-flomo
@@ -26,6 +31,7 @@ jobs:
       - name: Sync thoughts from flomo
         env:
           FLOMO_TOKEN: ${{ secrets.FLOMO_TOKEN }}
+          FLOMO_FORCE_PRUNE: ${{ inputs.force_prune }}
         run: node scripts/sync-flomo.mjs
 
       - name: Commit and push if changed

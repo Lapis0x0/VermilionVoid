@@ -9,6 +9,7 @@
 // Env:
 //   FLOMO_TOKEN  the Bearer token from flomo Web (copy from any api/v1 request header)
 //   FLOMO_TAG    publish tag, default `偶得`
+//   FLOMO_FORCE_PRUNE  set to `true` to skip the "publish count collapsed" guard
 // Flags:
 //   --preview N  ignore the tag and render the latest N memos (local preview only, never commit)
 
@@ -25,6 +26,7 @@ const IMAGES_URL = "/thoughts"
 
 const TOKEN = (process.env.FLOMO_TOKEN || "").replace(/^Bearer\s+/i, "").trim()
 const TAG = (process.env.FLOMO_TAG || "偶得").replace(/^#/, "")
+const FORCE_PRUNE = /^(1|true|yes)$/i.test((process.env.FLOMO_FORCE_PRUNE || "").trim())
 const previewIdx = process.argv.indexOf("--preview")
 const PREVIEW = previewIdx === -1 ? 0 : Number(process.argv[previewIdx + 1] || 20)
 
@@ -320,6 +322,8 @@ async function main() {
   console.log(`[sync-flomo] ${memos.length} memo(s) fetched, ${selected.length} selected`)
 
   const files = selected.map(memoToFile)
+  // Counted before anything is written, so the guard below sees the incoming state, not this run's output.
+  const onDisk = PREVIEW ? [] : (await walkFiles(THOUGHTS_DIR)).filter((f) => f.endsWith(".md"))
   let written = 0
   for (const f of files) {
     if (await writeIfChanged(f.path, f.content)) {
@@ -339,6 +343,16 @@ async function main() {
   if (PREVIEW) {
     console.log(`[sync-flomo] preview: ${written} written, cleanup skipped`)
     return
+  }
+
+  // A collapse in the publish count is almost always a renamed/mis-clicked tag rather than an
+  // intent to unpublish everything, and the cleanup below would happily delete the lot.
+  if (!FORCE_PRUNE && onDisk.length >= 4 && files.length < onDisk.length / 2) {
+    console.error(
+      `[sync-flomo] aborting: only ${files.length} memo(s) tagged #${TAG}, but ${onDisk.length} file(s) on disk.`,
+    )
+    console.error("[sync-flomo] tag renamed? if the deletion is intended, re-run with FLOMO_FORCE_PRUNE=true.")
+    process.exit(2)
   }
 
   // This script owns both directories entirely: anything not produced this run is stale.
