@@ -20,15 +20,7 @@ type FriendCategory = {
 const friends = friendsData as FriendCategory[]
 const allFriends = friends.flatMap((category) => category.links)
 
-const friendTintVars = ["var(--primary)", "var(--chart-2)", "var(--chart-4)", "var(--chart-5)", "var(--chart-3)"]
-
 const getInitial = (name: string) => name.trim().charAt(0).toUpperCase() || "?"
-
-const getTint = (name: string) => {
-  let hash = 0
-  for (let i = 0; i < name.length; i++) hash = (hash * 31 + name.charCodeAt(i)) >>> 0
-  return friendTintVars[hash % friendTintVars.length]
-}
 
 const siteInfo = {
   name: "时歌的博客",
@@ -72,7 +64,7 @@ const siteInfoText = [
                 class="friend-bento-card"
                 data-friend-card
                 data-index={index}
-                style={`--friend-tint: ${getTint(friend.title)}`}
+                data-no-avatar={friend.imgurl ? undefined : ""}
               >
                 <button
                   type="button"
@@ -90,7 +82,7 @@ const siteInfoText = [
                         height={320}
                         loading="lazy"
                         decoding="async"
-                        onerror="this.remove()"
+                        onerror="this.closest('[data-friend-card]')?.setAttribute('data-no-avatar', ''); this.remove(); window.dispatchEvent(new Event('friend-avatar-error'))"
                       />
                     ) : null}
                   </span>
@@ -252,8 +244,9 @@ const siteInfoText = [
       inset: 0;
     }
 
+    /* 没有头像时的中性底：颜色只来自头像本身，不再按站名给卡片染色 */
     .friend-card-media {
-      background: color-mix(in oklab, var(--friend-tint), var(--card) 72%);
+      background: var(--muted);
     }
 
     .friend-card-media img {
@@ -270,7 +263,7 @@ const siteInfoText = [
       display: flex;
       align-items: center;
       justify-content: center;
-      color: color-mix(in oklab, var(--friend-tint), var(--foreground) 12%);
+      color: color-mix(in oklab, var(--muted-foreground), transparent 35%);
       font-size: 26px;
       font-weight: 800;
     }
@@ -279,10 +272,17 @@ const siteInfoText = [
       font-size: 48px;
     }
 
+    /* 只为托住底部文字的中性暗角，不叠任何色相；多段缓动过渡，避免线性渐变在中段出现一道"边" */
     .friend-card-shade {
-      background:
-        linear-gradient(to top, rgb(0 0 0 / 76%), rgb(0 0 0 / 28%) 46%, rgb(0 0 0 / 4%) 78%),
-        radial-gradient(circle at 18% 85%, color-mix(in oklab, var(--friend-tint), transparent 54%), transparent 44%);
+      background: linear-gradient(
+        to top,
+        rgb(0 0 0 / 72%) 0%,
+        rgb(0 0 0 / 55%) 16%,
+        rgb(0 0 0 / 34%) 34%,
+        rgb(0 0 0 / 16%) 52%,
+        rgb(0 0 0 / 5%) 68%,
+        rgb(0 0 0 / 0%) 82%
+      );
       transition: background 250ms ease;
     }
 
@@ -568,10 +568,12 @@ const siteInfoText = [
         return featureDistance * 1.8 - holes * 11 - emptyRows * 80 - leadingGaps * 10 - lowerLeadingGaps * 16 - finalEmpty * 0.8 - height * 3.5 - balance * 0.9 - badTall * 10 - edgeLarge * 4 - floatingFeature * 90
       }
 
-      const createFeaturedAssignments = (count, columns) => {
+      // 大卡只从有头像的卡片里抽：没填头像、或头像加载失败（data-no-avatar）的只当小卡，
+      // 否则 2×2 的位置上只剩一个首字母，很空
+      const createFeaturedAssignments = (count, columns, candidates) => {
         const shapes = shapePool(count, columns)
         if (!shapes.length) return []
-        const indexes = shuffled(Array.from({ length: count }, (_, index) => index)).slice(0, shapes.length)
+        const indexes = shuffled(candidates).slice(0, shapes.length)
         return indexes.map((index, shapeIndex) => ({ ...shapes[shapeIndex], index }))
       }
 
@@ -612,7 +614,8 @@ const siteInfoText = [
       if (grid) {
         const cards = Array.from(grid.querySelectorAll("[data-friend-card]"))
         const initialColumns = gridColumnCount(grid)
-        const featuredAssignments = createFeaturedAssignments(cards.length, Math.max(initialColumns, 7))
+        const avatarCandidates = () => cards.flatMap((card, index) => card.hasAttribute("data-no-avatar") ? [] : [index])
+        let featuredAssignments = createFeaturedAssignments(cards.length, Math.max(initialColumns, 7), avatarCandidates())
         const layoutCache = new Map()
         let currentColumns = 0
 
@@ -669,6 +672,24 @@ const siteInfoText = [
         cleanups.push(() => window.removeEventListener("resize", resizeHandler))
 
         applyBentoLayout()
+
+        // 图片懒加载，失败可能发生在排版之后：若失败的正好是大卡，把它换成另一张有头像的卡并重新排版
+        const avatarErrorHandler = () => {
+          const failed = featuredAssignments.filter((item) => cards[item.index].hasAttribute("data-no-avatar"))
+          if (!failed.length) return
+          const taken = new Set(featuredAssignments.map((item) => item.index))
+          const spare = shuffled(avatarCandidates().filter((index) => !taken.has(index)))
+          featuredAssignments = featuredAssignments.flatMap((item) => {
+            if (!cards[item.index].hasAttribute("data-no-avatar")) return [item]
+            const replacement = spare.shift()
+            return replacement === undefined ? [] : [{ ...item, index: replacement }]
+          })
+          layoutCache.clear()
+          currentColumns = 0
+          applyBentoLayout()
+        }
+        window.addEventListener("friend-avatar-error", avatarErrorHandler)
+        cleanups.push(() => window.removeEventListener("friend-avatar-error", avatarErrorHandler))
       }
 
       const resetButton = (button) => {

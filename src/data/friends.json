@@ -4,20 +4,14 @@
     "categoryDesc": "这些是我的好朋友们，欢迎大家去他们的网站逛逛！",
     "links": [
       {
-        "title": "朽丘秋雨",
-        "imgurl": "https://cdn.koxiuqiu.cn/koxiuqiu/img/favicon.webp",
-        "desc": "一定会和喜欢的人在夏日夜晚牵手慢步",
-        "siteurl": "https://koxiuqiu.cn"
-      },
-      {
         "title": "qunqin‘s Blog",
-        "imgurl": "https://uesu.cn-sy1.rains3.com/halo/gptlogo.png",
+        "imgurl": "https://www.qunqin.net/q-favicon.webp",
         "desc": "在繁杂的世界里，我的信念始终锚定在真理的彼岸",
         "siteurl": "https://www.qunqin.net"
       },
       {
         "title": "XenWayne’s Blog",
-        "imgurl": "https://gcore.jsdelivr.net/gh/XenWayne/sitefile@master/img/avatar_square.webp",
+        "imgurl": "https://gcore.jsdelivr.net/gh/XenWayne/sitefile@master/img/avatar.webp",
         "desc": "寸进具欢喜，万物皆可爱。",
         "siteurl": "https://xenwayne.top"
       },
@@ -32,12 +26,6 @@
         "imgurl": "https://xingwangzhe.fun/avatar.webp",
         "desc": "记录学习生活的琐事，或技术文章",
         "siteurl": "https://xingwangzhe.fun"
-      },
-      {
-        "title": "溪午的博客",
-        "imgurl": "https://www.xiwuqaq.me/_astro/avatar.B24N4CPn_Z10xJVE.webp",
-        "desc": "愿不再遗憾所有",
-        "siteurl": "https://www.xiwuqaq.me"
       },
       {
         "title": "Zellon的博客",
@@ -107,12 +95,6 @@
         "siteurl": "https://blog.cuteleaf.cn"
       },
       {
-        "title": "一杯为品的博客",
-        "imgurl": "https://www.inkem.space/images/avatar.webp",
-        "desc": "不许平凡，不容悲欢。",
-        "siteurl": "https://www.inkem.space"
-      },
-      {
         "title": "Viki 写东西的地方",
         "imgurl": "https://blog.viki.moe/avatar.png",
         "desc": "生活需要记录。",
@@ -124,12 +106,6 @@
         "imgurl": "https://bluelanm.github.io/my-website/img/3.ico",
         "desc": "蓝莓",
         "siteurl": "https://bluelanm.github.io"
-      },
-      {
-        "title": "VnYzm的博客",
-        "imgurl": "https://vnyzm.top/img/profile.jpg",
-        "desc": "分享技术心得和摸鱼感想",
-        "siteurl": "https://vnyzm.top"
       },
       {
         "title": "树萌 - 技术与生活的随笔日记",
@@ -154,18 +130,6 @@
         "imgurl": "https://leehenry.top/friends/my-avatar-portrait.jpg",
         "desc": "何妨吟啸且徐行",
         "siteurl": "https://www.leehenry.top"
-      },
-      {
-        "title": "Wintel.",
-        "imgurl": "https://mrwintel.xyz/local/avatar.jpg",
-        "desc": "树在。山在。大地在。岁月在。我在。",
-        "siteurl": "https://mrwintel.xyz"
-      },
-      {
-        "title": "橘智的安宁之地",
-        "imgurl": "https://dataer-1257252871.cos.ap-shanghai.myqcloud.com/virtualUserIcon/logo.png",
-        "desc": "共享博客&深度思考。",
-        "siteurl": "https://juzhiart.com"
       },
       {
         "title": "三瓶可乐不过岗",
