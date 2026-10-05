@@ -211,9 +211,9 @@ function QuietMode({
       <button
         onClick={() => onJump((idx - 1 + thoughts.length) % thoughts.length)}
         aria-label="前一则"
-        className="hidden lg:flex fixed left-10 top-1/2 -translate-y-1/2 flex-col items-center gap-3.5 border-0 bg-transparent cursor-pointer font-mono text-[12px] tracking-widest text-muted-foreground opacity-60 hover:opacity-100 transition-opacity"
+        className="hidden lg:flex fixed left-10 top-1/2 -translate-y-1/2 flex-col items-center gap-3.5 border-0 bg-transparent cursor-pointer font-mono text-[length:var(--thought-rail-fs)] tracking-widest text-muted-foreground opacity-60 hover:opacity-100 transition-opacity"
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
           <path d="M9 2L3 7l6 5" />
         </svg>
         <span style={{ writingMode: "vertical-rl", letterSpacing: 2 }}>
@@ -223,9 +223,9 @@ function QuietMode({
       <button
         onClick={() => onJump((idx + 1) % thoughts.length)}
         aria-label="后一则"
-        className="hidden lg:flex fixed right-10 top-1/2 -translate-y-1/2 flex-col items-center gap-3.5 border-0 bg-transparent cursor-pointer font-mono text-[12px] tracking-widest text-muted-foreground opacity-60 hover:opacity-100 transition-opacity"
+        className="hidden lg:flex fixed right-10 top-1/2 -translate-y-1/2 flex-col items-center gap-3.5 border-0 bg-transparent cursor-pointer font-mono text-[length:var(--thought-rail-fs)] tracking-widest text-muted-foreground opacity-60 hover:opacity-100 transition-opacity"
       >
-        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+        <svg width="16" height="16" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
           <path d="M5 2l6 5-6 5" />
         </svg>
         <span style={{ writingMode: "vertical-rl", letterSpacing: 2 }}>
@@ -321,10 +321,24 @@ function QuietMode({
           </div>
 
           <div
-            className="mt-11 text-center font-mono text-[11px] text-muted-foreground"
+            className="mt-11 text-center font-mono text-[length:var(--thought-nav-fs)] text-muted-foreground"
             style={{ letterSpacing: 2 }}
           >
-            <kbd className="thoughts-kbd">←</kbd> 前一则 &nbsp;·&nbsp; <kbd className="thoughts-kbd">→</kbd> 后一则
+            <button
+              onClick={() => onJump((idx - 1 + thoughts.length) % thoughts.length)}
+              className="inline-flex items-center gap-2 border-0 bg-transparent px-1 py-2 cursor-pointer font-mono text-[length:var(--thought-nav-fs)] text-muted-foreground hover:text-foreground transition-colors"
+              style={{ letterSpacing: 2 }}
+            >
+              <kbd className="thoughts-kbd">←</kbd> 前一则
+            </button>
+            &nbsp;·&nbsp;
+            <button
+              onClick={() => onJump((idx + 1) % thoughts.length)}
+              className="inline-flex items-center gap-2 border-0 bg-transparent px-1 py-2 cursor-pointer font-mono text-[length:var(--thought-nav-fs)] text-muted-foreground hover:text-foreground transition-colors"
+              style={{ letterSpacing: 2 }}
+            >
+              后一则 <kbd className="thoughts-kbd">→</kbd>
+            </button>
           </div>
         </div>
       </article>

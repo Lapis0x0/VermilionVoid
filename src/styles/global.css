@@ -719,18 +719,29 @@ a.card-github:hover .github-logo {
   text-underline-offset: 4px;
 }
 
+/* 偶得翻页按钮字号：随正文 --thought-fs（0.5vw + 10.1px）同步缩放，但设下限，避免小屏上过小 */
+:root {
+  --thought-nav-fs: clamp(13px, 0.36vw + 7.3px, 16px);   /* 底部 前一则 / 后一则 */
+  --thought-rail-fs: clamp(14px, 0.33vw + 7px, 15px);    /* 左右竖排 */
+}
+
 .thoughts-kbd {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 20px;
-  padding: 1px 6px;
+  min-width: 1.8em;
+  padding: 1px 0.5em;
   background: var(--muted);
   border: 1px solid var(--border);
   border-radius: 3px;
   font-family: var(--font-mono);
-  font-size: 11px;
+  font-size: 0.9em;
   color: var(--muted-foreground);
+  transition: color 0.15s, border-color 0.15s;
+}
+button:hover > .thoughts-kbd {
+  color: var(--foreground);
+  border-color: var(--muted-foreground);
 }
 
 /* 偶得正文沿用文章 prose 排版，只去掉首尾外边距，贴合卡片 */
