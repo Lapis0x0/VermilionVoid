@@ -21,6 +21,13 @@ function stripHtmlToPreview(html: string, max = 10) {
   return text.length > max ? text.slice(0, max) + "…" : text
 }
 
+// 手机上把模式切换藏到顶栏后面，见 pages/thoughts/index.astro 里的内联脚本
+declare global {
+  interface Window {
+    thoughtsSkipModeSwitch?: () => boolean
+  }
+}
+
 const LIGHTBOX_ATTR = "data-thoughts-lightbox"
 const isLightboxOpen = () => document.documentElement.hasAttribute(LIGHTBOX_ATTR)
 
@@ -230,87 +237,95 @@ function QuietMode({
       <article
         key={t.slug}
         className="thoughts-fade-up thoughts-quiet mx-auto flex flex-col"
-        // 至少占满首屏（减去 5rem 的顶栏）：编号/日期贴上方，翻页提示贴下方，正文在中间上下居中；
-        // 正文长过一屏时中间区域自然撑开，退化为普通的从上往下排
-        style={{ padding: "56px 24px 80px", minHeight: "calc(100svh - 5rem)" }}
+        style={{ padding: "56px 24px 0" }}
       >
-        <div className="flex justify-center mb-10 sm:hidden">
+        {/* 手机：首屏把这一行滚到顶栏后面，往上拉才出现（类似 iOS 列表顶部的搜索栏） */}
+        <div className="flex justify-center mb-2 sm:hidden">
           <ModeSwitch mode="quiet" onChange={onSwitchMode} />
         </div>
-        <div className="text-center mb-11">
-          <div
-            className="font-serif italic text-[11px] text-muted-foreground uppercase"
-            style={{ letterSpacing: 5 }}
-          >
-            Serendipity · №{" "}
-            {String(thoughts.length - idx).padStart(2, "0")} of {thoughts.length}
+        {/* 编号到翻页提示这一段（含上下留白）至少占满首屏：编号/日期贴上方，翻页提示贴下方，
+            正文在中间上下居中，短偶得也不会把页脚露出来；正文长过一屏时自然撑开。
+            手机：首屏这段顶端正好贴着顶栏下沿，故为 100svh − 实测顶栏高度；
+            桌面：不滚动，故为 100svh − main 的 5rem 上内边距 − article 的 56px 上内边距 */}
+        <div
+          data-quiet-start
+          className="flex flex-1 flex-col pt-8 pb-20 min-h-[calc(100svh-var(--site-header-h,4.25rem))] sm:pt-0 sm:min-h-[calc(100svh-5rem-56px)]"
+        >
+          <div className="text-center mb-11">
+            <div
+              className="font-serif italic text-[11px] text-muted-foreground uppercase"
+              style={{ letterSpacing: 5 }}
+            >
+              Serendipity · №{" "}
+              {String(thoughts.length - idx).padStart(2, "0")} of {thoughts.length}
+            </div>
+            <div
+              className="mt-3 font-mono text-[12px] text-muted-foreground"
+              style={{ letterSpacing: 2 }}
+            >
+              {t.date.replace(/[.\-]/g, " · ")}
+            </div>
+            <div
+              className="mx-auto mt-5 flex flex-wrap justify-center gap-1.5"
+              style={{ maxWidth: 400 }}
+            >
+              {thoughts.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => onJump(i)}
+                  aria-label={`跳到第 ${i + 1} 则`}
+                  className={cn(
+                    "rounded-sm border-0 p-0 cursor-pointer transition-all",
+                    i === idx ? "bg-primary opacity-100" : "bg-muted-foreground opacity-40 hover:opacity-70",
+                  )}
+                  style={{ width: i === idx ? 18 : 4, height: 4 }}
+                />
+              ))}
+            </div>
           </div>
+
+          {/* 上下留白按 2:3 分配而不是 1:1：视觉中心在几何中心略偏上，且顶部信息比底部翻页提示厚 */}
+          <div className="flex flex-1 flex-col">
+            <div className="flex-[2]" />
+            {t.title && (
+              <h1
+                className="font-serif font-bold text-center text-foreground"
+                style={{
+                  fontSize: "clamp(32px, 6vw, 52px)",
+                  fontWeight: 500,
+                  margin: "0 0 44px",
+                  letterSpacing: 4,
+                  lineHeight: 1.3,
+                }}
+              >
+                {t.title}
+              </h1>
+            )}
+
+            <div
+              className={cn(articleProseClass, "text-left thoughts-body thoughts-quiet-body")}
+              dangerouslySetInnerHTML={{ __html: t.content }}
+            />
+
+            {t.tags.length > 0 && (
+              <div
+                className="flex items-center justify-center gap-6 font-mono text-[12px] text-muted-foreground"
+                style={{ marginTop: 44, letterSpacing: 1 }}
+              >
+                <span className="inline-block h-px w-10 bg-border" />
+                <span>{t.tags.map((tag) => "#" + tag).join("  ·  ")}</span>
+                <span className="inline-block h-px w-10 bg-border" />
+              </div>
+            )}
+            <div className="flex-[3]" />
+          </div>
+
           <div
-            className="mt-3 font-mono text-[12px] text-muted-foreground"
+            className="mt-11 text-center font-mono text-[11px] text-muted-foreground"
             style={{ letterSpacing: 2 }}
           >
-            {t.date.replace(/[.\-]/g, " · ")}
+            <kbd className="thoughts-kbd">←</kbd> 前一则 &nbsp;·&nbsp; <kbd className="thoughts-kbd">→</kbd> 后一则
           </div>
-          <div
-            className="mx-auto mt-5 flex flex-wrap justify-center gap-1.5"
-            style={{ maxWidth: 400 }}
-          >
-            {thoughts.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => onJump(i)}
-                aria-label={`跳到第 ${i + 1} 则`}
-                className={cn(
-                  "rounded-sm border-0 p-0 cursor-pointer transition-all",
-                  i === idx ? "bg-primary opacity-100" : "bg-muted-foreground opacity-40 hover:opacity-70",
-                )}
-                style={{ width: i === idx ? 18 : 4, height: 4 }}
-              />
-            ))}
-          </div>
-        </div>
-
-        {/* 上下留白按 2:3 分配而不是 1:1：视觉中心在几何中心略偏上，且顶部信息比底部翻页提示厚 */}
-        <div className="flex flex-1 flex-col">
-          <div className="flex-[2]" />
-          {t.title && (
-            <h1
-              className="font-serif font-bold text-center text-foreground"
-              style={{
-                fontSize: "clamp(32px, 6vw, 52px)",
-                fontWeight: 500,
-                margin: "0 0 44px",
-                letterSpacing: 4,
-                lineHeight: 1.3,
-              }}
-            >
-              {t.title}
-            </h1>
-          )}
-
-          <div
-            className={cn(articleProseClass, "text-left thoughts-body thoughts-quiet-body")}
-            dangerouslySetInnerHTML={{ __html: t.content }}
-          />
-
-          {t.tags.length > 0 && (
-            <div
-              className="flex items-center justify-center gap-6 font-mono text-[12px] text-muted-foreground"
-              style={{ marginTop: 44, letterSpacing: 1 }}
-            >
-              <span className="inline-block h-px w-10 bg-border" />
-              <span>{t.tags.map((tag) => "#" + tag).join("  ·  ")}</span>
-              <span className="inline-block h-px w-10 bg-border" />
-            </div>
-          )}
-          <div className="flex-[3]" />
-        </div>
-
-        <div
-          className="mt-11 text-center font-mono text-[11px] text-muted-foreground"
-          style={{ letterSpacing: 2 }}
-        >
-          <kbd className="thoughts-kbd">←</kbd> 前一则 &nbsp;·&nbsp; <kbd className="thoughts-kbd">→</kbd> 后一则
         </div>
       </article>
     </div>
@@ -520,7 +535,8 @@ export function ThoughtsView({ thoughts }: { thoughts: ThoughtMeta[] }) {
     (i: number) => {
       setIdx(i)
       syncHash(thoughts[i]?.slug ?? null)
-      if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior })
+      if (typeof window !== "undefined" && !window.thoughtsSkipModeSwitch?.())
+        window.scrollTo({ top: 0, behavior: "instant" as ScrollBehavior })
     },
     [syncHash, thoughts],
   )

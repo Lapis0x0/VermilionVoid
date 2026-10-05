@@ -20,6 +20,37 @@ const thoughtsWithContent = allThoughts.map((thought) => toThoughtMeta(thought))
       <section id="thoughts-main" class="scroll-mt-24">
         <ThoughtsView client:idle thoughts={thoughtsWithContent} />
       </section>
+      <!--
+        手机上专注模式默认把「专注/时间线」切换滚到顶栏后面，视觉重心直接落在正文上，往上拉才露出来。
+        必须是紧跟在内容后的同步内联脚本：解析到这里就执行，早于首次绘制，不会先露出再跳走；
+        ThoughtsView 是 client:idle，等它挂载再滚就晚了。
+        顶栏高度当场实测写进 --site-header-h，正文区的最小高度（100svh − 顶栏）用同一个值，
+        所以切换按钮正好藏满、底部正好停在翻页箭头，不依赖任何写死的尺寸。
+        ClientRouter 换页后会重新执行本脚本，此时滚动已复位；返回时若恢复了滚动位置则不动。
+      -->
+      <script is:inline data-astro-rerun>
+        (() => {
+          const skip = () => {
+            if (!matchMedia("(max-width: 639px)").matches) return false
+            const start = document.querySelector("[data-quiet-start]")
+            const header = document.querySelector(".site-header")
+            if (!start || !header) return false
+            const headerH = header.getBoundingClientRect().height
+            document.documentElement.style.setProperty("--site-header-h", headerH + "px")
+            const top = start.getBoundingClientRect().top + scrollY - headerH
+            scrollTo({ top: Math.max(0, top), behavior: "instant" })
+            return true
+          }
+          // 供 ThoughtsView 翻页时复用，保证翻到哪一则都停在同一位置
+          window.thoughtsSkipModeSwitch = skip
+
+          const params = new URLSearchParams(location.search)
+          let mode = null
+          try { mode = localStorage.getItem("thoughts.mode") } catch {}
+          const quiet = !params.has("tag") && (mode !== "timeline" || location.hash.startsWith("#thought-"))
+          if (quiet && scrollY === 0) skip()
+        })()
+      </script>
     </main>
     <Footer />
   </div>
