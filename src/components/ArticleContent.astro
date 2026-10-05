@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from "astro:content"
-import { TableOfContents } from "./table-of-contents"
+import { TableOfContents, ReadingProgressLine } from "./table-of-contents"
 import { articleProseClass } from "@/lib/article-prose"
 
 interface Props {
@@ -101,6 +101,8 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
       </div>
     )}
 
+    <ReadingProgressLine client:media="(max-width: 1279px)" />
+
     <div class="xl:hidden max-w-[44rem] mx-auto mb-4">
       <details open class="group border border-border/60 bg-card/60 rounded-xl">
         <summary class="list-none cursor-pointer px-4 py-3 flex items-center justify-between text-sm text-foreground">
@@ -111,7 +113,7 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
           <span class="text-muted-foreground transition-transform group-open:rotate-180">⌄</span>
         </summary>
         <div class="toc-scroll-container px-4 pb-3 pt-1 border-t border-border/50 max-h-72 overflow-y-auto overscroll-auto toc-scrollbar">
-          <TableOfContents showHeader={false} client:media="(max-width: 1279px)" />
+          <TableOfContents variant="list" client:media="(max-width: 1279px)" />
         </div>
       </details>
     </div>
@@ -121,11 +123,10 @@ const primaryTagHref = primaryTag ? `/?tag=${encodeURIComponent(primaryTag)}#hom
         {hasSlot ? <slot /> : Content ? <Content /> : null}
       </article>
 
-      <aside class="hidden xl:block absolute top-0 left-full pl-12 w-72 h-full">
+      <!-- 左侧栏：宽度取 18rem 与「正文左侧剩余空间 − 1.5rem 页边」的较小者，窄屏也不会贴到视口边缘 -->
+      <aside class="hidden xl:block absolute top-0 right-full pr-10 w-[min(18rem,calc(50vw-22rem-1.5rem))] h-full">
         <div class="sticky top-24">
-          <div class="toc-scroll-container max-h-[calc(100dvh-8rem)] overflow-y-auto overscroll-contain toc-scrollbar border border-border/60 bg-card/60 rounded-xl p-4">
-            <TableOfContents client:media="(min-width: 1280px)" />
-          </div>
+          <TableOfContents variant="rail" title={data.title} client:media="(min-width: 1280px)" />
         </div>
       </aside>
     </div>

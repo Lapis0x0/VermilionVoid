@@ -128,7 +128,9 @@
   --font-serif: "Noto Serif SC", "Source Han Serif SC", "Playfair Display", "Georgia", serif;
   --font-serif-cn: "Noto Serif SC", "Source Han Serif SC", "Georgia", serif;
   --font-display-serif: "Playfair Display", "Georgia", serif;
-  --font-mono: "Geist Mono", "Geist Mono Fallback";
+  /* Geist Mono 由 BaseLayout 从 Google Fonts 加载；它带有 └ ░ ▓ 等制表/阴影字形且同为 0.6em 宽，
+     目录树枝和字符进度条依赖这一点。兜底的系统等宽字体同样具备这些字形 */
+  --font-mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --color-surface-subtle: var(--surface-subtle);

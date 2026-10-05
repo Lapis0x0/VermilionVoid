@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useRef, useCallback } from "react"
+import { useState, useEffect, useRef, useCallback, useMemo } from "react"
 import { cn } from "@/lib/utils"
 
 interface TocItem {
@@ -10,10 +10,64 @@ interface TocItem {
 }
 
 interface TableOfContentsProps {
-  showHeader?: boolean
+  /**
+   * rail：桌面侧栏。顶部在文章大标题滚出视口后淡入标题，二级标题按所在章节手风琴展开，底部字符进度条。
+   * list：手机抽屉。只有目录树，二级标题全部展开。
+   */
+  variant?: "rail" | "list"
+  title?: string
 }
 
-export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
+// 每次滚动（合并到一帧）回调阅读进度 0–1：正文底部到达视口底部即为 1，不受页脚高度影响
+function useReadingProgress(onChange: (progress: number) => void) {
+  const onChangeRef = useRef(onChange)
+  onChangeRef.current = onChange
+
+  useEffect(() => {
+    let raf = 0
+    const update = () => {
+      raf = 0
+      const article = document.querySelector("article")
+      if (!article) return
+      const end = article.getBoundingClientRect().bottom + window.scrollY - window.innerHeight
+      onChangeRef.current(Math.max(0, Math.min(1, window.scrollY / Math.max(1, end))))
+    }
+    const schedule = () => {
+      if (!raf) raf = requestAnimationFrame(update)
+    }
+    update()
+    window.addEventListener("scroll", schedule, { passive: true })
+    window.addEventListener("resize", schedule, { passive: true })
+    document.addEventListener("astro:page-load", schedule)
+    return () => {
+      window.removeEventListener("scroll", schedule)
+      window.removeEventListener("resize", schedule)
+      document.removeEventListener("astro:page-load", schedule)
+      if (raf) cancelAnimationFrame(raf)
+    }
+  }, [])
+}
+
+// 手机端没有侧栏，用顶端一条 1px 主色细线表示阅读进度；直接写 transform，不走 React 渲染
+export function ReadingProgressLine() {
+  const ref = useRef<HTMLDivElement>(null)
+  useReadingProgress((p) => {
+    if (ref.current) ref.current.style.transform = `scaleX(${p})`
+  })
+  return (
+    <div
+      ref={ref}
+      aria-hidden="true"
+      className="pointer-events-none fixed inset-x-0 top-0 z-[55] h-px origin-left scale-x-0 bg-primary"
+    />
+  )
+}
+
+const EASE_OUT = "ease-[cubic-bezier(.19,1,.22,1)]"
+
+type TocGroup = { head: TocItem | null; subs: TocItem[] }
+
+export function TableOfContents({ variant = "rail", title }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<TocItem[]>([])
   const [activeId, setActiveId] = useState<string>("")
   const navRef = useRef<HTMLElement | null>(null)
@@ -285,35 +339,167 @@ export function TableOfContents({ showHeader = true }: TableOfContentsProps) {
     }, 2500)
   }
 
+  // 二级标题挂到前一个一级标题下；文章开头若直接是三级标题，单独成组且始终展开
+  const groups = useMemo(() => {
+    const result: TocGroup[] = []
+    for (const h of headings) {
+      if (h.level === 2) result.push({ head: h, subs: [] })
+      else if (result.length === 0) result.push({ head: null, subs: [h] })
+      else result[result.length - 1].subs.push(h)
+    }
+    return result
+  }, [headings])
+
+  const isRail = variant === "rail"
+
+  // 进度条格数随侧栏宽度铺满：可用宽度 ÷ 单个等宽字符宽度。字符宽度实测（字体加载前后会变），
+  // 侧栏宽度变化或字体就绪时重新计算。React 19 的 ref 回调可以返回清理函数
+  const [cells, setCells] = useState(24)
+  const progressBarRef = useCallback((bar: HTMLSpanElement | null) => {
+    if (!bar) return
+    const probe = bar.querySelector<HTMLSpanElement>("[data-cell-probe]")
+    const measure = () => {
+      const cellWidth = probe ? probe.getBoundingClientRect().width / 10 : 0
+      if (cellWidth > 0) setCells(Math.max(8, Math.floor(bar.clientWidth / cellWidth)))
+    }
+    const ro = new ResizeObserver(measure)
+    ro.observe(bar)
+    document.fonts?.ready.then(measure)
+    return () => ro.disconnect()
+  }, [])
+
+  const [percent, setPercent] = useState(0)
+  useReadingProgress((p) => {
+    if (isRail) setPercent(Math.round(p * 100))
+  })
+
+  // 文章大标题滚出视口后，侧栏顶部接住标题
+  const [titleShown, setTitleShown] = useState(false)
+  useEffect(() => {
+    if (!isRail || !title) return
+    const h1 = document.querySelector("main h1[data-pagefind-meta='title']")
+    if (!h1) return
+    const io = new IntersectionObserver(([entry]) => {
+      setTitleShown(!entry.isIntersecting && entry.boundingClientRect.bottom < 0)
+    })
+    io.observe(h1)
+    return () => io.disconnect()
+  }, [isRail, title])
+
   if (headings.length === 0) return null
 
+  const renderLink = (heading: TocItem, sub: boolean) => {
+    const active = activeId === heading.id
+    return (
+      <a
+        key={heading.id}
+        href={`#${heading.id}`}
+        onClick={(e) => handleClick(e, heading.id)}
+        aria-current={active ? "location" : undefined}
+        className={cn(
+          "flex gap-2.5 py-[3px] text-[13px] leading-[1.6] transition-colors duration-200",
+          sub && "pl-[18px]",
+          active ? "text-foreground" : "text-muted-foreground hover:text-foreground",
+        )}
+      >
+        <span
+          aria-hidden="true"
+          className={cn(
+            "shrink-0 font-mono transition-colors duration-200",
+            active ? "text-primary" : "text-muted-foreground/45",
+          )}
+        >
+          └
+        </span>
+        <span className="line-clamp-2 min-w-0">{heading.text}</span>
+      </a>
+    )
+  }
+
+  const tree = (
+    <div>
+      {groups.map((group, gi) => {
+        const open =
+          !isRail ||
+          !group.head ||
+          group.head.id === activeId ||
+          group.subs.some((h) => h.id === activeId)
+        return (
+          <div key={group.head?.id ?? `lead-${gi}`}>
+            {group.head && renderLink(group.head, false)}
+            {group.subs.length > 0 && (
+              // grid-template-rows 0fr ↔ 1fr：不用测量高度就能过渡到 auto
+              <div
+                className={cn(
+                  "grid transition-[grid-template-rows,visibility] duration-300 motion-reduce:transition-none",
+                  EASE_OUT,
+                  open ? "visible grid-rows-[1fr]" : "invisible grid-rows-[0fr]",
+                )}
+              >
+                <div className="min-h-0 overflow-hidden">
+                  {group.subs.map((h) => renderLink(h, Boolean(group.head)))}
+                </div>
+              </div>
+            )}
+          </div>
+        )
+      })}
+    </div>
+  )
+
+  if (!isRail) {
+    return (
+      <nav ref={navRef} aria-label="目录" className="toc-nav">
+        {tree}
+      </nav>
+    )
+  }
+
+  const filled = Math.round((percent / 100) * cells)
+
   return (
-    <nav ref={navRef} aria-label="目录" className="toc-nav">
-      {showHeader ? (
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-1 h-4 bg-primary rounded-full" />
-          <span className="text-xs font-medium text-foreground tracking-wide">目录</span>
+    <nav ref={navRef} aria-label="目录" className="toc-nav flex max-h-[calc(100dvh-8rem)] flex-col">
+      {title && (
+        <div
+          aria-hidden={!titleShown}
+          className={cn(
+            "shrink-0 overflow-hidden font-serif text-base font-semibold leading-snug text-foreground text-pretty",
+            "transition-[opacity,transform,max-height,margin] duration-[400ms] motion-reduce:transition-none",
+            EASE_OUT,
+            titleShown ? "mb-6 max-h-60 translate-y-0 opacity-100" : "max-h-0 translate-y-2 opacity-0",
+          )}
+        >
+          {title}
         </div>
-      ) : null}
-      <ul className="space-y-0.5">
-        {headings.map((heading) => (
-          <li key={heading.id}>
-            <a
-              href={`#${heading.id}`}
-              onClick={(e) => handleClick(e, heading.id)}
-              className={cn(
-                "block py-1 text-[13px] leading-relaxed border-l-2 transition-all duration-200",
-                heading.level === 2 ? "pl-3" : "pl-6",
-                activeId === heading.id
-                  ? "border-l-primary text-primary font-medium"
-                  : "border-l-transparent text-muted-foreground hover:text-foreground hover:border-l-border",
-              )}
-            >
-              <span className="line-clamp-2">{heading.text}</span>
-            </a>
-          </li>
-        ))}
-      </ul>
+      )}
+      <div className="mb-3 shrink-0 font-mono text-[11px] tracking-[0.2em] text-muted-foreground">目录</div>
+      <div className="toc-scroll-container toc-scrollbar min-h-0 overflow-y-auto overscroll-contain pr-2">
+        {tree}
+      </div>
+      {/* 字符进度条：▓ 已读、░ 未读，与 claude.dev 同法直接输出字符，依赖 --font-mono 里这两个字形等宽。
+          条占满百分比左侧的全部空间，格数按宽度实测计算；百分比固定在右，任何宽度下都不会被挤出去 */}
+      <div
+        className="mt-6 flex shrink-0 items-baseline gap-2.5 font-mono text-[12px]"
+        role="progressbar"
+        aria-label="阅读进度"
+        aria-valuemin={0}
+        aria-valuemax={100}
+        aria-valuenow={percent}
+      >
+        <span
+          ref={progressBarRef}
+          aria-hidden="true"
+          className="relative min-w-0 flex-1 overflow-hidden whitespace-nowrap text-muted-foreground/40"
+        >
+          <span className="text-primary">{"▓".repeat(filled)}</span>
+          {"░".repeat(cells - filled)}
+          {/* 量字符宽度用的探针：10 个字符取平均，不占位、不可见 */}
+          <span data-cell-probe className="invisible absolute left-0 top-0">
+            ░░░░░░░░░░
+          </span>
+        </span>
+        <span className="shrink-0 tabular-nums text-muted-foreground">{String(percent).padStart(2, "0")}%</span>
+      </div>
     </nav>
   )
 }
