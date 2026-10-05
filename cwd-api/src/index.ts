@@ -49,6 +49,11 @@ const COMMENT_ADMIN_KEY_HASH_KEY = 'comment_admin_key_hash';
 const COMMENT_REQUIRE_REVIEW_KEY = 'comment_require_review';
 const COMMENT_BLOCKED_IPS_KEY = 'comment_blocked_ips';
 const COMMENT_BLOCKED_EMAILS_KEY = 'comment_blocked_emails';
+const ADMIN_DISPLAY_CONFIG_KEY = 'admin_display_config';
+
+type AdminDisplaySettings = {
+	layoutTitle: string;
+};
 
 async function loadCommentSettings(env: Bindings) {
 	await env.CWD_DB.prepare('CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)').run();
@@ -117,6 +122,42 @@ async function loadCommentSettings(env: Bindings) {
 		adminKey: map.get(COMMENT_ADMIN_KEY_HASH_KEY) ?? null,
 		adminKeySet: !!map.get(COMMENT_ADMIN_KEY_HASH_KEY),
 	};
+}
+
+// 托管的后台面板（0.2.x）打开设置页时会和其他设置一起 Promise.all 请求这个接口，
+// 缺了它整页加载失败、表单全空，此时点保存会把管理员邮箱等配置清掉。实现照搬上游。
+async function loadAdminDisplaySettings(env: Bindings): Promise<AdminDisplaySettings> {
+	await env.CWD_DB.prepare('CREATE TABLE IF NOT EXISTS Settings (key TEXT PRIMARY KEY, value TEXT NOT NULL)').run();
+	const row = await env.CWD_DB.prepare('SELECT value FROM Settings WHERE key = ?')
+		.bind(ADMIN_DISPLAY_CONFIG_KEY)
+		.first<{ value: string }>();
+
+	const defaults: AdminDisplaySettings = {
+		layoutTitle: 'CWD 评论系统',
+	};
+
+	if (!row || !row.value) {
+		return defaults;
+	}
+
+	try {
+		const parsed = JSON.parse(row.value) as Partial<AdminDisplaySettings>;
+		return {
+			layoutTitle: typeof parsed.layoutTitle === 'string' && parsed.layoutTitle ? parsed.layoutTitle : defaults.layoutTitle,
+		};
+	} catch {
+		return defaults;
+	}
+}
+
+async function saveAdminDisplaySettings(env: Bindings, settings: Partial<AdminDisplaySettings>) {
+	const current = await loadAdminDisplaySettings(env);
+	const next: AdminDisplaySettings = {
+		layoutTitle: settings.layoutTitle !== undefined ? settings.layoutTitle : current.layoutTitle,
+	};
+	await env.CWD_DB.prepare('REPLACE INTO Settings (key, value) VALUES (?, ?)')
+		.bind(ADMIN_DISPLAY_CONFIG_KEY, JSON.stringify(next))
+		.run();
 }
 
 async function saveCommentSettings(
@@ -255,6 +296,24 @@ app.get('/admin/likes/list', listLikes);
 app.get('/admin/likes/stats', getLikeStats);
 app.get('/admin/settings/features', getFeatureSettings);
 app.put('/admin/settings/features', updateFeatureSettings);
+app.get('/admin/settings/admin-display', async (c) => {
+	try {
+		const settings = await loadAdminDisplaySettings(c.env);
+		return c.json(settings);
+	} catch (e: any) {
+		return c.json({ message: e.message || '加载显示配置失败' }, 500);
+	}
+});
+app.put('/admin/settings/admin-display', async (c) => {
+	try {
+		const body = await c.req.json();
+		const layoutTitle = typeof body.layoutTitle === 'string' ? body.layoutTitle.trim() : undefined;
+		await saveAdminDisplaySettings(c.env, { layoutTitle });
+		return c.json({ message: '保存成功' });
+	} catch (e: any) {
+		return c.json({ message: e.message || '保存失败' }, 500);
+	}
+});
 app.get('/admin/settings/email', getAdminEmail);
 app.put('/admin/settings/email', setAdminEmail);
 app.get('/admin/settings/email-notify', async (c) => {
