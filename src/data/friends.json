@@ -149,6 +149,12 @@
         "imgurl": "https://blog.tonks.top/assets/home/home.png",
         "desc": "我用全部记忆写下，你此刻的盛大",
         "siteurl": "https://blog.tonks.top"
+      },
+      {
+        "title": "梧桐雨の博客",
+        "imgurl": "https://www.wutongyu.site/avatar.webp",
+        "desc": "关于我的代码和生活",
+        "siteurl": "https://www.wutongyu.site/"
       }
     ]
   },
