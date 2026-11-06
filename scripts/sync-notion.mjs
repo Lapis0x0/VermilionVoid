@@ -9,6 +9,8 @@
 //   草稿 ──writer──▶ 待发布 ──(--publish) claim──▶ 发布中 ──(--finalize) deployed──▶ 已发布
 //                                                   └──────────── error ──────────▶ 发布失败 (+ 备注)
 //
+// - 发布日期 / 更新日期 are stamped by the claim, never typed: first publish sets 发布日期 to that
+//   minute, publishing an already-live page again sets 更新日期.
 // - Only pages claimed in this run are (re-)rendered. 已发布 pages keep whatever file is already
 //   on disk, so editing a live article in Notion changes nothing until it is set to 待发布 again.
 // - A page set back to 草稿 while 已上线 is ticked is taken down by the next --publish run (the
@@ -487,8 +489,8 @@ async function pageToFile(page, { draft }) {
   const frontmatter = [
     "---",
     `title: ${y(meta.title)}`,
-    `published: ${meta.published}`,
-    ...(meta.updated ? [`updated: ${meta.updated}`] : []),
+    `published: ${fmDate(meta.published)}`,
+    ...(meta.updated ? [`updated: ${fmDate(meta.updated)}`] : []),
     `description: ${y(meta.description)}`,
     `image: ${y(image)}`,
     `tags: ${y(meta.tags)}`,
@@ -614,7 +616,11 @@ async function readManifest() {
 
 const saveManifest = (m) => fs.writeFile(MANIFEST, JSON.stringify(m, null, 2))
 
-const today = () => new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 10) // UTC+8
+// Current minute in UTC+8, e.g. "2026-11-06T15:01:00+08:00" (Notion stores it as a date-time).
+const nowCN = () => `${new Date(Date.now() + 8 * 3600 * 1000).toISOString().slice(0, 16)}:00+08:00`
+
+// Notion returns date-times with milliseconds ("…T15:01:00.000+08:00"); keep frontmatter tidy.
+const fmDate = (s) => s.replace(/\.\d{3}(?=Z|[+-])/, "")
 
 // ---- local / --publish ----------------------------------------------------
 
@@ -639,7 +645,10 @@ async function sync() {
       console.log(`[sync-notion] taking down「${pageMeta(page).title}」`)
     }
     for (const page of pages.filter((p) => statusOf(p) === STATUS.queued)) {
-      const extra = page.properties[PROP.published]?.date ? {} : { [PROP.published]: { date: { start: today() } } }
+      // Dates are ours, stamped at claim time (≤1 min after the writer picked 待发布):
+      // first time online → 发布日期; already online → this is an update → 更新日期.
+      const stamp = { date: { start: nowCN() } }
+      const extra = isLive(page) ? { [PROP.updated]: stamp } : { [PROP.published]: stamp, [PROP.updated]: { date: null } }
       await setStatus(page.id, STATUS.publishing, { extra })
       manifest.claimed.push({ id: page.id, title: pageMeta(page).title })
       await saveManifest(manifest)

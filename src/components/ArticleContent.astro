@@ -13,7 +13,7 @@ interface Props {
 const { post, Content, words, minutes } = Astro.props as Props
 const hasSlot = Astro.slots.has("default")
 const data = post.data
-const formattedDate = data.published?.toISOString().slice(0, 10)
+const formattedDate = data.published?.toLocaleDateString("sv-SE", { timeZone: "Asia/Shanghai" })
 const tags = data.tags ?? []
 const categoryLabel = data.category?.toString().trim() || "未分类"
 const categoryHref = `/?category=${encodeURIComponent(categoryLabel)}#home-main`

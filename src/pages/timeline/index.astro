@@ -13,7 +13,7 @@ const posts = await getSortedPosts(true)
 const timelineItems = posts.map((post) => ({
   slug: post.id,
   title: post.data.title,
-  date: post.data.published.toISOString().slice(0, 10),
+  date: post.data.published.toLocaleDateString("sv-SE", { timeZone: "Asia/Shanghai" }),
 }))
 ---
 

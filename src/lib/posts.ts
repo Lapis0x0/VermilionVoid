@@ -17,7 +17,8 @@ const stripMarkdown = (input: string) => {
 
 const formatDate = (date?: Date) => {
   if (!date) return ""
-  return date.toISOString().slice(0, 10)
+  // 按北京时间取日期：Notion 同步的文章带具体时刻，UTC 截取会把早上 8 点前的文章算到前一天
+  return date.toLocaleDateString("sv-SE", { timeZone: "Asia/Shanghai" })
 }
 
 export async function getSortedPosts(ignorePinned = false): Promise<PostEntry[]> {
