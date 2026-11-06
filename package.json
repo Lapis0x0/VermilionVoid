@@ -9,7 +9,8 @@
     "preview": "astro preview",
     "check": "astro check",
     "sync-flomo": "node scripts/sync-flomo.mjs",
-    "sync-studies": "node scripts/sync-studies.mjs"
+    "sync-studies": "node scripts/sync-studies.mjs",
+    "sync-notion": "node scripts/sync-notion.mjs"
   },
   "dependencies": {
     "@astrojs/markdown-remark": "^7.3.0",

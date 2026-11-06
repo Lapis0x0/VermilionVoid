@@ -16,3 +16,7 @@ Design/
 .agents/
 .opencode/
 .dev.vars
+
+# Notion 草稿本地预览（scripts/sync-notion.mjs --drafts）
+src/content/posts/notion-drafts/
+public/notion-drafts/

@@ -397,6 +397,138 @@ html[data-prefilter="1"] .article-list-root {
 }
 
 /* ============================================
+   Notion 同步文章（scripts/sync-notion.mjs 生成的 nt-* 标记）
+   ============================================ */
+
+/* 文字色与背景色：色相对齐 Notion 的九色，明度按博客的纸感底色调过 */
+.prose {
+  --nt-gray: oklch(0.55 0 0);
+  --nt-brown: oklch(0.5 0.06 55);
+  --nt-orange: oklch(0.6 0.15 55);
+  --nt-yellow: oklch(0.62 0.13 85);
+  --nt-green: oklch(0.55 0.12 155);
+  --nt-blue: oklch(0.52 0.14 250);
+  --nt-purple: oklch(0.52 0.16 305);
+  --nt-pink: oklch(0.58 0.17 350);
+  --nt-red: var(--primary);
+  --nt-bg-mix: 85%;
+}
+
+.dark .prose {
+  --nt-gray: oklch(0.7 0 0);
+  --nt-brown: oklch(0.7 0.06 55);
+  --nt-orange: oklch(0.75 0.14 55);
+  --nt-yellow: oklch(0.82 0.13 90);
+  --nt-green: oklch(0.75 0.13 155);
+  --nt-blue: oklch(0.72 0.13 250);
+  --nt-purple: oklch(0.72 0.14 305);
+  --nt-pink: oklch(0.75 0.15 350);
+  --nt-red: oklch(0.7 0.2 25);
+  --nt-bg-mix: 78%;
+}
+
+.prose :is(.nt-gray, .nt-brown, .nt-orange, .nt-yellow, .nt-green, .nt-blue, .nt-purple, .nt-pink, .nt-red) {
+  color: var(--nt-c);
+}
+
+.prose :is(.nt-bg-gray, .nt-bg-brown, .nt-bg-orange, .nt-bg-yellow, .nt-bg-green, .nt-bg-blue, .nt-bg-purple, .nt-bg-pink, .nt-bg-red) {
+  background-color: color-mix(in oklab, var(--nt-c), transparent var(--nt-bg-mix));
+  border-radius: 0.2em;
+  padding: 0 0.15em;
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+}
+
+.prose :is(.nt-gray, .nt-bg-gray) { --nt-c: var(--nt-gray); }
+.prose :is(.nt-brown, .nt-bg-brown) { --nt-c: var(--nt-brown); }
+.prose :is(.nt-orange, .nt-bg-orange) { --nt-c: var(--nt-orange); }
+.prose :is(.nt-yellow, .nt-bg-yellow) { --nt-c: var(--nt-yellow); }
+.prose :is(.nt-green, .nt-bg-green) { --nt-c: var(--nt-green); }
+.prose :is(.nt-blue, .nt-bg-blue) { --nt-c: var(--nt-blue); }
+.prose :is(.nt-purple, .nt-bg-purple) { --nt-c: var(--nt-purple); }
+.prose :is(.nt-pink, .nt-bg-pink) { --nt-c: var(--nt-pink); }
+.prose :is(.nt-red, .nt-bg-red) { --nt-c: var(--nt-red); }
+
+/* 分栏：窄屏自动叠成一栏 */
+.prose .nt-columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: 1.5rem;
+  margin: 1.5em 0;
+}
+
+.prose .nt-column > :first-child {
+  margin-top: 0;
+}
+
+.prose .nt-column > :last-child {
+  margin-bottom: 0;
+}
+
+/* 折叠块 */
+.prose details.nt-toggle {
+  margin: 1.25em 0;
+  padding: 0.5rem 0.9rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  background: var(--surface-subtle);
+}
+
+.prose details.nt-toggle > summary {
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.prose details.nt-toggle[open] > summary {
+  margin-bottom: 0.5em;
+}
+
+.prose details.nt-toggle > :last-child {
+  margin-bottom: 0.25em;
+}
+
+/* 带说明的图片 */
+.prose figure.nt-figure {
+  margin: 1.75em 0;
+  text-align: center;
+}
+
+.prose figure.nt-figure > img {
+  margin: 0 auto;
+}
+
+.prose figure.nt-figure > figcaption {
+  margin-top: 0.6em;
+  font-size: 0.875em;
+  color: var(--muted-foreground);
+}
+
+/* 待办列表：只留复选框，不要圆点 */
+.prose ul.contains-task-list {
+  list-style: none;
+  padding-left: 0.25em;
+}
+
+.prose li.task-list-item > input[type="checkbox"] {
+  margin: 0 0.45em 0 0;
+  vertical-align: -0.1em;
+}
+
+/* 书签 / 嵌入链接 */
+.prose p.nt-bookmark > a {
+  display: block;
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: 0.6rem;
+  overflow-wrap: anywhere;
+  text-decoration: none;
+}
+
+.prose p.nt-bookmark > a:hover {
+  background: var(--surface-subtle);
+}
+
+/* ============================================
    GitHub Card - Modern Design
    ============================================ */
 

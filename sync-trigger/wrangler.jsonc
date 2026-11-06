@@ -2,9 +2,9 @@
  * 只有 cron 触发器的 Worker：没有 fetch handler，也不开 workers.dev 域名，
  * 对外没有任何可访问入口。
  *
- * 注意：GH_TOKEN 必须是 secret（`wrangler secret put GH_TOKEN`），不要写进
- * vars，也不要在面板上配成明文变量——`wrangler deploy` 会用本文件覆盖 vars，
- * 明文变量会被抹掉，secret 不受影响。
+ * 注意：GH_TOKEN、NOTION_TOKEN 必须是 secret（`wrangler secret put <名字>`），
+ * 不要写进 vars，也不要在面板上配成明文变量——`wrangler deploy` 会用本文件覆盖
+ * vars，明文变量会被抹掉，secret 不受影响。
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
@@ -13,7 +13,8 @@
   "compatibility_date": "2026-01-03",
   "workers_dev": false,
   "triggers": {
-    "crons": ["0 * * * *"]
+    // 每分钟一次：查 Notion 有没有「待发布」；整点那一次顺带触发 flomo 和 Notion 的例行同步。
+    "crons": ["* * * * *"]
   },
   "observability": {
     "enabled": true
@@ -21,6 +22,8 @@
   "vars": {
     "GH_REPO": "Lapis0x0/VermilionVoid",
     "GH_WORKFLOW": "sync-flomo.yml",
-    "GH_REF": "main"
+    "GH_NOTION_WORKFLOW": "sync-notion.yml",
+    "GH_REF": "main",
+    "NOTION_DATA_SOURCE_ID": "0f7ed547-b1ee-4d54-a9c0-23d67bb05633"
   }
 }

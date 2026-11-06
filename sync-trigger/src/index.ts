@@ -4,6 +4,13 @@
  * 为什么需要它：GitHub 自己的 `schedule` 事件在本仓库上稳定延迟 3~5 小时，积压时
  * 还会整段跳过。实测每次 schedule 运行的 created 与 started 完全相同，说明不是
  * runner 在排队，而是事件压根没按时发出来。workflow_dispatch 走实时通道，秒级触发。
+ *
+ * 每分钟跑一次：
+ * - 查 Notion「博客」库里有没有「待发布」，有就触发 sync-notion.yml。workflow 一开始就会
+ *   把它们改成「发布中」，所以下一分钟不会重复触发。
+ * - 把卡在「发布中」超过 15 分钟的文章改成「发布失败」（workflow 自己最多等 12 分钟，
+ *   超过这个时间说明它中途死掉了，连失败都没来得及回写）。
+ * - 整点：触发 sync-flomo.yml，并无条件触发一次 sync-notion.yml，把改回「草稿」的文章下架。
  */
 
 export interface Env {
@@ -11,16 +18,23 @@ export interface Env {
   GH_TOKEN: string
   /** "owner/repo" */
   GH_REPO: string
-  /** workflow 文件名，如 sync-flomo.yml */
+  /** flomo 同步的 workflow 文件名 */
   GH_WORKFLOW: string
+  /** Notion 发布的 workflow 文件名 */
+  GH_NOTION_WORKFLOW: string
   /** 触发的分支 */
   GH_REF: string
+  /** secret：Notion 集成「VermilionVoid 博客同步」的令牌（读取 + 更新内容） */
+  NOTION_TOKEN: string
+  /** Notion「博客」数据库的 data source id */
+  NOTION_DATA_SOURCE_ID: string
 }
 
 const RETRYABLE_DELAYS_MS = [1000, 3000]
+const STUCK_AFTER_MS = 15 * 60 * 1000
 
-async function dispatch(env: Env): Promise<void> {
-  const url = `https://api.github.com/repos/${env.GH_REPO}/actions/workflows/${env.GH_WORKFLOW}/dispatches`
+async function dispatch(env: Env, workflow: string): Promise<void> {
+  const url = `https://api.github.com/repos/${env.GH_REPO}/actions/workflows/${workflow}/dispatches`
 
   for (let attempt = 0; ; attempt++) {
     const res = await fetch(url, {
@@ -39,23 +53,95 @@ async function dispatch(env: Env): Promise<void> {
     })
 
     if (res.status === 204) {
-      console.log(`dispatched ${env.GH_WORKFLOW} on ${env.GH_REPO}@${env.GH_REF}`)
+      console.log(`dispatched ${workflow} on ${env.GH_REPO}@${env.GH_REF}`)
       return
     }
 
     const detail = (await res.text()).slice(0, 300)
     // 4xx 是配置问题（token 过期、权限不足、workflow 改名），重试没有意义。
     if (res.status < 500 || attempt >= RETRYABLE_DELAYS_MS.length) {
-      throw new Error(`GitHub dispatch failed: HTTP ${res.status} ${detail}`)
+      throw new Error(`GitHub dispatch ${workflow} failed: HTTP ${res.status} ${detail}`)
     }
-    console.warn(`GitHub dispatch HTTP ${res.status}, retrying: ${detail}`)
+    console.warn(`GitHub dispatch ${workflow} HTTP ${res.status}, retrying: ${detail}`)
     await new Promise((r) => setTimeout(r, RETRYABLE_DELAYS_MS[attempt]))
   }
 }
 
+async function notion(env: Env, method: string, path: string, body?: unknown): Promise<any> {
+  const res = await fetch(`https://api.notion.com/v1${path}`, {
+    method,
+    headers: {
+      Authorization: `Bearer ${env.NOTION_TOKEN}`,
+      "Notion-Version": "2025-09-03",
+      "Content-Type": "application/json",
+    },
+    body: body ? JSON.stringify(body) : undefined,
+  })
+  const data: any = await res.json()
+  if (!res.ok) throw new Error(`Notion ${method} ${path}: HTTP ${res.status} ${data?.code} ${data?.message}`)
+  return data
+}
+
+async function hasQueued(env: Env): Promise<boolean> {
+  const data = await notion(env, "POST", `/data_sources/${env.NOTION_DATA_SOURCE_ID}/query`, {
+    filter: { property: "状态", select: { equals: "待发布" } },
+    page_size: 1,
+  })
+  return data.results.length > 0
+}
+
+async function failStuck(env: Env, now: number): Promise<void> {
+  const data = await notion(env, "POST", `/data_sources/${env.NOTION_DATA_SOURCE_ID}/query`, {
+    filter: {
+      and: [
+        { property: "状态", select: { equals: "发布中" } },
+        { timestamp: "last_edited_time", last_edited_time: { before: new Date(now - STUCK_AFTER_MS).toISOString() } },
+      ],
+    },
+    page_size: 20,
+  })
+  for (const page of data.results) {
+    await notion(env, "PATCH", `/pages/${page.id}`, {
+      properties: {
+        状态: { select: { name: "发布失败" } },
+        备注: {
+          rich_text: [
+            {
+              type: "text",
+              text: {
+                content: `超过 15 分钟还在「发布中」，发布流程可能中途退出了。看一下 https://github.com/${env.GH_REPO}/actions/workflows/${env.GH_NOTION_WORKFLOW} ，改回「待发布」即可重试。`,
+              },
+            },
+          ],
+        },
+      },
+    })
+    console.warn(`marked stuck page ${page.id} as 发布失败`)
+  }
+}
+
 export default {
-  // 抛异常会让这次 cron 在 Cloudflare 的 observability 里记为失败，便于排查。
-  async scheduled(_controller, env) {
-    await dispatch(env)
+  async scheduled(controller, env) {
+    const now = controller.scheduledTime
+    const onTheHour = new Date(now).getUTCMinutes() === 0
+    const errors: unknown[] = []
+    const attempt = async (fn: () => Promise<unknown>) => {
+      try {
+        await fn()
+      } catch (err) {
+        console.error(err)
+        errors.push(err)
+      }
+    }
+
+    // 各自独立：Notion 出问题不能耽误 flomo，反过来也一样。
+    await attempt(() => failStuck(env, now))
+    await attempt(async () => {
+      if (onTheHour || (await hasQueued(env))) await dispatch(env, env.GH_NOTION_WORKFLOW)
+    })
+    if (onTheHour) await attempt(() => dispatch(env, env.GH_WORKFLOW))
+
+    // 抛异常会让这次 cron 在 Cloudflare 的 observability 里记为失败，便于排查。
+    if (errors.length) throw errors[0]
   },
 } satisfies ExportedHandler<Env>

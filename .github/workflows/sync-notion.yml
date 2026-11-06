@@ -1,0 +1,78 @@
+name: Publish 长文 from Notion
+
+# 日常由 sync-trigger/ 那个 Cloudflare Worker 打 workflow_dispatch：
+#   - 每分钟查一次 Notion，有「待发布」就触发（发布用）
+#   - 每小时整点无条件触发一次（把改回「草稿」的文章下架）
+# 这里的 schedule 只是 Worker 挂掉时的兜底。
+on:
+  schedule:
+    - cron: '41 */6 * * *'
+  workflow_dispatch:
+    inputs:
+      force_prune:
+        description: '跳过"文章数骤降"保护，允许本次批量下架'
+        type: boolean
+        default: false
+
+concurrency:
+  group: sync-notion
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      contents: write
+      statuses: read
+
+    env:
+      NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
+      NOTION_DATA_SOURCE_ID: ${{ secrets.NOTION_DATA_SOURCE_ID }}
+      NOTION_FORCE_PRUNE: ${{ inputs.force_prune }}
+      MANIFEST: /tmp/notion-publish.json
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # sync-notion.mjs 只用 Node 内置模块，不需要安装依赖
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Claim 待发布 and render
+        run: node scripts/sync-notion.mjs --publish --manifest "$MANIFEST"
+
+      - name: Commit and push if changed
+        id: push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          # public/notion 在没有图片时不存在，直接 add 会报 pathspec 错误，所以 add 整个 public
+          git add -A src/content/posts public
+          if git diff --staged --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore: 同步 Notion 长文"
+          # 与其他同步 workflow 同时推送时，rebase 后重试
+          for i in 1 2 3; do
+            if git pull --rebase origin main && git push; then
+              echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 5
+          done
+          exit 1
+
+      - name: Wait for Vercel, then mark 已发布
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          COMMIT_SHA: ${{ steps.push.outputs.sha }}
+        run: node scripts/sync-notion.mjs --finalize --manifest "$MANIFEST"
+
+      - name: Mark claimed pages 发布失败
+        if: failure()
+        run: >-
+          node scripts/sync-notion.mjs --fail --manifest "$MANIFEST"
+          --reason "GitHub Actions 运行失败：${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
