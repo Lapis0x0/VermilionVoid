@@ -1,8 +1,8 @@
 name: Publish 长文 from Notion
 
 # 日常由 sync-trigger/ 那个 Cloudflare Worker 打 workflow_dispatch：
-#   - 每分钟查一次 Notion，有「待发布」就触发（发布用）
-#   - 每小时整点无条件触发一次（把改回「草稿」的文章下架）
+#   - 每分钟查一次 Notion，有「待发布」或「改回草稿但已上线」就触发
+#   - 每小时整点无条件触发一次兜底（清掉在 Notion 里直接删除的文章）
 # 这里的 schedule 只是 Worker 挂掉时的兜底。
 on:
   schedule:

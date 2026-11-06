@@ -2,9 +2,9 @@
 
 一个只有 cron 触发器的 Cloudflare Worker，每分钟跑一次：
 
-- **Notion 长文**：查「博客」数据库里有没有「待发布」，有就触发 `sync-notion.yml`；
+- **Notion 长文**：查「博客」数据库里有没有「待发布」或「改回草稿但已上线还勾着」的文章，有就触发 `sync-notion.yml`；
   顺带把卡在「发布中」超过 15 分钟的文章改成「发布失败」。
-- **整点**：触发 `sync-flomo.yml`，并无条件触发一次 `sync-notion.yml`（把改回「草稿」的文章下架）。
+- **整点**：触发 `sync-flomo.yml`，并无条件触发一次 `sync-notion.yml` 兜底（在 Notion 里直接删掉的文章查不到，靠它清掉）。
 
 每分钟只是一次 Notion 查询，没活就什么都不做；GitHub Actions 只在真有文章要发时才跑。
 

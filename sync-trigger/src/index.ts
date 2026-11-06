@@ -6,11 +6,13 @@
  * runner 在排队，而是事件压根没按时发出来。workflow_dispatch 走实时通道，秒级触发。
  *
  * 每分钟跑一次：
- * - 查 Notion「博客」库里有没有「待发布」，有就触发 sync-notion.yml。workflow 一开始就会
- *   把它们改成「发布中」，所以下一分钟不会重复触发。
+ * - 查 Notion「博客」库里有没有「待发布」，或改回「草稿」但还在线上的文章，有就触发
+ *   sync-notion.yml。workflow 一开始就会认领它们（改成「发布中」/ 取消「已上线」），
+ *   所以下一分钟不会重复触发。
  * - 把卡在「发布中」超过 15 分钟的文章改成「发布失败」（workflow 自己最多等 12 分钟，
  *   超过这个时间说明它中途死掉了，连失败都没来得及回写）。
- * - 整点：触发 sync-flomo.yml，并无条件触发一次 sync-notion.yml，把改回「草稿」的文章下架。
+ * - 整点：触发 sync-flomo.yml，并无条件触发一次 sync-notion.yml 兜底（比如在 Notion 里
+ *   直接删掉的文章，查询查不到，只能靠例行同步清掉）。
  */
 
 export interface Env {
@@ -82,9 +84,21 @@ async function notion(env: Env, method: string, path: string, body?: unknown): P
   return data
 }
 
-async function hasQueued(env: Env): Promise<boolean> {
+// 有活 = 有「待发布」，或者有「草稿」但「已上线」还勾着（刚被改回草稿、线上还挂着）。
+// 后者被 workflow 认领时会先取消「已上线」，所以和「发布中」一样不会被重复触发。
+async function hasWork(env: Env): Promise<boolean> {
   const data = await notion(env, "POST", `/data_sources/${env.NOTION_DATA_SOURCE_ID}/query`, {
-    filter: { property: "状态", select: { equals: "待发布" } },
+    filter: {
+      or: [
+        { property: "状态", select: { equals: "待发布" } },
+        {
+          and: [
+            { property: "状态", select: { equals: "草稿" } },
+            { property: "已上线", checkbox: { equals: true } },
+          ],
+        },
+      ],
+    },
     page_size: 1,
   })
   return data.results.length > 0
@@ -137,7 +151,7 @@ export default {
     // 各自独立：Notion 出问题不能耽误 flomo，反过来也一样。
     await attempt(() => failStuck(env, now))
     await attempt(async () => {
-      if (onTheHour || (await hasQueued(env))) await dispatch(env, env.GH_NOTION_WORKFLOW)
+      if (onTheHour || (await hasWork(env))) await dispatch(env, env.GH_NOTION_WORKFLOW)
     })
     if (onTheHour) await attempt(() => dispatch(env, env.GH_WORKFLOW))
 

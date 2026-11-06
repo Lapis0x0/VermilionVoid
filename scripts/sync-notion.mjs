@@ -11,7 +11,8 @@
 //
 // - Only pages claimed in this run are (re-)rendered. 已发布 pages keep whatever file is already
 //   on disk, so editing a live article in Notion changes nothing until it is set to 待发布 again.
-// - A page whose status goes back to 草稿 (or that is deleted) loses its file on the next run.
+// - A page set back to 草稿 while 已上线 is ticked is taken down by the next --publish run (the
+//   Worker sees it within a minute). Deleted pages lose their file on the next run of any kind.
 // - Files land at `src/content/posts/<分类文件夹>/<Slug>.md` with `notion_id` in the frontmatter;
 //   that field is how this script recognises its own posts. Hand-written posts are never touched.
 // - Uploaded images and the cover go to `public/notion/<Slug>/`: Notion's file URLs expire in ~1h.
@@ -83,6 +84,9 @@ const PROP = {
   pinned: "置顶",
 }
 const PROP_NOTE = "备注"
+// Checkbox maintained by this script: ticked once a page is live, cleared once it is taken down.
+// 草稿 + 已上线 is how the Worker spots "set back to draft, still online" within a minute.
+const PROP_LIVE = "已上线"
 
 const STATUS = {
   draft: "草稿",
@@ -156,6 +160,8 @@ async function queryPages(status) {
 }
 
 const statusOf = (page) => page.properties?.[PROP.status]?.select?.name || ""
+const isLive = (page) => !!page.properties?.[PROP_LIVE]?.checkbox
+const liveProp = (live) => ({ [PROP_LIVE]: { checkbox: live } })
 
 const textProp = (s) => ({ rich_text: s ? [{ type: "text", text: { content: s.slice(0, 1900) } }] : [] })
 
@@ -601,7 +607,7 @@ async function readManifest() {
   try {
     return JSON.parse(await fs.readFile(MANIFEST, "utf-8"))
   } catch (err) {
-    if (err.code === "ENOENT") return { claimed: [] }
+    if (err.code === "ENOENT") return { claimed: [], unpublished: [] }
     throw err
   }
 }
@@ -622,8 +628,16 @@ async function sync() {
 
   // 1. Claim. The manifest is written right after each claim, so a crash later in this run still
   //    lets --fail release the pages instead of leaving them stuck in 发布中.
-  const manifest = { claimed: [] }
+  //    Take-downs are claimed by clearing 已上线 up front, so the Worker stops re-dispatching;
+  //    --finalize / --fail tick it again if the take-down doesn't make it online.
+  const manifest = { claimed: [], unpublished: [] }
   if (MODE === "publish") {
+    for (const page of pages.filter((p) => (statusOf(p) === STATUS.draft || !statusOf(p)) && isLive(p))) {
+      await notion("PATCH", `/pages/${page.id}`, { properties: liveProp(false) })
+      manifest.unpublished.push({ id: page.id, title: pageMeta(page).title })
+      await saveManifest(manifest)
+      console.log(`[sync-notion] taking down「${pageMeta(page).title}」`)
+    }
     for (const page of pages.filter((p) => statusOf(p) === STATUS.queued)) {
       const extra = page.properties[PROP.published]?.date ? {} : { [PROP.published]: { date: { start: today() } } }
       await setStatus(page.id, STATUS.publishing, { extra })
@@ -639,6 +653,7 @@ async function sync() {
 
   // 2. Decide what each page contributes to the site.
   const owned = await ownedPosts()
+  for (const u of manifest.unpublished) u.changed = owned.has(u.id) // its file is about to be pruned
   const onDiskCount = owned.size
   const render = [] // pages to (re-)render now
   const keepPaths = new Set() // existing files left exactly as they are
@@ -746,11 +761,12 @@ async function waitForPage(url) {
 async function finalize() {
   const manifest = await readManifest()
   const pending = manifest.claimed.filter((c) => !c.failed)
-  if (!pending.length) return console.log("[sync-notion] nothing to finalize")
+  const takedowns = (manifest.unpublished || []).filter((u) => !u.done)
+  if (!pending.length && !takedowns.length) return console.log("[sync-notion] nothing to finalize")
 
   const sha = (process.env.COMMIT_SHA || "").trim()
   let deployError = null
-  if (pending.some((c) => c.changed)) {
+  if ([...pending, ...takedowns].some((c) => c.changed)) {
     if (!sha) deployError = new Error("文件有改动，但没有拿到推送后的提交")
     else await waitForVercel(sha).catch((err) => (deployError = err))
   }
@@ -762,11 +778,20 @@ async function finalize() {
       await setStatus(c.id, STATUS.failed, { note: errText(error) })
       console.error(`[sync-notion] failed「${c.title}」: ${errText(error)}`)
     } else {
-      await setStatus(c.id, STATUS.published)
+      await setStatus(c.id, STATUS.published, { extra: liveProp(true) })
       console.log(`[sync-notion] published「${c.title}」→ ${c.url}`)
     }
     c.failed = !!error
     c.done = true
+  }
+  for (const u of takedowns) {
+    if (deployError) {
+      await setStatus(u.id, STATUS.failed, { note: `下架失败：${errText(deployError)}`, extra: liveProp(true) })
+      console.error(`[sync-notion] take-down failed「${u.title}」: ${errText(deployError)}`)
+    } else {
+      console.log(`[sync-notion] took down「${u.title}」`)
+    }
+    u.done = true
   }
   await saveManifest(manifest)
   if (deployError) process.exit(1)
@@ -783,6 +808,12 @@ async function fail() {
     if (statusOf(page) !== STATUS.publishing) continue
     await setStatus(c.id, STATUS.failed, { note: reason })
     console.log(`[sync-notion] marked「${c.title}」as ${STATUS.failed}`)
+  }
+  // A take-down that didn't make it: the post is presumably still online, so say so.
+  for (const u of manifest.unpublished || []) {
+    if (u.done) continue
+    await setStatus(u.id, STATUS.failed, { note: `下架失败：${reason}`, extra: liveProp(true) })
+    console.log(`[sync-notion] marked take-down of「${u.title}」as ${STATUS.failed}`)
   }
 }
 
