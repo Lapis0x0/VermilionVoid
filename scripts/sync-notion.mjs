@@ -636,12 +636,9 @@ const fmDate = (s) => s.replace(/\.\d{3}(?=Z|[+-])/, "")
 // ---- local / --publish ----------------------------------------------------
 
 async function sync() {
+  // Lost access makes this throw (404 object_not_found), so an empty result really is an empty
+  // database. Mass take-downs are still caught by the "post count collapsed" guard below.
   let pages = await queryPages()
-  if (pages.length === 0) {
-    // An empty database almost certainly means lost access, not "unpublish everything".
-    console.error("[sync-notion] aborting: the database returned 0 pages (integration access lost?).")
-    process.exit(2)
-  }
 
   // 1. Claim. The manifest is written right after each claim, so a crash later in this run still
   //    lets --fail release the pages instead of leaving them stuck in 发布中.
