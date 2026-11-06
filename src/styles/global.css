@@ -431,6 +431,11 @@ html[data-prefilter="1"] .article-list-root {
   color: var(--nt-c);
 }
 
+/* prose 给 strong 单独定了颜色，会盖掉外层的 Notion 文字色 */
+.prose :is(.nt-gray, .nt-brown, .nt-orange, .nt-yellow, .nt-green, .nt-blue, .nt-purple, .nt-pink, .nt-red) :is(strong, em, del, u) {
+  color: inherit;
+}
+
 .prose :is(.nt-bg-gray, .nt-bg-brown, .nt-bg-orange, .nt-bg-yellow, .nt-bg-green, .nt-bg-blue, .nt-bg-purple, .nt-bg-pink, .nt-bg-red) {
   background-color: color-mix(in oklab, var(--nt-c), transparent var(--nt-bg-mix));
   border-radius: 0.2em;
@@ -449,12 +454,18 @@ html[data-prefilter="1"] .article-list-root {
 .prose :is(.nt-pink, .nt-bg-pink) { --nt-c: var(--nt-pink); }
 .prose :is(.nt-red, .nt-bg-red) { --nt-c: var(--nt-red); }
 
-/* 分栏：窄屏自动叠成一栏 */
+/* 分栏：宽屏按 Notion 里的列宽（--nt-cols 由同步脚本写入），窄屏叠成一栏 */
 .prose .nt-columns {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  grid-template-columns: minmax(0, 1fr);
   gap: 1.5rem;
   margin: 1.5em 0;
+}
+
+@media (min-width: 640px) {
+  .prose .nt-columns {
+    grid-template-columns: var(--nt-cols, repeat(auto-fit, minmax(14rem, 1fr)));
+  }
 }
 
 .prose .nt-column > :first-child {

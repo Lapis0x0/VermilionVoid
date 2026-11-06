@@ -352,10 +352,14 @@ class Renderer {
       }
 
       case "column_list": {
-        const cols = (b.children || []).map(
-          (c) => `<div class="nt-column">\n\n${this.blocks(c.children, true)}\n\n</div>`,
-        )
-        return `<div class="nt-columns">\n\n${cols.join("\n\n")}\n\n</div>`
+        const columns = b.children || []
+        const cols = columns.map((c) => `<div class="nt-column">\n\n${this.blocks(c.children, true)}\n\n</div>`)
+        // Widths dragged in Notion arrive as width_ratio (fractions summing to 1); equal columns omit it.
+        const ratios = columns.map((c) => c.column?.width_ratio)
+        const fr = ratios.every((r) => typeof r === "number")
+          ? ratios.map((r) => `minmax(0, ${Math.round(r * 1000) / 10}fr)`)
+          : columns.map(() => "minmax(0, 1fr)")
+        return `<div class="nt-columns" style="--nt-cols: ${fr.join(" ")}">\n\n${cols.join("\n\n")}\n\n</div>`
       }
 
       case "equation":
@@ -374,11 +378,16 @@ class Renderer {
 
       case "table": {
         const rows = (b.children || []).map((r) =>
-          r.table_row.cells.map((cell) => rich(cell).replace(/\|/g, "\\|") || " "),
+          // escMd already escaped `|` in plain text; code spans still need it for GFM tables.
+          r.table_row.cells.map((cell) => rich(cell).replace(/(?<!\\)\|/g, "\\|") || " "),
         )
         if (!rows.length) return ""
         const width = Math.max(...rows.map((r) => r.length))
         const line = (cells) => `| ${Array.from({ length: width }, (_, i) => cells[i] ?? " ").join(" | ")} |`
+        // GFM has no row headers; a bold first column is the closest equivalent.
+        if (v.has_row_header) {
+          for (const r of rows.slice(v.has_column_header ? 1 : 0)) if (r[0].trim()) r[0] = `<strong>${r[0]}</strong>`
+        }
         // GFM tables need a header row; without one in Notion, an empty header is used.
         const header = v.has_column_header ? rows.shift() : []
         return [line(header), line(Array(width).fill("---")), ...rows.map(line)].join("\n")
@@ -387,10 +396,12 @@ class Renderer {
       case "image": {
         const src = this.fileUrl(v)
         if (!src) return ""
+        // Always a <figure> (not `![]()`, which gets wrapped in a <p> with its own margins), so
+        // images with and without a caption line up, e.g. side by side in columns.
         const caption = rich(v.caption, { html: true })
         const alt = escHtml(plain(v.caption))
-        if (!caption) return `![](${src})`
-        return `<figure class="nt-figure">\n<img src="${escHtml(src)}" alt="${alt}" loading="lazy" />\n<figcaption>${caption}</figcaption>\n</figure>`
+        const cap = caption ? `\n<figcaption>${caption}</figcaption>` : ""
+        return `<figure class="nt-figure">\n<img src="${escHtml(src)}" alt="${alt}" loading="lazy" />${cap}\n</figure>`
       }
 
       case "bookmark":
@@ -408,7 +419,7 @@ class Renderer {
       case "pdf": {
         const src = v.type === "external" ? v.external.url : this.fileUrl(v)
         if (!src) return ""
-        const label = plain(v.caption) || v.name || path.basename(src)
+        const label = plain(v.caption) || v.name || (v.type === "external" ? src : path.basename(new URL(src).pathname))
         return `<p class="nt-bookmark"><a href="${escHtml(src)}">${escHtml(label)}</a></p>`
       }
 
