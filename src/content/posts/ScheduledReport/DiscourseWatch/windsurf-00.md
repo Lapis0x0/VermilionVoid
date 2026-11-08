@@ -2,7 +2,7 @@
 title: 风向专栏导读：正在撕裂的，与正在形成的
 published: 2025-07-16
 description: "风，已然起于青萍之末，并将愈演愈烈。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/1752559862384-tuya.webp?imageSlim"
+image: "https://pic.lapis.cafe/2025/07/e4da772b45ae8e5a200fe736966d8341.webp"
 tags: ["风向"]
 category: 浅度报告
 draft: false

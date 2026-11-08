@@ -2,7 +2,7 @@
 title: 模型考古学（八）：Llama4发布——并非领先
 published: 2025-04-06
 description: "Meta发布Llama 4系列，采用MoE、原生多模态与千万级上下文。虽性能宣称领先，但社区质疑实际效果与宣传不符，发布显仓促，更像追赶而非引领。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504061504868.png"
+image: "https://pic.lapis.cafe/2025/04/eb5c1f1ae2b5a5d3593d030998b660e3.png"
 tags: ["模型考古学"]
 category: 深度学习
 draft: false
@@ -41,7 +41,7 @@ Llama4系列是 Meta **首次**在旗舰模型中采用**专家混合 (MoE, Mixt
 
 转向 MoE 是 Llama 4 实现更高性能和效率的关键一步，使得强大的模型（如 Maverick）能够在单个 H100 主机上运行成为可能，并为 Behemoth 这样的超大规模模型训练提供了基础。
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504061344684.png)
+![](https://pic.lapis.cafe/2025/04/7c335bd86dc4df7c674ae525021b4633.png)
 
 ## 2.原生多模态与早期融合
 
@@ -68,7 +68,7 @@ Llama 4 在处理长序列信息方面取得了突破性进展，尤其是 Llama
 
 模型在“大海捞针 (Needle-in-a-haystack)”测试（在长文本中定位信息）和处理超过 1000 万代码 token 的 NLL（负对数似然）任务上都展示了良好效果。
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504061353183.png)
+![](https://pic.lapis.cafe/2025/04/5e15935913bc9c14023036944b19ef1a.png)
 
 ## 4.训练与后训练优化
 
@@ -141,7 +141,7 @@ Llama 4 Scout 和 Maverick 的性能确实亮眼，在各自的细分领域（�
 > 再补一句，reddit上有人测试竞技场的知识量和or发布的知识量似乎是不相同的，很多竞技场的是知道的，但是放到or渠道就不知道了（我没有实测，在此放上贴图，如果有老哥实测欢迎贴出来）
 > 
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504061447509.png)
+![](https://pic.lapis.cafe/2025/04/79027db8e2475872fbc2702b7b1e03ba.png)
 
 **这意味着什么？**
 

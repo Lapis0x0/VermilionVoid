@@ -2,7 +2,7 @@
 title: 模型考古学（七）：Qwen2.5-Omni技术报告解读
 published: 2025-03-27
 description: "阿里小开了一款大模型，叫Qwen2.5-Omni，本篇将看下Qwen2.5-Omni的技术报告，讨论一下其中的创新点和Omni类模型的工程优势。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503271808335.png"
+image: "https://pic.lapis.cafe/2025/03/db168f2e6863a4ca8e0058d7eec9346b.png"
 tags: ["模型考古学"]
 category: 深度学习
 draft: false
@@ -61,7 +61,7 @@ Qwen2.5‑Omni 的关键特性可以概括为：
 
 # 二、Thinker-Talker 解读
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503271807672.png)
+![](https://pic.lapis.cafe/2025/03/42b85dfc76b740a9d86f1571acef4323.png)
 
 上图为Qwen2.5-Omni的架构，可以看到Qwen2.5‑Omni 采用了 Thinker‑Talker 架构。Thinker 就像大脑一样，负责处理和理解来自文本、音频和视频模态的输入，生成高级表示和相应的文本。Talker 则像人的嘴巴一样，以流式的方式接收 Thinker 产生的高级表示和文本，并以离散的语音单元输出。
 
@@ -69,7 +69,7 @@ Qwen2.5‑Omni 的关键特性可以概括为：
 
 Thinker模块本身就可以被视为一个大语言模型（LLM），用来接收来自多种模态的输出（文本、图像、音频、视频），将这些信息转化为高层语义表示。在在输入端，Thinker 通过一系列编码器（Audio Encoder、Vision Encoder）获取语音、图像 / 视频的表示，再和文本序列的表示在统一的 Transformer 解码器中融合。不同模态在实际处理时，通过 **TMRoPE** 等时间对齐机制确保时序信息一致，从而让 Thinker 能获得对多模态的整体理解。
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503271841602.png)
+![](https://pic.lapis.cafe/2025/03/c565be9a5c45fe9332afaf8d685dd7a8.png)
 
 当用户需要纯文本回答时，Thinker 就直接把语义向量转化为文本输出（经典的自回归生成过程）。从架构上看，它承担了大部分复杂的“语言思考”和 “语义推理”工作。
 
@@ -98,7 +98,7 @@ Thinker模块本身就可以被视为一个大语言模型（LLM），用来接�
 
 # 三、跑分展示
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503271859412.png)
+![](https://pic.lapis.cafe/2025/03/95127dc13c6685a3e7c01bbea22feaec.png)
 
 剩下的懒得放了，毕竟7B的模型最主要还是学术研究用途。
 

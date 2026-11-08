@@ -29,7 +29,7 @@ draft: true
 
 在测试中，云飞测试了好几次，**每一次的操作路径都不一样**，**这代表背后是华为在用一套完整的大模型Moblie Agent系统来执行用户的指令。**
 
-![Untitled](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202407060233934.png)
+![Untitled](https://pic.lapis.cafe/2024/07/568df1aa620b07609c917c85e59695b1.png)
 
 这对我来说才是真正革命性的地方。
 
@@ -41,7 +41,7 @@ AI要成为能每个人身边的生产娱乐工具，人的可用之器，必须
 
 科大讯飞在上个月发布了星火大模型V4.0，在纸面上宣称“全面对标GPT-4 Turbo”，发布会后讯飞股票直接大跌，不管是资本市场还是技术层，大家都不太认可讯飞在大模型面的作为。
 
-![Untitled](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202407060233498.png)
+![Untitled](https://pic.lapis.cafe/2024/07/fa8e3209553bac7d2564798fe01052d6.png)
 
 发布会后从近期的最高点一直跌到现在
 

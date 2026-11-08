@@ -2,7 +2,7 @@
 title: 模型考古学（五）：Minimax-01 模型技术报告简读
 published: 2025-03-22
 description: "本篇博客简要解析了 Minimax-01 模型的架构设计，聚焦其在超长上下文处理中的性能表现与混合注意力机制的技术实现。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503221522122.png"
+image: "https://pic.lapis.cafe/2025/03/ebb5c36f0de9a27015e45d6c8a007070.png"
 tags: ["模型考古学"]
 category: 深度学习
 draft: false
@@ -12,7 +12,7 @@ DeepSeek V3刚出那会就想专门写篇解读博客了，但一直摸到现在
 
 # Minimax-01模型亮点：Lightning attention加持下的百万上下文窗口
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503221522122.png)
+![](https://pic.lapis.cafe/2025/03/ebb5c36f0de9a27015e45d6c8a007070.png)
 
 先放一个模型的跑分表，可以看到Minimax 01尤其在超长上下文领域表现优秀，随着上下文长度的增加，其模型性能衰退的速度是所有长上下文模型里最缓慢的。
 
@@ -138,7 +138,7 @@ Minimax最后做了个总结，尽管这些创新在理论上颇具前景，但�
 
 Minimax 01采用了MoE架构，最终参数为456b，激活459亿，共32个专家。
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503221757601.png)
+![](https://pic.lapis.cafe/2025/03/89bb4b0c433b3f363d6256a3380c8329.png)
 
 新模型在长上下文场景下的响应延迟也非常不错。
 
@@ -172,7 +172,7 @@ $$
 
 这是Minimax-text-01的架构图：
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503221816516.png)
+![](https://pic.lapis.cafe/2025/03/617909684f8a459f7347a00701072623.png)
 
 虽然线性注意力（包括各种近似或低秩方法）虽然在理论和实验中大幅降低了计算复杂度和显存占用，但其对注意力分布的近似在某些场景下会带来表达损失，尤其是对长程依赖或分布较尖锐的注意力模式可能刻画得不够精细。插入少量的 Softmax Attention 块可以弥补这一局限，让模型仍能捕捉到更复杂或更细腻的依赖结构。另一方面，如果所有模块都使用标准的 Softmax Attention，则 O(n²) 的注意力机制在长序列场景下会带来巨大的硬件与时间成本。
 
@@ -180,7 +180,7 @@ $$
 
 **让我们看一下不同架构的模型参数与 FLOPs ⽐较：**
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503221826650.png)
+![](https://pic.lapis.cafe/2025/03/dd429c202f700ad4285e9eee934c201f.png)
 
 已知常见符号含义如下：
 
@@ -202,7 +202,7 @@ FLOPs（运算量）：
 这张表格应该可以很清晰地显示不同技术路径的性能消耗区别了。模型规模越大，Lightning Attention 与 Hybrid-lightning 相对于 softmax 注意力的优势就越明显。
 :::
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503221933903.png)
+![](https://pic.lapis.cafe/2025/03/2fcb8207b47e4994542873a42220627b.png)
 
 > 技术报告显示，Lightning attention 在大多数下游任务中表现出与 Transformer 模型相当的性能，除了 NIAH。这表明线性注意力在语言建模能力上与 Transformer 模型相似，但在检索任务上表现不佳，使其不适合于大规模语言模型（LLMs）。然而，Hybrid Lightning attention 不仅匹配了 softmax attention 的检索和外推能力，还超越了其表现，因而非常适合在 LLMs 中进行上下文学习。
 > 
@@ -210,7 +210,7 @@ FLOPs（运算量）：
 > Softmax 注意力机制可解释为一种线性 RNN（Qin 等人，2024a）。在每个时间步 $t$ 从初始时间 $t=1$开始，重新计算隐藏状态的过程常被比喻为“翻阅书籍”。该方法通过系统地回顾先前数据，使模型能够准确保留输入信息。相比之下，线性模型缺乏这种重新计算过程，这限制了它们有效保留输入数据的能力。
 > 
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503221934775.png)
+![](https://pic.lapis.cafe/2025/03/ac114804d816e143656c6f5b57eeaba1.png)
 
 Hybrid Lightning Attention实现了与序列⻓度⽆关的恒定训练速度，并且是唯⼀⼀个性能超过FlashAttention2 的线性模型。
 

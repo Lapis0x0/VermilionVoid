@@ -2,7 +2,7 @@
 title: 宗教研究 01｜制度大于真理：早期基督教的边界建构
 published: 2025-07-04
 description: "制度未必通向真理，但每一个真理的诞生，都离不开制度的边界"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/religion-01-christianity-institutions-over-truth-tuya.webp"
+image: "https://pic.lapis.cafe/2025/07/1752af6712aa5edbf30fdce203e8fcd3.webp"
 tags: ["基督教研究"]
 category: 宗教研究
 draft: false

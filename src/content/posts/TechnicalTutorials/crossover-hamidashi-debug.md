@@ -2,7 +2,7 @@
 title: MacOS使用Crossover&Wine运行Galgame（常轨脱离）崩溃解决记录
 published: 2025-04-23
 description: "本篇记录了在 Apple Silicon Mac 上使用 Crossover（Wine）运行 Galgame《常轨脱离》时遭遇白屏崩溃的排查与解决全过程。详尽分析了 WVC1/WMA 解码失败背后的多媒体依赖问题，并通过安装 DirectShow Filters 成功修复。适合所有在 macOS 上尝试跑 Windows 游戏的折腾型玩家参考。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/iShot_2025-04-23_22.00.00-tuya.webp"
+image: "https://pic.lapis.cafe/2025/04/e3022fe2aef45dd13b18ccb96b38bb66.webp"
 tags: []
 category: 技术教程
 draft: false
@@ -97,7 +97,7 @@ draft: false
 
 在检索后，我发现 **DirectShow Filters** 也能满足游戏的组件需求。这次的下载安装过程就非常顺利：在 CrossOver 对应容器“安装软件”中选择“DirectShow Filters”，一键安装完成，不需要额外配置、不需要自己找 DLL，也没有出现之前 WMP 安装时那种依赖冲突或组件注册失败的问题。
 
-![泪目](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/iShot_2025-04-23_22.00.00-tuya.webp)
+![泪目](https://pic.lapis.cafe/2025/04/e3022fe2aef45dd13b18ccb96b38bb66.webp)
 >泪目，终于顺利进游戏了
 
 >最终结果当然也是游戏顺利启动并渲染，直到现在都没有碰到过任何报错。

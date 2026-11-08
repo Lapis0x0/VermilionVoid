@@ -171,4 +171,4 @@ OpenAI之所以能领先所有人半步（甚至是一步），正是因为它�
 
 >直接引用我[《评OpenAI发布o3&o4mini：喧嚣落幕，长路开启》](https://www.lapis.cafe/posts/ai-and-deep-learning/tech-review-openai-o3/#2chatgpt%E6%9C%AC%E8%BA%AB%E5%B0%B1%E6%98%AF%E4%B8%80%E4%B8%AAagent%E4%BA%A7%E5%93%81)博客的结论：
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202507121633824.png?imageSlim)
+![image.png](https://pic.lapis.cafe/2025/07/6b60eb929610572486fe428db95a640c.png)

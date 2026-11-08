@@ -17,7 +17,9 @@
 //   Worker sees it within a minute). Deleted pages lose their file on the next run of any kind.
 // - Files land at `src/content/posts/<分类文件夹>/<Slug>.md` with `notion_id` in the frontmatter;
 //   that field is how this script recognises its own posts. Hand-written posts are never touched.
-// - Uploaded images and the cover go to `public/notion/<Slug>/`: Notion's file URLs expire in ~1h.
+// - Uploaded images and the cover go to the Cloudflare R2 image bucket behind pic.lapis.cafe, keyed
+//   `<发布年>/<月>/<md5>.<ext>` like PicList does, because Notion's file URLs expire in ~1h. Drafts
+//   (--drafts) keep theirs in the gitignored `public/notion-drafts/<Slug>/` instead.
 // - The sync-trigger Worker polls for 待发布 every minute and dispatches sync-notion.yml, and
 //   fails pages stuck in 发布中 for more than 15 minutes.
 //
@@ -34,6 +36,8 @@
 //   NOTION_DATA_SOURCE_ID  the database's data source id
 //   NOTION_FORCE_PRUNE     `true` skips the "post count collapsed" guard
 //   NOTION_SITE            default https://www.lapis.cafe
+//   R2_ENDPOINT / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY   image uploads (any mode that renders
+//                          a non-draft post with images); R2_BUCKET and R2_PUBLIC_URL have defaults
 //   GITHUB_TOKEN / GITHUB_REPOSITORY / COMMIT_SHA   --finalize only
 //
 // Only Node built-ins, like sync-flomo.mjs.
@@ -47,13 +51,20 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const REPO_ROOT = path.resolve(__dirname, "..")
 const POSTS_DIR = path.join(REPO_ROOT, "src", "content", "posts")
 const DRAFTS_DIR = path.join(POSTS_DIR, "notion-drafts")
-const IMAGES_DIR = path.join(REPO_ROOT, "public", "notion")
 const DRAFT_IMAGES_DIR = path.join(REPO_ROOT, "public", "notion-drafts")
 
 const TOKEN = (process.env.NOTION_TOKEN || "").trim()
 const DATA_SOURCE_ID = (process.env.NOTION_DATA_SOURCE_ID || "").trim()
 const FORCE_PRUNE = /^(1|true|yes)$/i.test((process.env.NOTION_FORCE_PRUNE || "").trim())
 const SITE = (process.env.NOTION_SITE || "https://www.lapis.cafe").replace(/\/$/, "")
+const env = (name, fallback = "") => (process.env[name] || fallback).trim().replace(/\/$/, "")
+const R2 = {
+  endpoint: env("R2_ENDPOINT"),
+  bucket: env("R2_BUCKET", "obsidianpicture"),
+  keyId: env("R2_ACCESS_KEY_ID"),
+  secret: env("R2_SECRET_ACCESS_KEY"),
+  publicUrl: env("R2_PUBLIC_URL", "https://pic.lapis.cafe"),
+}
 
 const argv = process.argv.slice(2)
 const flag = (name) => argv.includes(name)
@@ -263,11 +274,14 @@ const indent = (text, prefix) =>
 const isListItem = (t) => t === "bulleted_list_item" || t === "numbered_list_item" || t === "to_do"
 
 class Renderer {
-  constructor({ slug, imagesDir, imagesUrl }) {
+  // `local` = { dir, url } to download images under public/; otherwise they go to R2 under `r2Prefix`.
+  constructor({ slug, local, r2Prefix }) {
     this.slug = slug
-    this.imagesDir = imagesDir
-    this.imagesUrl = imagesUrl
-    this.downloads = [] // { url, path }
+    this.local = local
+    this.r2Prefix = r2Prefix
+    // { url, path } for local files; { url, token } for R2, whose key (an md5 of the bytes) is only
+    // known after the download, so the markdown carries `token` until writePost swaps it in.
+    this.downloads = []
     this.warnings = []
   }
 
@@ -436,17 +450,22 @@ class Renderer {
     }
   }
 
-  // Uploaded files get downloaded and served from public/; external URLs are kept as-is.
+  // Uploaded files get re-hosted (R2, or public/ for drafts); external URLs are kept as-is.
   fileUrl(v) {
     if (v.type === "external") return v.external.url
     if (v.type !== "file") return ""
     const url = v.file.url
     const { pathname } = new URL(url)
     const ext = (path.extname(decodeURIComponent(pathname)) || ".png").toLowerCase()
+    if (!this.local) {
+      const token = `NOTION-IMAGE-${IMAGE_NONCE}-${this.downloads.length}`
+      this.downloads.push({ url, token, ext, prefix: this.r2Prefix })
+      return token
+    }
     // The S3 key (without the signature) is unique per upload, so its hash is a stable file name.
     const name = `${crypto.createHash("sha1").update(pathname).digest("hex").slice(0, 12)}${ext}`
-    this.downloads.push({ url, path: path.join(this.imagesDir, this.slug, name) })
-    return `${this.imagesUrl}/${this.slug}/${name}`
+    this.downloads.push({ url, path: path.join(this.local.dir, this.slug, name) })
+    return `${this.local.url}/${this.slug}/${name}`
   }
 }
 
@@ -484,8 +503,9 @@ async function pageToFile(page, { draft }) {
 
   const r = new Renderer({
     slug: meta.slug,
-    imagesDir: draft ? DRAFT_IMAGES_DIR : IMAGES_DIR,
-    imagesUrl: draft ? "/notion-drafts" : "/notion",
+    local: draft ? { dir: DRAFT_IMAGES_DIR, url: "/notion-drafts" } : null,
+    // 发布日期, not today: re-publishing next month must not re-upload under a new key.
+    r2Prefix: meta.published.slice(0, 7).replace("-", "/"),
   })
   const body = r.blocks(await fetchChildren(page.id))
   const image = meta.cover ? r.fileUrl(meta.cover) : ""
@@ -583,21 +603,61 @@ async function ownedPosts() {
   return owned
 }
 
-// Writes the file and downloads its images; true if anything on disk changed.
+// ---- R2 ---------------------------------------------------------------------
+
+const IMAGE_NONCE = crypto.randomBytes(6).toString("hex")
+const MIME = { ".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".gif": "image/gif", ".webp": "image/webp", ".svg": "image/svg+xml", ".avif": "image/avif" }
+
+const sha256 = (data) => crypto.createHash("sha256").update(data).digest("hex")
+const hmac = (key, data) => crypto.createHmac("sha256", key).update(data).digest()
+
+// PUT one object through R2's S3 API, signed with SigV4 by hand to stay dependency-free.
+async function r2Put(key, body, contentType) {
+  if (!R2.endpoint || !R2.keyId || !R2.secret) throw new Error("缺少 R2_ENDPOINT / R2_ACCESS_KEY_ID / R2_SECRET_ACCESS_KEY，无法上传图片")
+  const url = new URL(`${R2.endpoint}/${R2.bucket}/${key}`)
+  const amzDate = new Date().toISOString().replace(/[-:]|\.\d{3}/g, "") // 20261108T123456Z
+  const scope = `${amzDate.slice(0, 8)}/auto/s3/aws4_request`
+  const headers = { "content-type": contentType, host: url.host, "x-amz-content-sha256": sha256(body), "x-amz-date": amzDate }
+  const names = Object.keys(headers).sort()
+  const canonical = ["PUT", url.pathname, "", ...names.map((n) => `${n}:${headers[n]}`), "", names.join(";"), headers["x-amz-content-sha256"]].join("\n")
+  const signingKey = ["auto", "s3", "aws4_request"].reduce(hmac, hmac(`AWS4${R2.secret}`, amzDate.slice(0, 8)))
+  const signature = crypto.createHmac("sha256", signingKey).update(["AWS4-HMAC-SHA256", amzDate, scope, sha256(canonical)].join("\n")).digest("hex")
+  delete headers.host
+  headers.authorization = `AWS4-HMAC-SHA256 Credential=${R2.keyId}/${scope}, SignedHeaders=${names.join(";")}, Signature=${signature}`
+  const res = await fetch(url, { method: "PUT", headers, body })
+  if (!res.ok) throw new Error(`图片上传 R2 失败 (HTTP ${res.status}): ${(await res.text()).slice(0, 200)}`)
+}
+
+async function download(url) {
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`图片下载失败 (HTTP ${res.status})`)
+  return Buffer.from(await res.arrayBuffer())
+}
+
+// Writes the file and re-hosts its images; true if anything on disk changed.
 async function writePost(f) {
   let changed = false
-  if (await writeIfChanged(f.path, f.content)) {
-    changed = true
-    console.log(`[sync-notion] wrote ${path.relative(REPO_ROOT, f.path)}`)
-  }
+  let content = f.content
   for (const img of f.images) {
+    if (img.token) {
+      // Uploaded before the file is written, so a post never links to an image that isn't there.
+      const body = await download(img.url)
+      const key = `${img.prefix}/${crypto.createHash("md5").update(body).digest("hex")}${img.ext}`
+      await r2Put(key, body, MIME[img.ext] || "application/octet-stream")
+      content = content.replaceAll(img.token, `${R2.publicUrl}/${key}`)
+      console.log(`[sync-notion] uploaded ${key}`)
+      continue
+    }
     if (await exists(img.path)) continue // named by upload, so an existing file is current
-    const res = await fetch(img.url)
-    if (!res.ok) throw new Error(`图片下载失败 (HTTP ${res.status})`)
+    const body = await download(img.url)
     await fs.mkdir(path.dirname(img.path), { recursive: true })
-    await fs.writeFile(img.path, Buffer.from(await res.arrayBuffer()))
+    await fs.writeFile(img.path, body)
     changed = true
     console.log(`[sync-notion] saved ${path.relative(REPO_ROOT, img.path)}`)
+  }
+  if (await writeIfChanged(f.path, content)) {
+    changed = true
+    console.log(`[sync-notion] wrote ${path.relative(REPO_ROOT, f.path)}`)
   }
   return changed
 }
@@ -713,12 +773,9 @@ async function sync() {
   }
   if (MODE === "publish") await saveManifest(manifest)
 
-  // 4. Prune. Images of kept posts live under public/notion/<their slug>/ and stay with them.
-  const keep = new Set([...keepPaths, ...files.flatMap((f) => [f.path, ...f.images.map((i) => i.path)])])
-  const keptImageDirs = [...keepPaths].map((p) => path.join(IMAGES_DIR, path.basename(p, ".md")) + path.sep)
-  const allOwned = [...owned.values()].flat()
-  const images = (await walkFiles(IMAGES_DIR)).filter((p) => !keptImageDirs.some((d) => p.startsWith(d)))
-  const deleted = await prune(keep, [...allOwned, ...images], [IMAGES_DIR])
+  // 4. Prune. Images live in R2 and are never deleted from there.
+  const keep = new Set([...keepPaths, ...files.map((f) => f.path)])
+  const deleted = await prune(keep, [...owned.values()].flat(), [])
   console.log(`[sync-notion] ${files.length} rendered, ${keepPaths.size} kept, ${deleted} removed`)
 
   if (WITH_DRAFTS) await syncDrafts(pages)

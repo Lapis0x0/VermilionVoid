@@ -30,7 +30,7 @@ ResNet的主要创新点在于它引入了一种特殊的网络结构——残�
 
 考虑到手上MacBook air的羸弱性能，我预训练的模型用的是ResNet-18，训练数据集一共分了四类：'a.美少女', 'b.截图与杂图', 'c.动物', 'd.漫画’，一共大概六百张图片。训练跑了10个epoch，训练用时差不多10min（没有用Apple自己的mps加速框架），实际效果非常不错，准确率在95%左右。
 
-![Untitled](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202407040236167.png)
+![Untitled](https://pic.lapis.cafe/2024/07/9b7a3b880eb5c6be3e702e88e2e08261.png)
 
 # 二、完整代码
 

@@ -2,7 +2,7 @@
 title: 信息洪流中的官僚体系：苏联央地关系与大部委制度反思
 published: 2025-06-01
 description: "写了很久的一篇博客了，本文聚焦苏联官僚体系，剖析其央地关系与大部委制下的信息处理困境，揭示计划经济失灵的深层原因。旨在反思信息洪流中官僚治理的结构性症结与制度韧性，为现代国家治理提供镜鉴。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/AF25E88EC474DF0DF597D712297F0EA81C14551A_size108_w832_h558.webp"
+image: "https://pic.lapis.cafe/2025/05/da06184eca681bf5ec8b31f6d003ff7d.webp"
 tags: ["风自东方来"]
 category: 金融与经济
 draft: false

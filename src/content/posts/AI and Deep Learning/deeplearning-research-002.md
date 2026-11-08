@@ -2,7 +2,7 @@
 title: 模型考古学（二）：视觉大模型发展梳理与Qwen2-VL论文解读
 published: 2025-01-22
 description: "如果说「模型考古学」第一篇主要聚焦于大语言模型（LLM）的内部机制与演进脉络，那么本篇博客将拓宽视野，探求视觉大模型（Vision Large Language Model，VLLM）的技术原理和发展历程。在单纯的文本世界之外，视觉大模型融合了图像理解能力，赋予了AI“看”世界的眼睛，让模型理解世界的方式从一维的文字扩展到了二维的图像。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/llmresearch-tuya.webp"
+image: "https://pic.lapis.cafe/2025/04/21a75dfa036c6cc79046e56613f31751.webp"
 tags: ["模型考古学"]
 category: 深度学习
 draft: false
@@ -133,13 +133,13 @@ Qwen2-VL整体架构上仍然延续了Qwen-VL中ViT加Qwen2的串联架构，在
     例如对text输入，distinct-IDs退化为1D-RoPE；对image输入，distinct-IDs是由height & width components决定的；对于video输入，distinct-IDs是由height & width + temporal决定的。
     
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202501222210404.png)
+![image.png](https://pic.lapis.cafe/2025/01/2e20e91a6a4c1af81ce49a188666678d.png)
 
 - **采用统一的范式处理图像和视频**，增强了模型的视觉感知能力
 
 ## 1.基础：以Qwen2-VL为例解析一个视觉大模型的结构
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202501222210360.png)
+![image.png](https://pic.lapis.cafe/2025/01/9d2689873b0fd7f2a50d37414022bd5d.png)
 
 我们直接以Qwen2-VL技术报告里这张结构图为例，来解析一下一个视觉大模型应该包含哪些部分。
 

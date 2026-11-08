@@ -2,7 +2,7 @@
 title: 暗涌系列：Ark Invest《Big Ideas 2025》报告浅析 Part 2
 published: 2025-03-16
 description: "The BigIdeas 2025的分析报告Part2，主要内容为Robotaxi、自动物流和可重复利用火箭三个领域的解析"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163202792.png"
+image: "https://pic.lapis.cafe/2025/03/0ea64b64e12dbdba64203947510ffb73.png"
 tags: ["暗涌"]
 category: 金融与经济
 draft: false
@@ -53,7 +53,7 @@ draft: false
 > 木头姐在这章最后一页还专门提了一嘴，“美国需要低成本、⼈⼯智能驱动的⻜机”，放了中国和伊朗的无人机和美国的F16还有导弹做对比，主打一个压力给到议员，美元给到专款
 > 
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503162326443.png)
+![image.png](https://pic.lapis.cafe/2025/03/afb1130e22b6dc9267ed8c1c905b9ed3.png)
 
 # 六、能源
 

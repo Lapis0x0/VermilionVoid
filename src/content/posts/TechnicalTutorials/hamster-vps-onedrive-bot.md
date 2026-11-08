@@ -119,7 +119,7 @@ docker compose logs -f
 - 仓鼠收到任务后，会开始下载，并在下载完成后自动开始上传到你指定的 OneDrive 路径。整个过程，它都会在 Telegram 里向你汇报进度（下载进度、上传进度、完成/失败信息）。
 - 你可以使用 `/help` 查看所有可用命令，比如 `/info` 看系统状态，`/path` 切换下载目录（不影响上传路径），`/web` 获取 AriaNg 的 WebUI 地址（如果你需要更精细地管理下载任务）。
 
-![效果](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504301529135.png)
+![效果](https://pic.lapis.cafe/2025/04/a8aa288aeea33426bdd4adff54df7fa4.png)
 
 
 ## 未来计划

@@ -2,7 +2,7 @@
 title: 模型考古学（四）：RAG技术解析
 published: 2025-03-20
 description: "本文将深入探讨RAG技术的原理、实现方式及其在实际应用中的优势与局限。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/llmresearch-tuya.webp"
+image: "https://pic.lapis.cafe/2025/04/21a75dfa036c6cc79046e56613f31751.webp"
 tags: ["模型考古学"]
 category: 深度学习
 draft: false
@@ -39,7 +39,7 @@ RAG通常由两个主要模块组成：
 
 # 二、RAG的实现原理
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503201800995.png)
+![](https://pic.lapis.cafe/2025/03/9d9a3c7d37694b769ec8b8437ae3847a.png)
 
 RAG系统的运作遵循“检索-增强-生成”的循环逻辑，其标准流程可分为以下三个阶段：
 
@@ -86,7 +86,7 @@ RAG系统的运作遵循“检索-增强-生成”的循环逻辑，其标准流
 | Advanced RAG | Advanced RAG在Naive RAG的基础上进行优化和增强。包含额外处理步骤，分别在数据索引、检索前和检索后进行。包括更精细的数据清洗、设计文档结构和添加元数据，以提升文本一致性、准确性和检索效率。在检索前使用问题的重写、路由和扩充等方式对齐问题和文档块之间的语义差异。在检索后通过重排序避免“Lost in the Middle”现象，或通过上下文筛选与压缩缩短窗口长度。 |
 | Modular RAG | Modular RAG引入更多具体功能模块，例如查询搜索引擎、融合多个回答等。技术上融合了检索与微调、强化学习等。流程上对RAG模块进行设计和编排，出现多种不同RAG模式。提供更大灵活性，系统可以根据应用需求选择合适的功能模块组合。模块化RAG的引入使得系统更自由、灵活，适应不同场景和需求。 |
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503201801087.png)
+![](https://pic.lapis.cafe/2025/03/89e84fe6734443f4998f06da30f19d16.png)
 
 # 三、RAG还是SFT？
 
@@ -153,7 +153,7 @@ RAG的优势就是系统低耦合，模型无需训练即可接入新知识源�
 
 微软的解决方法是，与其他RAG系统类似，GraphRAG整个Pipeline也可划分为索引(Indexing)与查询(Query)两个阶段。索引过程利用LLM提取出节点（如实体）、边（如关系）和协变量（如 claim），然后利用社区检测技术对整个知识图谱进行划分，再利用LLM进一步总结。最终针对特定的查询，可以汇总所有与之相关的社区摘要生成一个全局性的答案。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503201930705.png)
+![image.png](https://pic.lapis.cafe/2025/03/e98906006489252d1b30b70db7586b61.png)
 
 这么做的优势就是，通过社区分层和知识图谱的拓扑结构，GraphRAG能捕捉数据集的整体语义，回答传统RAG难以处理的抽象问题（如“数据中的前五主题”），在全面性、多样性等指标上显著优于基线RAG。
 

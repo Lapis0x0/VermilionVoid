@@ -25,22 +25,22 @@ draft: false
 # 一、模型速览与Benchmark观察
 认识一个模型性能最直接和简单的方法就是看各种benchmark。虽然榜单可能会被刷/因为各种算法原因导致不公平评估，但终究是比我们自己“俺寻思”能更加拟合实际性能曲线的。
 ## 1.OpenAI自己的报告
-![OpenAI](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504200141804.png)
+![OpenAI](https://pic.lapis.cafe/2025/04/17cb1f95c4edb9f049d231bddc8aef49.png)
 
 后面的各种OpenAI自己的编程基准测试还有指令遵循榜单什么就不放了，总之结论是o3 和 o4mini的性能表现比之前的o1还有o3mini要好一大截，o3 和 o4-mini 是 OpenAI 迄今为止发布的最智能模型，而且它们通常也比其前辈 o1 和 o3-mini 更高效。
 >例如，在 2025 年 AIME 数学竞赛中，o3 的性价比边界比 o1 有显著提升；同样，o4-mini 的性价比边界也比 o3-mini 有显著提升。
 >
 >更普遍地讲，OpenAI 预计，在大多数实际应用中，o3 和 o4-mini 也将分别比 o1 和 o3-mini 更智能、更经济。
 ## 2.Artificial Analysis LLM Leaderboard
-![榜单](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504200145365.png)
+![榜单](https://pic.lapis.cafe/2025/04/503cd8292a7075543a687a9bbd18cbdd.png)
 
 可以看到排名还是稳的
 ## 3.Aider LLM Leaderboards 衡量模型编码能力的榜单
-![Aider](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504200146447.png)
+![Aider](https://pic.lapis.cafe/2025/04/a42e3bb3af8a9bfda379dcb849ca3355.png)
 目前理论上的最优解是让O3当架构师，4.1作为最终的执行者去编写具体代码
 
 ## 4.LiveBench 我目前认为最权威的衡量模型性能的榜单
-![Livebench](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504200149860.png)
+![Livebench](https://pic.lapis.cafe/2025/04/c6fc71e0f67161f31f07fbfb2a6a3b5a.png)
 可以看到，目前的模型性能排行里最强的是o3 High，其次是o4-Mini High，第三是Gemini 2.5 Pro。
 
 ## 5.总结
@@ -108,7 +108,7 @@ draft: false
 
 **虽然前后两个模型名称一样，但实际并非相同的模型，OpenAI当下最新的o3，已针对聊天和产品应用进行了微调**。
 
-![图源ARC官网](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504231536535.png)
+![图源ARC官网](https://pic.lapis.cafe/2025/04/2058db5e2d7aa63d82a08e7f135a85e2.png)
 
 
 ## 2.部分友商模型“跑分没赢过，实际体验没输过”

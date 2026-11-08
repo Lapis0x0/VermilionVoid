@@ -2,7 +2,7 @@
 title: 暗涌系列：Ark Invest《Big Ideas 2025》报告浅析 Part 1
 published: 2025-03-03
 description: "The BigIdeas 2025的分析报告Part1，主要内容为报告的观点洞察与AI Agent、比特币和稳定币三个领域的解析"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163202792.png"
+image: "https://pic.lapis.cafe/2025/03/0ea64b64e12dbdba64203947510ffb73.png"
 tags: ["暗涌"]
 category: 金融与经济
 draft: false
@@ -176,7 +176,7 @@ ARK写这份报告我觉得还有潜藏的意思，就是通过渲染「颠覆�
 > 在颠覆性技术中，神经网络是最重要的催化剂。根据ARK Inverst的研究，神经网络的进步将使得其他14项技术中至少6项的价值提升至少一个数量级，从而为下一代云技术、智能设备、自动驾驶、人形机器人、精准医学和多组学技术带来巨大的市场扩展。
 > 
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163308724.png)
+![image.png](https://pic.lapis.cafe/2025/03/c3bf663e992173bd470fd1df0d4fe4fe.png)
 
 > ARK团队认为的十四项技术
 > 
@@ -188,13 +188,13 @@ ARK写这份报告我觉得还有潜藏的意思，就是通过渲染「颠覆�
 > AI代理是一个通过自然语言理解意图，利用推理和适当的上下文制定计划，使用工具采取行动以实现意图，通过迭代和持续学习自我改进的技术实体。
 > 
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163338928.png)
+![image.png](https://pic.lapis.cafe/2025/03/d3141610dc1609fe086ed62ebe957113.png)
 
 目前主流的agents都处于孤立的单用途代理场景，未来会逐步发展平台级代理和最广泛的通用代理。
 
 ## 1.AI搜索+购物
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163356057.png)
+![image.png](https://pic.lapis.cafe/2025/03/0b790086fc383b9adcb5566eab809527.png)
 
 ARK主要认为agent在未来搜索+购物领域大有可为，其实也好理解，毕竟最终消费掏钱的还得是人嘛。
 
@@ -204,7 +204,7 @@ ARK主要认为agent在未来搜索+购物领域大有可为，其实也好理�
 
 在The Enterprise中，agent将通过软件提高生产力。部署智能代理的公司能够在相同人力资源的情况下增加单位产量，和/或优化人力资源以转向更高价值活动。随着人工智能的发展，agent有可能承担更高比例的工作负荷，并独立完成更高价值的任务。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163447114.png)
+![image.png](https://pic.lapis.cafe/2025/03/f21530314b9ea199bebf7043c0beca6a.png)
 
 **降本增效.jpg**
 
@@ -222,7 +222,7 @@ ARK主要认为agent在未来搜索+购物领域大有可为，其实也好理�
 
 ### （2）AI Coding赛道：AI正在重塑软件价值链
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163500913.png)
+![image.png](https://pic.lapis.cafe/2025/03/cb320b452c988f788aa9b3d3101c4281.png)
 
 不同的大模型在实际编程任务解决中的表现
 
@@ -261,7 +261,7 @@ ARK 设想了三种不同的AI投资情境，并分析了它们对就业、自�
 > 比特币目前建立了一个成熟的全球货币体系，具有健全的网络基础与日益增长的机构采用率。
 > 
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163511122.png)
+![image.png](https://pic.lapis.cafe/2025/03/23d02a5eb9a077c41c8e8487ad05e66c.png)
 
 比特币在2024年创下历史新高，并且市场普遍预期特朗普总统任期内会有加密货币市场的重大利好。
 
@@ -345,7 +345,7 @@ Layer 2 的具体实现方式可以分为多种，比如：
 - 2024年比特币的总成本基础创下新高，因为大家都想赚钱所以比特币未来的估值会越来越高
 - 最后，比特币正按部就班地向我们2030年的价格目标迈进，熊市30万刀正常71万刀牛市150万刀，好大的一个饼
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163524391.png)
+![image.png](https://pic.lapis.cafe/2025/03/8d025baa80c64480e6505101045903e3.png)
 
 # 三、稳定币
 
@@ -507,7 +507,7 @@ UST的失败暴露了算法稳定币的几个致命问题：
 - 稳定币因Layer 2 的低成本和高效率而吸引零售兴趣
 - 点对点交易与个人钱包储存主导稳定币应用场景
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/20250303163542753.png)
+![image.png](https://pic.lapis.cafe/2025/03/d01c47d1b5a78bbecdceb33c76f75097.png)
 
 - Tether的财务表现无论在绝对值还是相对值上都令人震惊（意思是这玩意太赚钱了）
 - 在「去美元化」对冲下，稳定币正增加对美国政府债务作为抵押品的需求（意思是这玩意对美国也好）

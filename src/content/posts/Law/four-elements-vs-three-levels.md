@@ -2,7 +2,7 @@
 title: 为权力勘定边界：从四要件与三阶层看刑法评价体系的功能转型
 published: 2025-07-17
 description: "国家治理体系与治理能力现代化的必由之路"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/iShot_2025-07-17_23.17.51-tuya.webp"
+image: "https://pic.lapis.cafe/2025/07/eb319e55b1f30ec1f54fc3854a1d30d2.webp"
 tags: ["风自东方来"]
 category: 法学
 draft: false

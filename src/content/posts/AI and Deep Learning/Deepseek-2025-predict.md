@@ -14,19 +14,19 @@ draft: false
 
 今年 4 月底，不知哪家海外媒体扒拉到国内炒股社区的**一篇DeepSeek写的、预测DeepSeek r2更新的、内容离谱水平已经突破当前人类科技上限的ai文**，结果不仅当了真，还当成“第一手爆料”大肆宣发。更讽刺的是，这条明显未经核实的内容很快又被国内 AI 媒体当作“外媒报道”原路带回，实现了完美的信源闭环。
 
-![Cache_-6ba51fda3cfd38f6.jpg](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/Cache_-6ba51fda3cfd38f6.jpg)
+![Cache_-6ba51fda3cfd38f6.jpg](https://pic.lapis.cafe/2025/06/0e4d94411f0b39509dc7236b78420064.jpg)
 
 
 6月2日，《南风窗》居然把这玩意当作“各方透露”的可靠信息，堂而皇之写进自己文章里——令人忍俊不禁。
 
-![Pasted image 20250603045953.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/Pasted%20image%2020250603045953.png)
+![Pasted image 20250603045953.png](https://pic.lapis.cafe/2025/06/8a7e20dbfafd32a902737d70e01524de.png)
 
 
 6月5日最新消息：摩根士丹利也干了！
 
-![10b3adabb02a7a4bd2a14bc29cd16b89.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/10b3adabb02a7a4bd2a14bc29cd16b89.png)
+![10b3adabb02a7a4bd2a14bc29cd16b89.png](https://pic.lapis.cafe/2025/06/10b3adabb02a7a4bd2a14bc29cd16b89.png)
 
-![e5c518f554145e311d59daa7d2232f8c.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/e5c518f554145e311d59daa7d2232f8c.png)
+![e5c518f554145e311d59daa7d2232f8c.png](https://pic.lapis.cafe/2025/06/e5c518f554145e311d59daa7d2232f8c.png)
 
 
 What can i say？

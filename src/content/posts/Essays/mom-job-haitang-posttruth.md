@@ -27,8 +27,8 @@ draft: false
 | 反复出现          | **“判十年”流言**    | 多位博主宣称：写 R18 文即面临十年刑期             | 法条与判例显示：涉案作者多获缓刑或教育释放；“十年”说法被认为夸大                                   |
 | 伴随事件          | **“兰州拉面抵制”**   | 部分粉丝因兰州警方抓捕号召抵制兰州及其拉面             | 兰州拉面连锁主体多源自河南，被嘲“无辜躺枪”                                              |
 | 整体趋势          | 作者与粉丝          | “小作文”情绪叙事—> 快速募捐—> 缺乏审计—> 频繁塌房    | 舆论转向：呼吁理性捐助、追责信息不实传播                                                |
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202506151810822.png)
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202506151810115.png)
+![image.png](https://pic.lapis.cafe/2025/06/019d8705994ca0491ea68ad2bf1be51e.png)
+![image.png](https://pic.lapis.cafe/2025/06/22ebfe2d3d0c973167eb4958454ab9d0.png)
 
 >第一次看到这图的时候真给我看乐了
 

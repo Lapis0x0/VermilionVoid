@@ -2,7 +2,7 @@
 title: 我们无法修好彼此：城市、疏离与机器人之梦
 published: 2025-06-24
 description: "我们竟是如此的孤独，又是如此的自私和善于自我欺骗"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202506242354215.png"
+image: "https://pic.lapis.cafe/2025/06/375c8c533da39d00607891951b503545.png"
 tags: ["人类研究"]
 category: 随笔
 draft: false

@@ -62,7 +62,7 @@ Github Actions 是 GitHub 提供的一项持续集成和持续部署（CI/CD）�
 - **选择远程服务：** 在插件设置中，找到选择远程服务提供商的选项。这里你需要选择 S3 或者专门列出的 Tencent COS (如果插件有此区分选项)。
 - **填写 S3 凭证：** 这是最关键的一步。你需要填入连接到你云存储桶所需的信息。具体设置界面可能因插件版本略有不同，但核心信息是相同的。
 你可以参考下图所示的配置界面：
-![参考](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504101135221.png)
+![参考](https://pic.lapis.cafe/2025/04/23d131484a0e6c89adf73c7a3a6e9a0b.png)
 
 - **获取必要的 S3 凭证信息：** 你需要登录你的云服务提供商控制台（以腾讯云对象存储 COS 为例）获取以下四个关键信息。**请务必妥善保管，尤其是 SecretKey！**
     - COS_SECRET_ID (对应 S3 的 Access Key ID): 访问密钥 ID，用于标识你的账户。
@@ -556,7 +556,7 @@ jobs:
 
 在腾讯云COS脚本的基础上，我将 AWS CLI 版本降级到已知与 Cloudflare R2 兼容的版本 2.22.35，在 在所有的 `aws s3 cp` 命令中添加了 `--checksum-algorithm CRC32` 参数，现在运行脚本之后已经可以正常上传了。
 效果图：
-![image|565x500](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504132258238.png)
+![image|565x500](https://pic.lapis.cafe/2025/04/7c4bb85a7896e9f0dbc154bba4b4b464.png)
 
 如果你想要使用R2，需要在github仓库里配置四个环境变量
 * R2_ACCOUNT_ID
@@ -833,7 +833,7 @@ jobs:
 ```
 
 # 四、最终效果
-![效果](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202504101240457.png)
+![效果](https://pic.lapis.cafe/2025/04/53606080714e18d5e440d7d8e64e3a81.png)
 可以看到执行同步后，对应刊物的最新文章就被我们同步到Obsidian的Vault里了。
 
 # 五、可能的改进优化

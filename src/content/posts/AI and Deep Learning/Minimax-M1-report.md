@@ -86,7 +86,7 @@ M1 的训练分为三个核心阶段：持续预训练、监督微调（SFT）�
 
 ## 4.理论性能与优势
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202506211854720.png)
+![image.png](https://pic.lapis.cafe/2025/06/1d0291230934a787c7ef9506603435f7.png)
 
 在纸面性能上，**Minimax M1在上下文能力方面是无可争议的强**：
 
@@ -104,7 +104,7 @@ M1 的训练分为三个核心阶段：持续预训练、监督微调（SFT）�
 
 >他在知乎上也有账号：[链接](https://www.zhihu.com/people/toyama)
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202506211814981.png)
+![image.png](https://pic.lapis.cafe/2025/06/0558383d89440caa0b8c5f1c22943d61.png)
 
 我们可以看到榜单中 Minimax-M1 的得分并不理想，其极限分数（45.97）和中位数分数（32.18）与 DeepSeek R1、Qwen3-235B 等第一梯队模型存在显著差距。-42.84% 的中位数分差也暴露了其性能的**不稳定性**。
 

@@ -2,7 +2,7 @@
 title: 模型考古学（一）：大模型原理探赜
 published: 2025-01-13
 description: "这篇博客探讨了大模型（如GPT系列）背后的神经网络基础，从神经网络的基本结构、反向传播算法、梯度下降法，到Transformer架构及其在大语言模型中的应用。文章详细解析了大模型的训练过程、参数优化以及如何通过海量数据提升模型性能。最后，回顾了大语言模型架构的发展历程，比较了不同模型（如BERT和GPT）的特点和应用场景。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/llmresearch-tuya.webp"
+image: "https://pic.lapis.cafe/2025/04/21a75dfa036c6cc79046e56613f31751.webp"
 tags: ["模型考古学"]
 category: 深度学习
 draft: false
@@ -33,11 +33,11 @@ draft: false
 
 在这种网络结构中，第一层被称为 **输入层（Input Layer）** ，负责接收外部输入的数据；最后一层被称为 **输出层（Output Layer）** ，负责输出网络的计算结果；中间的层被称为 **隐藏层（Hidden Layer）** ，隐藏层的层数和每层的神经元数量可以根据任务的复杂程度进行调整。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202501141749060.png)
+![image.png](https://pic.lapis.cafe/2025/01/92a75a4e9df16c535c6076bdc5386283.png)
 
 我们可以把神经元看做是一个函数（Function），它输入的是上一层所有神经元的输出，而它的输出是一个0到1之间的值。其实整个神经网络就是一个函数，在上图中是一个输入784个值（因为图片的像素是28*28），输出10个值（因为输出的是十个数字的概率）的函数。不过这个函数极其的复杂，它用了13002个权重参数偏置函数来识别特殊图案，当然这个函数要是不复杂的话我们又怎么能放心的用它来识别数字了呢（）
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202501141749468.png)
+![image.png](https://pic.lapis.cafe/2025/01/06d4509b7bab41c57b096cc299ed8326.png)
 
 那么，我们的神经网络是如何处理这项艰巨任务的，神经网络又是如何通过数据来获得合适的权重和偏置的？答案是 **反向传播算法（Backpropagation）**。
 
@@ -146,7 +146,7 @@ $\theta(t+1) = \theta(t) - \eta * \nabla J(\theta(t))$
 
 ## 1.组成架构
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202501141750102.png)
+![image.png](https://pic.lapis.cafe/2025/01/725c3cac4f276ad94d3a1ec265cba4da.png)
 
 ### （1）、嵌入层
 
@@ -205,7 +205,7 @@ $\theta(t+1) = \theta(t) - \eta * \nabla J(\theta(t))$
 - **更好的泛化能力：** 泛化能力是指模型在面对从未见过的数据时的表现。大模型通常拥有更好的泛化能力，因为它们在训练过程中见过了更多的数据，学习到了更普遍性的规律，而不是仅仅记住了训练数据中的特定例子。这就像一个学生，如果他只做了几道练习题，那么他可能只会做这几道题，但如果他做了大量的练习题，那么他就更有可能掌握解题的普遍方法，从而能够解决各种各样的新题目。
 - **更丰富的知识表示：** 大模型可以看作是一个巨大的知识库，它将海量的训练数据中蕴含的信息压缩并存储在其参数中。模型参数越多，这个知识库的容量就越大，能够存储的信息就越丰富。当模型遇到新的任务或问题时，它可以从这个知识库中检索相关的信息，并利用这些信息来生成答案或执行任务。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202501141750971.png)
+![image.png](https://pic.lapis.cafe/2025/01/fce966282e1977bd3856d74b8b0cf62e.png)
 
 ### （3）、海量的训练数据都去哪了？
 
@@ -236,7 +236,7 @@ $\theta(t+1) = \theta(t) - \eta * \nabla J(\theta(t))$
 - **仅解码器模型 (Decoder-only Models):** 例如 GPT 系列 (GPT-1, GPT-2, GPT-3, GPT-4)。这类模型只使用 Transformer 的解码器部分，擅长于生成文本，常用于文本生成、对话系统、机器翻译等任务。它们通常通过 **自回归 (Autoregressive)** 的方式进行训练，即根据前面已生成的词来预测下一个词。
 - **编码器-解码器模型 (Encoder-Decoder Models):** 例如 BART、T5。这类模型同时使用 Transformer 的编码器和解码器部分，兼具理解和生成能力，常用于机器翻译、文本摘要等任务。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202501141751421.png)
+![image.png](https://pic.lapis.cafe/2025/01/ce4edbb3f51085bd9645492c4751bce2.png)
 
 在大模型发展的早期阶段，encoder-only和encoder-decoder模型更受欢迎，但随着 2021 年 GPT-3 的横空出世，decoder-only 模型完成了一次漂亮的翻身仗。在 BERT 带来的最初爆炸性增长之后，encoder-only 模型逐渐开始失宠。
 

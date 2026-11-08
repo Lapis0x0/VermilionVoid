@@ -30,6 +30,10 @@ jobs:
       NOTION_TOKEN: ${{ secrets.NOTION_TOKEN }}
       NOTION_DATA_SOURCE_ID: ${{ secrets.NOTION_DATA_SOURCE_ID }}
       NOTION_FORCE_PRUNE: ${{ inputs.force_prune }}
+      # 文章图片上传到 R2 图床（pic.lapis.cafe），和 PicList 用同一个桶
+      R2_ENDPOINT: ${{ secrets.R2_ENDPOINT }}
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       MANIFEST: /tmp/notion-publish.json
 
     steps:
@@ -48,8 +52,8 @@ jobs:
         run: |
           git config --local user.email "github-actions[bot]@users.noreply.github.com"
           git config --local user.name "github-actions[bot]"
-          # public/notion 在没有图片时不存在，直接 add 会报 pathspec 错误，所以 add 整个 public
-          git add -A src/content/posts public
+          # 图片在 R2，仓库里只有文章本身
+          git add -A src/content/posts
           if git diff --staged --quiet; then
             echo "No changes to commit."
             exit 0

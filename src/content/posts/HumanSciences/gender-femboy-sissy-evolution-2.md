@@ -2,7 +2,7 @@
 title: 儿童节专题｜她的身体，他的灵魂：男娘审美的生成机制
 published: 2025-05-31
 description: "在上一篇的基础上去论述为什么男娘文化可以部分成为现在的显学"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/iShot_2025-05-30_17.50.19-tuya.webp"
+image: "https://pic.lapis.cafe/2025/05/50c665ed9ed56681cb8827bd0b3232f3.webp"
 tags: ["亚文化研究"]
 category: 人类研究
 draft: false

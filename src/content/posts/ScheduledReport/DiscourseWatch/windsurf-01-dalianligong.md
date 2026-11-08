@@ -2,7 +2,7 @@
 title: 风向｜大连工业大学李某开除事件
 published: 2025-07-16
 description: "鬣狗一般的媒体，与立场驱动的思潮演变"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/1752559862384-tuya.webp?imageSlim"
+image: "https://pic.lapis.cafe/2025/07/e4da772b45ae8e5a200fe736966d8341.webp"
 tags: ["风向"]
 category: 浅度报告
 draft: true
@@ -26,7 +26,7 @@ draft: true
 
 **3.首波：流量鬣狗冲锋（7月13日上午）**
 
-![知微事见传播链路](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202507161058406.png?imageSlim)
+![知微事见传播链路](https://pic.lapis.cafe/2025/07/722c3bf4e45f3ddc7d31c1c475b841ab.png)
 
 该部分因为信源过于繁杂，时间很有可能是混乱错误的，但主要传播群体正确
 

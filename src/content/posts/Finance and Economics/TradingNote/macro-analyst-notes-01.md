@@ -56,11 +56,11 @@ draft: false
 - **因子定义（X）：** 针对不同滚动窗口（7、14、21日）构造的 ETF 净流入因子。具体为：每日计算 ETF 总流量的 N 日滚动和，记为 `flow_rolling_musd`。
 - **预测目标（Y）：** BTC 与 ETH 的收盘价取对数，计算未来 N 日的对数收益差，得到 `btc_excess_return`。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202510010040445.png?imageSlim)
+![image.png](https://pic.lapis.cafe/2025/09/ef6555bbfaf09c07da9dd8e9bca6daa2.png)
 
 下图展示了 ETF 净流入（以 14 天滚动和为例）与 BTC 未来超额回报的散点分布，初步揭示了两者之间的关系。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202510010037840.png?imageSlim)
+![image.png](https://pic.lapis.cafe/2025/09/ffcd627dca24a818ed18bc8c8e44b8d2.png)
 
 ## 2.2 线性回归分析：初步发现与统计检验
 
@@ -91,7 +91,7 @@ ETF 净流入确实是一个能预测 BTC 未来表现的显著因子，但其�
 - 横轴 `4=High` 代表净流入最高的 20% 的时期。
 - 纵轴则代表在特定净流入组别发生后，**未来一周** BTC 相对于 ETH 的**平均超额回报**，单位是基点（bp），100 bp = 1%。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202510010038043.png?imageSlim)
+![image.png](https://pic.lapis.cafe/2025/09/ad1de5027b5161f8f3f60b8af300d522.png)
 
 - **核心洞察**：
     1. **印证“卖出事实”**：当ETF净流入最高时（第4组），未来一周BTC的平均回报是**负115个基点（-1.15%）**，表现最差。这强烈支持了之前的回归结果，即极端的资金流入往往是市场情绪过热的顶点，是“卖出事实”的信号。

@@ -477,7 +477,7 @@ const items = [
 
 *最终效果：*
 
-![friends](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/iShot_2024-12-14_21.59.55-tuya.webp)
+![friends](https://pic.lapis.cafe/2024/12/f79ee7b94f677b3b93240e688793f8b9.webp)
 
 ## 3.添加评论系统
 本主题作者未来会计划添加评论系统，但目前主题原生不支持，可采用giscus等第三方评论系统，本节就采用giscus来进行演示。

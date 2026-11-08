@@ -2,7 +2,7 @@
 title: ta们不配讲理｜浅谈现代思潮对立中的去人性化机制
 published: 2025-09-13
 description: "当标签取代了面孔，我们便失去了看见人的能力，也失去了对话的可能"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/iShot_2025-09-13_18.08.16-tuya.webp?imageSlim"
+image: "https://pic.lapis.cafe/2025/09/85ec70ccb100a6d55d8c7b0b30f5b880.webp"
 tags: ["亚文化研究"]
 category: 人类研究
 draft: false

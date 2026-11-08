@@ -2,7 +2,7 @@
 title: Trading101：策略交易解析
 published: 2025-01-03
 description: "策略交易通过数学模型、历史数据分析和计算机程序，构建系统化交易策略，力求在市场波动中获利。其优势在于纪律性、高效性和风险可控性，帮助投资者克服情绪化操作。本文介绍了现货/合约网格、马丁格尔、智能套利、定投和信号策略等工具，分析了其原理、实施方法和潜在风险，为投资者提供了策略交易的入门指南。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/Trading%20101-tuya.webp"
+image: "https://pic.lapis.cafe/2025/02/2d957245ddb22b7627ce4e22dc85e115.webp"
 tags: ["投资101"]
 category: 金融与经济
 draft: false

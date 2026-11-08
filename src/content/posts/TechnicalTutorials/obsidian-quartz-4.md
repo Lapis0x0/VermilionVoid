@@ -27,7 +27,7 @@ draft: false
 
 [效果预览：](https://note.lapis.cafe/)
 
-![效果预览](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202506131523967.png)
+![效果预览](https://pic.lapis.cafe/2025/06/294610b527d6087f2a1b1b5356b85f44.png)
 
 # 一、基本部署流程
 

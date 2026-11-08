@@ -2,7 +2,7 @@
 title: “我们”的偶像与“我”的英雄｜从时代少年团看两性情动结构的分野与融合
 published: 2025-09-13
 description: "在情感被规训、欲望被商品化的时代，我们为何仍愿相信偶像？"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/iShot_2025-09-13_02.50.49-tuya.webp?imageSlim"
+image: "https://pic.lapis.cafe/2025/09/8ffbd7cef01cdb57b406a8f5c91d6ddb.webp"
 tags: ["亚文化研究"]
 category: 人类研究
 draft: false

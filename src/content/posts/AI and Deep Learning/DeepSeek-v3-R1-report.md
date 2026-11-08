@@ -2,7 +2,7 @@
 title: 模型考古学（六）：DeepSeek V3和R1技术报告浅析
 published: 2025-03-23
 description: "本文深入解析 DeepSeek V3 和 R1 两大模型的创新点，涵盖架构、训练策略与推理能力，展现中国开源模型的强劲进展与高性价比潜力。"
-image: "https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/llmresearch-tuya.webp"
+image: "https://pic.lapis.cafe/2025/04/21a75dfa036c6cc79046e56613f31751.webp"
 tags: ["模型考古学"]
 category: 深度学习
 draft: false
@@ -23,7 +23,7 @@ draft: false
 
 老规矩，先看看模型性能跑分：
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503231304283.png)
+![](https://pic.lapis.cafe/2025/03/6d310f553cfbb820762e8383bb956186.png)
 
 ## 前置知识（1）：消融实验
 
@@ -170,7 +170,7 @@ draft: false
 
 在预训练阶段，DS在14.8T的数据上训练了V3，预训练过程异常稳定，在整个训练过程中没有碰到任何不可恢复的损失峰值，也无需回滚。
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503231333849.png)
+![](https://pic.lapis.cafe/2025/03/a9fc75aaa4a2af16d24a8bb0531c5569.png)
 
 全部训练过程一共也就花了五百来万美元，令人感慨。
 
@@ -186,7 +186,7 @@ draft: false
 
 - 引入了一种创新方法，从长链思维（CoT）模型中锻炼推理能力，特别是从DeepSeek R1系列模型之一转化为标准的LLMs，特别是DeepSeek V3。DS将R1的验证和反思模式融入到DeepSeek V3，显著提升了其推理性能，同时也保持了对V3的输出风格和长度的控制。
     
-    ![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503231345963.png)
+    ![](https://pic.lapis.cafe/2025/03/4acd50cb64f163469c4486007481acda.png)
     
 
 我们可以看到，和昨天的Minimax一样，Ds V3也是在Attention机制上做了大改良。DeepSeek V3的基本架构仍然在Transformer的框架内，为了实现高效推理和经济高效的训练，DS V3还采用了MLA和DeepSeek MoE，这二者的含金量在DS V2那里已经体现的非常明显了。
@@ -380,7 +380,7 @@ Mamba和线性注意力，启动！
 > - DeepSeek-R1
 > - 基于 Qwen 和 Llama 从 DeepSeek-R1 蒸馏出的六个密集模型（1.5B、7B、8B、14B、32B、70B）
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503231745242.png)
+![](https://pic.lapis.cafe/2025/03/2fd6d6d4f64ab88886a77ba0f3d9f99b.png)
 
 本次DeepSeek相当于发布了三个部分的模型：
 
@@ -390,7 +390,7 @@ Mamba和线性注意力，启动！
 
 整体流程：
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503231844135.png)
+![](https://pic.lapis.cafe/2025/03/54dd9241b1fc36e1b6418a86f14fe9f2.png)
 
 ## 一、研究贡献总结
 
@@ -458,12 +458,12 @@ Assistant:
 
 - 通过这种大规模、持续迭代的 RL 训练，让模型不断学会更长、更完整的推理，并提升准确率。
     
-    ![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503231914898.png)
+    ![](https://pic.lapis.cafe/2025/03/e9696d5294df0b47e4174ef14d6e2cbd.png)
     
 
 可以看到，随着RL的推进，DeepSeek-R1-Zero表现出稳定且一致的性能提升。
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503231916386.png)
+![](https://pic.lapis.cafe/2025/03/2f2ab1e797c821f6706f1fbf6a253872.png)
 
 图为DeepSeek-R1-Zero在RL过程中训练集上的平均响应长度。可以看出DeepSeek-R1-Zero自然地学会了通过更多的思考时间来解决推理任务。
 
@@ -477,7 +477,7 @@ DeepSeek-R1-Zero在训练中并没有显式地被人工示例教导要“写冗�
 
 训练进行到中期时，模型在推理过程中可能会出现“突然意识到自己推理有误”然后改写推理的“**aha moment**”，这在纯 RL 场景下非常有意思。aha moment强调了RL的力量和美感：我们不需要明确地教导模型如何解决问题，而是需要简单地为其提供正确的激励，模型就会自主发展出高级的问题解决策略。
 
-![](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202503231919293.png)
+![](https://pic.lapis.cafe/2025/03/1d965364a49dd2ed23f8918ffd0bdbc0.png)
 
 ## 三、DeepSeek-R1：冷启动的强化学习
 

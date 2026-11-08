@@ -102,4 +102,4 @@ your-project/
 
 你可以访问[这个链接](https://note.lapis.cafe/%E6%8A%95%E8%B5%84/20250613%E4%BB%A5%E4%BC%8A%E5%86%B2%E7%AA%81%E4%B8%93%E9%A2%98/%E6%A2%B3%E7%90%86)来查看最终嵌入效果，我们可以看到`<iframe>` 成功在笔记中渲染完整内容，无需额外改路由。
 
-![image.png](https://blog-1302893975.cos.ap-beijing.myqcloud.com/pic/202506162318563.png)
+![image.png](https://pic.lapis.cafe/2025/06/7c194bbd9a6846d0788da0e6595a97c9.png)
