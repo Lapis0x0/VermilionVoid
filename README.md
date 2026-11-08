@@ -91,20 +91,7 @@ draft: false               # 草稿不会被构建
 
 ### `thoughts` —— 碎碎念
 
-短内容，只需要 `published`，`title` 可选。由同步脚本从 Obsidian / COS 拉取，一般不手写。
-
-### `studies` —— 学习追踪
-
-```yaml
----
-title: 主题
-status: 在读               # 在读 | 沉淀中 | 暂搁 | 已结
-started: 2026-08
-field: 领域                # 可选
-subtitle: 副标题           # 可选
-epigraph: 题记             # 可选
----
-```
+短内容，只需要 `published`，`title` 可选。由同步脚本从 flomo 拉取，一般不手写。
 
 ### `articles`
 
@@ -135,9 +122,10 @@ epigraph: 题记             # 可选
 |---|---|---|---|
 | 书 / 论文 | 飞书多维表 | `public/data/books.json`、`papers.json` | GitHub Actions，每周日 |
 | 漫画 | komiic → 飞书多维表 | `public/data/comics.json` | 本地脚本推到飞书，再由 CI 生成 JSON |
-| 碎碎念 / 学习追踪 | 腾讯云 COS | `src/content/thoughts/`、`studies/` | GitHub Actions，每 12 小时 |
+| 碎碎念 | flomo | `src/content/thoughts/` | GitHub Actions（`sync-flomo.yml`） |
+| 长文 | Notion「博客」库 | `src/content/posts/`，图片传 R2 图床 | Notion 状态改「待发布」后约一分钟 |
 
-CI 需要的 secrets：`FEISHU_APP_ID`、`FEISHU_APP_SECRET`、`FEISHU_APP_TOKEN`、`FEISHU_TABLE_ID`（及 `_PAPERS` / `_COMICS` 变体）、`COS_SECRET_ID`、`COS_SECRET_KEY`、`COS_BUCKET`、`COS_REGION`、`COS_PREFIX`、`COS_STUDIES_PREFIX`。
+CI 需要的 secrets：`FEISHU_APP_ID`、`FEISHU_APP_SECRET`、`FEISHU_APP_TOKEN`、`FEISHU_TABLE_ID`（及 `_PAPERS` / `_COMICS` 变体）、`FLOMO_TOKEN`、`NOTION_TOKEN`、`NOTION_DATA_SOURCE_ID`、`R2_ENDPOINT`、`R2_ACCESS_KEY_ID`、`R2_SECRET_ACCESS_KEY`。
 
 两个已知约束：
 

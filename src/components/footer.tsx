@@ -42,7 +42,6 @@ export function Footer() {
                 { name: "首页", href: "/" },
                 { name: "时间线", href: "/timeline/" },
                 { name: "书架", href: "/bookshelf/" },
-                { name: "专题", href: "/studies/" },
                 { name: "友链", href: "/friends/" },
                 { name: "关于", href: "/about/" },
                 { name: "开往", href: "https://www.travellings.cn/go.html", external: true },

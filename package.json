@@ -9,7 +9,6 @@
     "preview": "astro preview",
     "check": "astro check",
     "sync-flomo": "node scripts/sync-flomo.mjs",
-    "sync-studies": "node scripts/sync-studies.mjs",
     "sync-notion": "node scripts/sync-notion.mjs"
   },
   "dependencies": {
@@ -18,7 +17,6 @@
     "@astrojs/react": "^6.0.5",
     "@astrojs/rss": "^4.0.19",
     "@astrojs/sitemap": "^3.7.4",
-    "@aws-sdk/client-s3": "^3.1037.0",
     "@expressive-code/core": "^0.44.2",
     "@expressive-code/plugin-collapsible-sections": "^0.44.2",
     "@expressive-code/plugin-line-numbers": "^0.44.2",
@@ -60,7 +58,6 @@
     "crypto-js": "^4.2.0",
     "date-fns": "4.1.0",
     "embla-carousel-react": "8.5.1",
-    "gray-matter": "^4.0.3",
     "hastscript": "^9.0.1",
     "input-otp": "1.4.1",
     "katex": "^0.16.22",

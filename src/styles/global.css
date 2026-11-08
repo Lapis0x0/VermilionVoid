@@ -851,17 +851,6 @@ a.card-github:hover .github-logo {
 .thoughts-fade-up { animation: thoughts-fade-up 200ms cubic-bezier(.2,.7,.3,1) both; }
 .thoughts-cross-fade { animation: thoughts-cross-fade 220ms ease both; }
 
-/* ——— 专题 (studies) view ——— */
-.studies-cross-fade { animation: thoughts-cross-fade 220ms ease both; }
-.studies-link-title {
-  text-decoration: none;
-}
-.studies-link:hover .studies-link-title,
-.studies-link:focus-visible .studies-link-title {
-  text-decoration: underline solid var(--primary) 1.5px;
-  text-underline-offset: 4px;
-}
-
 /* 偶得翻页按钮字号：随正文 --thought-fs（0.5vw + 10.1px）同步缩放，但设下限，避免小屏上过小 */
 :root {
   --thought-nav-fs: clamp(13px, 0.36vw + 7.3px, 16px);   /* 底部 前一则 / 后一则 */

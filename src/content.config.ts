@@ -35,18 +35,4 @@ const thoughts = defineCollection({
   }),
 })
 
-const studies = defineCollection({
-  loader: glob({ pattern: "**/*.{md,mdx}", base: "./src/content/studies" }),
-  // 注意：frontmatter 里的 `slug` 字段在 glob loader 下不再是保留字，也不参与 URL 生成；
-  // URL 用 entry.id（= 相对 base 的文件路径）。这里不声明 slug，正文里的 slug: 字段是冗余的。
-  schema: z.object({
-    title: z.string(),
-    status: z.enum(["在读", "沉淀中", "暂搁", "已结"]),
-    started: z.string(), // "YYYY-MM" 或 "YYYY-MM-DD"
-    subtitle: z.string().optional(),
-    epigraph: z.string().optional(),
-    field: z.string().optional(),
-  }),
-})
-
-export const collections = { posts, thoughts, studies }
+export const collections = { posts, thoughts }
