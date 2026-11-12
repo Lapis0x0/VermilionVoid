@@ -155,6 +155,12 @@
         "imgurl": "https://www.wutongyu.site/avatar.webp",
         "desc": "关于我的代码和生活",
         "siteurl": "https://www.wutongyu.site/"
+      },
+      {
+        "title": "RAGNote",
+        "imgurl": "https://ragnote.top/Avatar.png",
+        "desc": "Life is code. I will debug it.",
+        "siteurl": "https://ragnote.top/"
       }
     ]
   },
